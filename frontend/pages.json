@@ -5,6 +5,24 @@
 			"style": {
 				"navigationBarTitleText": "uni-app"
 			}
+		},
+		{
+			"path": "components/TabBar/TabBar",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "components/WeatherInfo/WeatherInfo",
+			"style": {
+				"navigationBarTitleText": ""
+			}
+		},
+		{
+			"path": "components/WeatherCard/WeatherCard",
+			"style": {
+				"navigationBarTitleText": ""
+			}
 		}
 	],
 	"globalStyle": {

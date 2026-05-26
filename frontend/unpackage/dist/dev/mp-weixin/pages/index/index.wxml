@@ -1,1 +1,1 @@
-<view class="content"><image class="logo" src="{{a}}"></image><view class="text-area"><text class="title">{{b}}</text></view></view>
+<view class="page data-v-1cf27b2a"><tab-bar class="data-v-1cf27b2a" u-i="1cf27b2a-0" bind:__l="__l"/></view>

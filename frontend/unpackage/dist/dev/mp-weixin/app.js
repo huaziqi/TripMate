@@ -1,8 +1,10 @@
 "use strict";
 Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 const common_vendor = require("./common/vendor.js");
+const i18n = require("./i18n.js");
 if (!Math) {
   "./pages/index/index.js";
+  "./components/TabBar/TabBar.js";
 }
 const _sfc_main = {
   onLaunch: function() {
@@ -17,6 +19,7 @@ const _sfc_main = {
 };
 function createApp() {
   const app = common_vendor.createSSRApp(_sfc_main);
+  app.use(i18n.i18n);
   return {
     app
   };
