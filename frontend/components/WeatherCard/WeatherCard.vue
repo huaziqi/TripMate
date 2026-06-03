@@ -2,47 +2,38 @@
   <view class="weather-card">
 
     <view class="top">
-      <text class="city">{{ city }}</text>
-      <text class="update-time">
-        {{ reportTime }}
+      <text class="city" :style="{ fontSize: rpx(34) }">
+        {{ city }}
+      </text>
+      <text class="update-time" :style="{ fontSize: rpx(22) }">
+        {{ reporttime }}
       </text>
     </view>
 
     <view class="content">
 
       <view class="left">
-        <text class="temp">
+        <text class="temp" :style="{ fontSize: rpx(96) }">
           {{ temperature }}°
         </text>
-
-        <text class="weather">
-          {{ weather }}
+        <text class="weather-label" :style="{ fontSize: rpx(32) }">
+          {{ displayWeather }}
         </text>
       </view>
 
       <view class="right">
-
         <view class="info-item">
-          <text>风向</text>
-          <text>
-            {{ winddirection }}
-          </text>
+          <text :style="{ fontSize: rpx(26) }">{{ t('weather.card.windDirection') }}</text>
+          <text :style="{ fontSize: rpx(26) }">{{ winddirection }}</text>
         </view>
-
         <view class="info-item">
-          <text>风力</text>
-          <text>
-            {{ windpower }}级
-          </text>
+          <text :style="{ fontSize: rpx(26) }">{{ t('weather.card.windPower') }}</text>
+          <text :style="{ fontSize: rpx(26) }">{{ windpower }}{{ t('weather.card.windPowerUnit') }}</text>
         </view>
-
         <view class="info-item">
-          <text>湿度</text>
-          <text>
-            {{ humidity }}%
-          </text>
+          <text :style="{ fontSize: rpx(26) }">{{ t('weather.card.humidity') }}</text>
+          <text :style="{ fontSize: rpx(26) }">{{ humidity }}%</text>
         </view>
-
       </view>
 
     </view>
@@ -51,204 +42,146 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { fetchWeather } from '@/api/weather'
+import { useElder } from '@/composables/useElder'
+import type { WeatherData } from '@/types/weather'
 
-const city = ref('定位中...')
-const weather = ref('--')
-const temperature = ref('--')
+const { t } = useI18n()
+const { rpx } = useElder()
 
+// ----------------------------------------------------------------
+// 定位状态（用枚举替代硬编码文字，切换语言后自动更新）
+// ----------------------------------------------------------------
+type LocationStatus = 'locating' | 'failed' | 'done'
+const locationStatus = ref<LocationStatus>('locating')
+const cityName       = ref('')
+
+const city = computed(() => {
+  if (locationStatus.value === 'locating') return t('weather.card.locating')
+  if (locationStatus.value === 'failed')   return t('weather.card.locateFailed')
+  return cityName.value
+})
+
+// ----------------------------------------------------------------
+// 天气数据
+// ----------------------------------------------------------------
+const weather      = ref('--')
+const temperature  = ref('--')
 const winddirection = ref('--')
-const windpower = ref('--')
+const windpower    = ref('--')
+const humidity     = ref('--')
+const reporttime   = ref('--')
 
-const humidity = ref('--')
-const reportTime = ref('--')
+// 天气状况国际化：以后端返回的中文字符串作为 i18n key 查询译文
+// 第二个参数为 fallback，key 不存在时原样显示
+const displayWeather = computed(() =>
+  weather.value === '--'
+    ? '--'
+    : t(`weather.condition.${weather.value}`, weather.value)
+)
 
-const AMAP_KEY = '你的高德KEY'
-
+// ----------------------------------------------------------------
+// 生命周期
+// ----------------------------------------------------------------
 onMounted(() => {
   getLocation()
 })
 
-function getLocation() {
+// ----------------------------------------------------------------
+// 方法
+// ----------------------------------------------------------------
+// 开发调试用，真机或上线时删除这两行，改为实际定位
+const DEV_MOCK_LOCATION = { longitude: 116.39, latitude: 39.91 } // 北京
+const USE_MOCK = true // 改为 true 跳过 GPS，直接用上面的坐标
 
+function getLocation() {
+  if (USE_MOCK) {
+    loadWeather(DEV_MOCK_LOCATION.longitude, DEV_MOCK_LOCATION.latitude)
+    return
+  }
   uni.getLocation({
     type: 'gcj02',
-
-    success: async (res) => {
-
-      const { longitude, latitude } = res
-
-      try {
-
-        const geoRes: any = await uni.request({
-          url: 'https://restapi.amap.com/v3/geocode/regeo',
-
-          data: {
-            key: AMAP_KEY,
-            location: `${longitude},${latitude}`
-          }
-        })
-
-        const cityName =
-          geoRes.data.regeocode
-            .addressComponent.city
-
-        city.value = cityName
-
-        getWeather(cityName)
-
-      } catch (e) {
-        console.log(e)
-      }
-
-    },
-
-    fail() {
-      city.value = '定位失败'
-    }
-
+    success: ({ longitude, latitude }) => loadWeather(longitude, latitude),
+    fail: () => { locationStatus.value = 'failed' }
   })
-
 }
 
-async function getWeather(
-  cityName: string
-) {
-
+async function loadWeather(longitude: number, latitude: number) {
   try {
-
-    const res: any = await uni.request({
-      url:
-        'https://restapi.amap.com/v3/weather/weatherInfo',
-
-      data: {
-        key: AMAP_KEY,
-        city: cityName,
-        extensions: 'base'
-      }
-    })
-
-    const data = res.data.lives[0]
-
-    weather.value = data.weather
-    temperature.value = data.temperature
-
-    winddirection.value =
-      data.winddirection
-
-    windpower.value =
-      data.windpower
-
-    humidity.value =
-      data.humidity
-
-    reportTime.value =
-      data.reporttime
-
-  } catch (e) {
-
-    console.log(e)
-
+    const res = await fetchWeather(longitude, latitude)
+    applyData(res.data)
+    locationStatus.value = 'done'
+  } catch {
+    locationStatus.value = 'failed'
   }
+}
 
+function applyData(data: WeatherData) {
+  cityName.value      = data.city
+  weather.value       = data.weather
+  temperature.value   = data.temperature
+  winddirection.value = data.winddirection
+  windpower.value     = data.windpower
+  humidity.value      = data.humidity
+  reporttime.value    = data.reporttime
 }
 </script>
 
 <style scoped>
 .weather-card {
-  background: linear-gradient(
-    135deg,
-    #4facfe,
-    #00c6fb
-  );
-
+  background: linear-gradient(135deg, #4facfe, #00c6fb);
   border-radius: 24rpx;
-
   padding: 32rpx;
-
   color: white;
-
-  box-shadow:
-    0 8rpx 20rpx
-    rgba(0,0,0,0.08);
+  box-shadow: 0 8rpx 20rpx rgba(0, 0, 0, 0.08);
 }
 
 .top {
   display: flex;
-
-  justify-content:
-    space-between;
-
+  justify-content: space-between;
   align-items: center;
-
   margin-bottom: 24rpx;
 }
 
 .city {
-  font-size: 34rpx;
-
   font-weight: 600;
 }
 
 .update-time {
-  font-size: 24rpx;
-
   opacity: 0.8;
 }
 
 .content {
-
   display: flex;
-
-  justify-content:
-    space-between;
-
+  justify-content: space-between;
   align-items: center;
-
 }
 
 .left {
-
   display: flex;
-
   flex-direction: column;
-
 }
 
 .temp {
-
-  font-size: 96rpx;
-
   font-weight: bold;
-
   line-height: 1;
 }
 
-.weather {
-
+.weather-label {
   margin-top: 12rpx;
-
-  font-size: 32rpx;
 }
 
 .right {
-
   display: flex;
-
   flex-direction: column;
-
   gap: 14rpx;
 }
 
 .info-item {
-
   display: flex;
-
   gap: 16rpx;
-
-  justify-content:
-    space-between;
-
-  font-size: 26rpx;
+  justify-content: space-between;
 }
 </style>

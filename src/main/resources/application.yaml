@@ -1,3 +1,7 @@
 spring:
   application:
     name: TripMate
+weather:
+  api:
+    path: https://qk5ctumxuw.re.qweatherapi.com
+    key: 785df59a4de346d8afedd974a573dc8f

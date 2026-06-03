@@ -4,7 +4,10 @@ const common_vendor = require("./common/vendor.js");
 const i18n = require("./i18n.js");
 if (!Math) {
   "./pages/index/index.js";
-  "./components/TabBar/TabBar.js";
+  "./pages/guide/guide.js";
+  "./pages/elder/elder.js";
+  "./pages/language/language.js";
+  "./pages/mine/mine.js";
 }
 const _sfc_main = {
   onLaunch: function() {

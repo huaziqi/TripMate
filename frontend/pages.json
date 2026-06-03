@@ -1,35 +1,43 @@
 {
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+	"pages": [
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": "首页",
+				"navigationBarBackgroundColor": "#ffffff",
+				"navigationBarTextStyle": "black"
 			}
 		},
 		{
-			"path": "components/TabBar/TabBar",
+			"path": "pages/guide/guide",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "攻略"
 			}
 		},
 		{
-			"path": "components/WeatherInfo/WeatherInfo",
+			"path": "pages/elder/elder",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "老年版"
 			}
 		},
 		{
-			"path": "components/WeatherCard/WeatherCard",
+			"path": "pages/language/language",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationBarTitleText": "翻译"
+			}
+		},
+		{
+			"path": "pages/mine/mine",
+			"style": {
+				"navigationBarTitleText": "我的"
 			}
 		}
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
+		"navigationBarTitleText": "TripMate",
+		"navigationBarBackgroundColor": "#ffffff",
+		"backgroundColor": "#f7f8fa"
 	},
 	"uniIdRouter": {}
 }

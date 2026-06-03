@@ -1,5 +1,5 @@
 {
-  "navigationBarTitleText": "",
+  "navigationBarTitleText": "攻略",
   "usingComponents": {
     "tab-bar": "../../components/TabBar/TabBar"
   }

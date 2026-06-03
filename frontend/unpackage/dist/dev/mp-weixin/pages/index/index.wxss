@@ -3,3 +3,27 @@
   min-height: 100vh;
   background-color: #f7f8fa;
 }
+.header.data-v-1cf27b2a {
+  padding: 60rpx 32rpx 24rpx;
+  background-color: #ffffff;
+}
+.title.data-v-1cf27b2a {
+  display: block;
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.subtitle.data-v-1cf27b2a {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 26rpx;
+  color: #999;
+}
+.section.data-v-1cf27b2a {
+  margin: 24rpx 24rpx 0;
+}
+
+/* 与 TabBar 高度（120rpx）+ safe area 保持一致，防止内容被遮挡 */
+.tabbar-placeholder.data-v-1cf27b2a {
+  height: 140rpx;
+}

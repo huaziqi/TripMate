@@ -1,13 +1,24 @@
 {
   "pages": [
     "pages/index/index",
-    "components/TabBar/TabBar"
+    "pages/guide/guide",
+    "pages/elder/elder",
+    "pages/language/language",
+    "pages/mine/mine"
   ],
   "window": {
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "uni-app",
-    "navigationBarBackgroundColor": "#F8F8F8",
-    "backgroundColor": "#F8F8F8"
+    "navigationBarTitleText": "TripMate",
+    "navigationBarBackgroundColor": "#ffffff",
+    "backgroundColor": "#f7f8fa"
   },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "获取您的位置以查询当地实时天气"
+    }
+  },
+  "requiredPrivateInfos": [
+    "getLocation"
+  ],
   "usingComponents": {}
 }

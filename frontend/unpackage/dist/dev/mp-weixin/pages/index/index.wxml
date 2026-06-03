@@ -1,1 +1,1 @@
-<view class="page data-v-1cf27b2a"><tab-bar class="data-v-1cf27b2a" u-i="1cf27b2a-0" bind:__l="__l"/></view>
+<view class="page data-v-1cf27b2a"><view class="header data-v-1cf27b2a"><text class="title data-v-1cf27b2a">TripMate</text><text class="subtitle data-v-1cf27b2a">你的智能旅行助手</text></view><view class="section data-v-1cf27b2a"><weather-card class="data-v-1cf27b2a" u-i="1cf27b2a-0" bind:__l="__l"/></view><view class="tabbar-placeholder data-v-1cf27b2a"/><tab-bar wx:if="{{a}}" class="data-v-1cf27b2a" u-i="1cf27b2a-1" bind:__l="__l" u-p="{{a}}"/></view>

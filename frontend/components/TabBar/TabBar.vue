@@ -63,7 +63,7 @@ const switchTab = (item: TabItem): void => {
       v-for="item in tabs"
       :key="item.key"
       class="tabbar-item"
-      :class="{ active: active === props.active }"
+      :class="{ active: item.key === props.active }"
       @click="switchTab(item)"
     >
       <view class="tabbar-icon">

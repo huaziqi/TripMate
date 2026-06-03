@@ -1293,6 +1293,9 @@ function isReadonly(value) {
 function isShallow(value) {
   return !!(value && value["__v_isShallow"]);
 }
+function isProxy(value) {
+  return isReactive(value) || isReadonly(value);
+}
 function toRaw(observed) {
   const raw = observed && observed["__v_raw"];
   return raw ? toRaw(raw) : observed;
@@ -3725,6 +3728,12 @@ const Static = Symbol.for("v-stc");
 function isVNode(value) {
   return value ? value.__v_isVNode === true : false;
 }
+const InternalObjectKey = `__vInternal`;
+function guardReactiveProps(props) {
+  if (!props)
+    return null;
+  return isProxy(props) || InternalObjectKey in props ? extend({}, props) : props;
+}
 const emptyAppContext = createAppContext();
 let uid = 0;
 function createComponentInstance(vnode, parent, suspense) {
@@ -4984,6 +4993,11 @@ function initApp(app) {
   }
 }
 const propsCaches = /* @__PURE__ */ Object.create(null);
+function renderProps(props) {
+  const { uid: uid2, __counter } = getCurrentInstance();
+  const propsId = (propsCaches[uid2] || (propsCaches[uid2] = [])).push(guardReactiveProps(props)) - 1;
+  return uid2 + "," + propsId + "," + __counter;
+}
 function pruneComponentPropsCache(uid2) {
   delete propsCaches[uid2];
 }
@@ -5156,6 +5170,7 @@ const o = (value, key) => vOn(value, key);
 const f = (source, renderItem) => vFor(source, renderItem);
 const h = (str) => hyphenate(str);
 const t = (val) => toDisplayString$1(val);
+const p = (props) => renderProps(props);
 function createApp$1(rootComponent, rootProps = null) {
   rootComponent && (rootComponent.mpType = "app");
   return createVueApp(rootComponent, rootProps).use(plugin);
@@ -7020,9 +7035,9 @@ function isConsoleWritable() {
   return isWritable;
 }
 function initRuntimeSocketService() {
-  const hosts = "192.168.56.1,192.168.139.1,192.168.200.3,10.135.88.1,127.0.0.1";
+  const hosts = "192.168.56.1,192.168.139.1,192.168.200.3,10.69.221.227,127.0.0.1";
   const port = "8090";
-  const id = "mp-weixin__s9k0P";
+  const id = "mp-weixin_YoAr6s";
   const lazy = typeof swan !== "undefined";
   let restoreError = lazy ? () => {
   } : initOnError();
@@ -11358,12 +11373,16 @@ function injectGlobalFields(app, composer) {
   setDevToolsHook(target.__INTLIFY_DEVTOOLS_GLOBAL_HOOK__);
 }
 exports._export_sfc = _export_sfc;
+exports.computed = computed;
 exports.createI18n = createI18n;
 exports.createSSRApp = createSSRApp;
 exports.defineComponent = defineComponent;
 exports.f = f;
 exports.index = index;
 exports.o = o;
+exports.onMounted = onMounted;
+exports.p = p;
+exports.ref = ref;
 exports.t = t;
 exports.unref = unref;
 exports.useI18n = useI18n;
