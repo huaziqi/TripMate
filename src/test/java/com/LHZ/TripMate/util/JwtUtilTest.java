@@ -39,4 +39,24 @@ class JwtUtilTest {
         String token = jwtUtil.generateToken("admin", "SUPER_ADMIN");
         assertThat(jwtUtil.isValid(token, "other")).isFalse();
     }
+
+    @Test
+    void expiredToken_isNotValid() {
+        JwtUtil expiredJwtUtil = new JwtUtil(
+            "TestSecretKeyForJwtUtilTestTestSecretKeyForJwtUtilTest",
+            -1000L // already expired
+        );
+        String token = expiredJwtUtil.generateToken("admin", "SUPER_ADMIN");
+        assertThat(expiredJwtUtil.isValid(token, "admin")).isFalse();
+    }
+
+    @Test
+    void malformedToken_isNotValid() {
+        assertThat(jwtUtil.isValid("not.a.valid.token", "admin")).isFalse();
+    }
+
+    @Test
+    void nullToken_isNotValid() {
+        assertThat(jwtUtil.isValid(null, "admin")).isFalse();
+    }
 }

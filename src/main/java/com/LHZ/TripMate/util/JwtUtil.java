@@ -42,9 +42,11 @@ public class JwtUtil {
 
     public boolean isValid(String token, String expectedUsername) {
         try {
-            String username = extractUsername(token);
-            return username.equals(expectedUsername)
-                    && !parseClaims(token).getExpiration().before(new Date());
+            Claims claims = parseClaims(token);
+            Date expiration = claims.getExpiration();
+            return claims.getSubject().equals(expectedUsername)
+                    && expiration != null
+                    && !expiration.before(new Date());
         } catch (Exception e) {
             return false;
         }
