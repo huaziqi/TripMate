@@ -21,4 +21,7 @@ public class AdminUserDetails implements UserDetails {
     @Override public String getPassword() { return adminUser.getPassword(); }
     @Override public String getUsername() { return adminUser.getUsername(); }
     @Override public boolean isEnabled() { return adminUser.getStatus() == 1; }
+    @Override public boolean isAccountNonExpired() { return true; }
+    @Override public boolean isAccountNonLocked() { return true; }
+    @Override public boolean isCredentialsNonExpired() { return true; }
 }
