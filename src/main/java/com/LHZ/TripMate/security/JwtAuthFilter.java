@@ -1,6 +1,7 @@
 package com.LHZ.TripMate.security;
 
 import com.LHZ.TripMate.repository.AdminUserRepository;
+import com.LHZ.TripMate.repository.WxUserRepository;
 import com.LHZ.TripMate.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,6 +21,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final AdminUserRepository adminUserRepository;
+    private final WxUserRepository wxUserRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -34,18 +36,31 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         String token = header.substring(7);
-        String username = jwtUtil.extractUsername(token);
+        String subject = jwtUtil.extractUsername(token);
+        String userType = jwtUtil.extractUserType(token);
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            adminUserRepository.findByUsername(username).ifPresent(user -> {
-                if (jwtUtil.isValid(token, username) && user.getStatus() == 1) {
-                    var details = new AdminUserDetails(user);
-                    var auth = new UsernamePasswordAuthenticationToken(
-                            details, null, details.getAuthorities());
-                    auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(auth);
-                }
-            });
+        if (subject != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if ("WX_USER".equals(userType)) {
+                wxUserRepository.findByOpenid(subject).ifPresent(wxUser -> {
+                    if (jwtUtil.isValid(token, subject)) {
+                        var details = new WxUserDetails(wxUser);
+                        var auth = new UsernamePasswordAuthenticationToken(
+                                details, null, details.getAuthorities());
+                        auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(auth);
+                    }
+                });
+            } else {
+                adminUserRepository.findByUsername(subject).ifPresent(user -> {
+                    if (jwtUtil.isValid(token, subject) && user.getStatus() == 1) {
+                        var details = new AdminUserDetails(user);
+                        var auth = new UsernamePasswordAuthenticationToken(
+                                details, null, details.getAuthorities());
+                        auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        SecurityContextHolder.getContext().setAuthentication(auth);
+                    }
+                });
+            }
         }
         chain.doFilter(request, response);
     }
