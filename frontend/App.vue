@@ -1,15 +1,14 @@
 <script>
-	export default {
-		onLaunch: function() {
-			console.log('App Launch')
-		},
-		onShow: function() {
-			console.log('App Show')
-		},
-		onHide: function() {
-			console.log('App Hide')
-		}
-	}
+import { useAuth } from '@/composables/useAuth'
+
+export default {
+	onLaunch: function() {
+		const { loadFromStorage } = useAuth()
+		loadFromStorage()
+	},
+	onShow: function() {},
+	onHide: function() {}
+}
 </script>
 
 <style>
