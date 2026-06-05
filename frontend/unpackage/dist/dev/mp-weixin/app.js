@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 const common_vendor = require("./common/vendor.js");
+const composables_useAuth = require("./composables/useAuth.js");
 const i18n = require("./i18n.js");
 if (!Math) {
   "./pages/index/index.js";
@@ -11,13 +12,12 @@ if (!Math) {
 }
 const _sfc_main = {
   onLaunch: function() {
-    common_vendor.index.__f__("log", "at App.vue:4", "App Launch");
+    const { loadFromStorage } = composables_useAuth.useAuth();
+    loadFromStorage();
   },
   onShow: function() {
-    common_vendor.index.__f__("log", "at App.vue:7", "App Show");
   },
   onHide: function() {
-    common_vendor.index.__f__("log", "at App.vue:10", "App Hide");
   }
 };
 function createApp() {

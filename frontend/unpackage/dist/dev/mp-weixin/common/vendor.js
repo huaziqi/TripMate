@@ -364,8 +364,8 @@ const E = function() {
 E.prototype = {
   _id: 1,
   on: function(name, callback, ctx) {
-    var e = this.e || (this.e = {});
-    (e[name] || (e[name] = [])).push({
+    var e2 = this.e || (this.e = {});
+    (e2[name] || (e2[name] = [])).push({
       fn: callback,
       ctx,
       _id: this._id
@@ -392,8 +392,8 @@ E.prototype = {
     return this;
   },
   off: function(name, event) {
-    var e = this.e || (this.e = {});
-    var evts = e[name];
+    var e2 = this.e || (this.e = {});
+    var evts = e2[name];
     var liveEvents = [];
     if (evts && event) {
       for (var i = evts.length - 1; i >= 0; i--) {
@@ -404,7 +404,7 @@ E.prototype = {
       }
       liveEvents = evts;
     }
-    liveEvents.length ? e[name] = liveEvents : delete e[name];
+    liveEvents.length ? e2[name] = liveEvents : delete e2[name];
     return this;
   }
 };
@@ -5168,6 +5168,7 @@ function setupDevtoolsPlugin() {
 }
 const o = (value, key) => vOn(value, key);
 const f = (source, renderItem) => vFor(source, renderItem);
+const e = (target, ...sources) => extend(target, ...sources);
 const h = (str) => hyphenate(str);
 const t = (val) => toDisplayString$1(val);
 const p = (props) => renderProps(props);
@@ -5309,8 +5310,8 @@ function tryCatch(fn) {
   return function() {
     try {
       return fn.apply(fn, arguments);
-    } catch (e) {
-      console.error(e);
+    } catch (e2) {
+      console.error(e2);
     }
   };
 }
@@ -5774,7 +5775,7 @@ let enabled;
 function normalizePushMessage(message) {
   try {
     return JSON.parse(message);
-  } catch (e) {
+  } catch (e2) {
   }
   return message;
 }
@@ -6542,15 +6543,15 @@ function tryConnectSocket(host2, port, id) {
       });
       resolve(null);
     }, SOCKET_TIMEOUT);
-    socket.onOpen((e) => {
+    socket.onOpen((e2) => {
       clearTimeout(timer);
       resolve(socket);
     });
-    socket.onClose((e) => {
+    socket.onClose((e2) => {
       clearTimeout(timer);
       resolve(null);
     });
-    socket.onError((e) => {
+    socket.onError((e2) => {
       clearTimeout(timer);
       resolve(null);
     });
@@ -6667,7 +6668,7 @@ function formatMessage(type, args) {
       type,
       args: formatArgs(args)
     };
-  } catch (e) {
+  } catch (e2) {
   }
   return {
     type,
@@ -6695,7 +6696,7 @@ function formatArg(arg, depth = 0) {
     case "object":
       try {
         return formatObject(arg, depth);
-      } catch (e) {
+      } catch (e2) {
         return {
           type: "object",
           value: {
@@ -7037,7 +7038,7 @@ function isConsoleWritable() {
 function initRuntimeSocketService() {
   const hosts = "192.168.56.1,192.168.139.1,192.168.200.3,10.69.221.227,127.0.0.1";
   const port = "8090";
-  const id = "mp-weixin_d6-6O3";
+  const id = "mp-weixin_iq_iEC";
   const lazy = typeof swan !== "undefined";
   let restoreError = lazy ? () => {
   } : initOnError();
@@ -9377,7 +9378,7 @@ function parseDateTimeArgs(...args) {
     value = new Date(arg1);
     try {
       value.toISOString();
-    } catch (e) {
+    } catch (e2) {
       throw createCoreError(
         16
         /* INVALID_ISO_DATE_ARGUMENT */
@@ -10775,8 +10776,8 @@ async function enableDevTools(app, i18n) {
         });
         resolve(true);
       });
-    } catch (e) {
-      console.error(e);
+    } catch (e2) {
+      console.error(e2);
       reject(false);
     }
   });
@@ -11377,11 +11378,13 @@ exports.computed = computed;
 exports.createI18n = createI18n;
 exports.createSSRApp = createSSRApp;
 exports.defineComponent = defineComponent;
+exports.e = e;
 exports.f = f;
 exports.index = index;
 exports.o = o;
 exports.onMounted = onMounted;
 exports.p = p;
+exports.reactive = reactive;
 exports.ref = ref;
 exports.t = t;
 exports.unref = unref;
