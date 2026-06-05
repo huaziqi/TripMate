@@ -18,25 +18,38 @@ class JwtUtilTest {
 
     @Test
     void generateToken_thenExtractUsername_returnsSame() {
-        String token = jwtUtil.generateToken("admin", "SUPER_ADMIN");
+        String token = jwtUtil.generateToken("admin", "SUPER_ADMIN", "ADMIN");
         assertThat(jwtUtil.extractUsername(token)).isEqualTo("admin");
     }
 
     @Test
     void generateToken_thenExtractRole_returnsSame() {
-        String token = jwtUtil.generateToken("admin", "SUPER_ADMIN");
+        String token = jwtUtil.generateToken("admin", "SUPER_ADMIN", "ADMIN");
         assertThat(jwtUtil.extractRole(token)).isEqualTo("SUPER_ADMIN");
     }
 
     @Test
+    void generateToken_thenExtractUserType_returnsSame() {
+        String token = jwtUtil.generateToken("admin", "SUPER_ADMIN", "ADMIN");
+        assertThat(jwtUtil.extractUserType(token)).isEqualTo("ADMIN");
+    }
+
+    @Test
+    void wxUserToken_extractsUserType_asWxUser() {
+        String token = jwtUtil.generateToken("oXxxx123", "WX_USER", "WX_USER");
+        assertThat(jwtUtil.extractUserType(token)).isEqualTo("WX_USER");
+        assertThat(jwtUtil.extractUsername(token)).isEqualTo("oXxxx123");
+    }
+
+    @Test
     void validToken_isValid() {
-        String token = jwtUtil.generateToken("admin", "SUPER_ADMIN");
+        String token = jwtUtil.generateToken("admin", "SUPER_ADMIN", "ADMIN");
         assertThat(jwtUtil.isValid(token, "admin")).isTrue();
     }
 
     @Test
     void tokenWithWrongUsername_isNotValid() {
-        String token = jwtUtil.generateToken("admin", "SUPER_ADMIN");
+        String token = jwtUtil.generateToken("admin", "SUPER_ADMIN", "ADMIN");
         assertThat(jwtUtil.isValid(token, "other")).isFalse();
     }
 
@@ -44,9 +57,9 @@ class JwtUtilTest {
     void expiredToken_isNotValid() {
         JwtUtil expiredJwtUtil = new JwtUtil(
             "TestSecretKeyForJwtUtilTestTestSecretKeyForJwtUtilTest",
-            -1000L // already expired
+            -1000L
         );
-        String token = expiredJwtUtil.generateToken("admin", "SUPER_ADMIN");
+        String token = expiredJwtUtil.generateToken("admin", "SUPER_ADMIN", "ADMIN");
         assertThat(expiredJwtUtil.isValid(token, "admin")).isFalse();
     }
 

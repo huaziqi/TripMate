@@ -34,7 +34,7 @@ public class AdminAuthServiceImpl implements AdminAuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, ResultCode.PASSWORD_ERROR.getMessage());
         }
 
-        String token = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
+        String token = jwtUtil.generateToken(user.getUsername(), user.getRole().name(), "ADMIN");
         return new LoginResponseDTO(token, user.getRole().name(), user.getUsername());
     }
 }
