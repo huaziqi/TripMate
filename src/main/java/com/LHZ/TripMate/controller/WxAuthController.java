@@ -24,7 +24,7 @@ public class WxAuthController {
     }
 
     @PostMapping("/profile")
-    public Result<Void> updateProfile(@RequestBody UpdateProfileRequestDTO req,
+    public Result<Void> updateProfile(@Valid @RequestBody UpdateProfileRequestDTO req,
                                       @AuthenticationPrincipal WxUserDetails userDetails) {
         wxAuthService.updateProfile(userDetails.getUsername(), req.getNickname(), req.getAvatarUrl());
         return Result.success();

@@ -40,4 +40,24 @@ class WxAuthControllerTest {
                 .andExpect(jsonPath("$.data.openid").value("openid-123"))
                 .andExpect(jsonPath("$.data.nickname").value("用户昵称"));
     }
+
+    @Test
+    void login_withBlankCode_returnsBadRequest() throws Exception {
+        mockMvc.perform(post("/api/wx/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"code\":\"\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void login_whenServiceThrows_propagatesError() throws Exception {
+        given(wxAuthService.login("bad-code")).willThrow(
+                new org.springframework.web.server.ResponseStatusException(
+                        org.springframework.http.HttpStatus.BAD_REQUEST, "微信登录失败: invalid code"));
+
+        mockMvc.perform(post("/api/wx/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"code\":\"bad-code\"}"))
+                .andExpect(status().isBadRequest());
+    }
 }

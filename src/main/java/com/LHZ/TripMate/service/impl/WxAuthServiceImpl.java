@@ -85,6 +85,9 @@ public class WxAuthServiceImpl implements WxAuthService {
             log.warn("微信 jscode2session 失败: {}", msg);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "微信登录失败: " + msg);
         }
+        if (res.getOpenid() == null || res.getOpenid().isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "微信登录失败: openid 为空");
+        }
         return res.getOpenid();
     }
 
