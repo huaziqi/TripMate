@@ -6,6 +6,7 @@ import com.LHZ.TripMate.dto.wx.WxLoginRequestDTO;
 import com.LHZ.TripMate.dto.wx.WxLoginResponseDTO;
 import com.LHZ.TripMate.security.WxUserDetails;
 import com.LHZ.TripMate.service.WxAuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class WxAuthController {
     private final WxAuthService wxAuthService;
 
     @PostMapping("/login")
-    public Result<WxLoginResponseDTO> login(@RequestBody WxLoginRequestDTO req) {
+    public Result<WxLoginResponseDTO> login(@Valid @RequestBody WxLoginRequestDTO req) {
         return Result.success(wxAuthService.login(req.getCode()));
     }
 

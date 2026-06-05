@@ -60,8 +60,12 @@ public class WxAuthServiceImpl implements WxAuthService {
     public void updateProfile(String openid, String nickname, String avatarUrl) {
         WxUser wxUser = wxUserRepository.findByOpenid(openid)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "用户不存在"));
-        wxUser.setNickname(nickname);
-        wxUser.setAvatarUrl(avatarUrl);
+        if (nickname != null) {
+            wxUser.setNickname(nickname);
+        }
+        if (avatarUrl != null) {
+            wxUser.setAvatarUrl(avatarUrl);
+        }
         wxUserRepository.save(wxUser);
     }
 
