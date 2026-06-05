@@ -6,4 +6,5 @@ import java.util.Optional;
 
 public interface WxUserRepository extends JpaRepository<WxUser, Long> {
     Optional<WxUser> findByOpenid(String openid);
+    boolean existsByOpenid(String openid);
 }
