@@ -22,3 +22,7 @@ weather:
 jwt:
   secret: TripMateAdminSecretKey2026TripMateAdminSecretKey2026
   expiration-ms: 86400000
+
+wx:
+  appid: wxa0ffa36d76bcb468
+  secret: 3b73d873726f4ad116a9d4d327cd659f
