@@ -32,14 +32,14 @@ const tabs: TabItem[] = [
     url: '/pages/guide/guide'
   },
   {
-    key: 'elder',
-    icon: '👴',
-    url: '/pages/elder/elder'
-  },
-  {
     key: 'language',
     icon: '🌐',
     url: '/pages/language/language'
+  },
+  {
+    key: 'badges',
+    icon: '🏅',
+    url: '/pages/badges/badges'
   },
   {
     key: 'mine',
@@ -51,7 +51,7 @@ const tabs: TabItem[] = [
 const switchTab = (item: TabItem): void => {
   if (item.key === props.active) return
 
-  uni.switchTab({
+  uni.redirectTo({
     url: item.url
   })
 }
