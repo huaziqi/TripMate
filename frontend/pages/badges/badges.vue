@@ -11,47 +11,31 @@
       <text class="header-count">已获得 {{ unlockedCount }} / {{ total }} 枚勋章</text>
     </view>
 
-    <!-- 最近获得 -->
-    <view v-if="recentBadges.length" class="section">
-      <text class="section-title">最近获得</text>
-      <scroll-view scroll-x class="recent-scroll">
-        <view class="recent-list">
-          <view
-            v-for="badge in recentBadges"
-            :key="badge.id"
-            class="recent-item"
-            @click="openDetail(badge)"
-          >
-            <BadgeCard :badge="badge" size="large" />
-            <text class="badge-name">{{ badge.name }}</text>
-            <text class="badge-date">{{ formatDate(badge.unlockedAt) }}</text>
-          </view>
-        </view>
-      </scroll-view>
-    </view>
-
-    <!-- 景点勋章 -->
-    <view class="section">
-      <text class="section-title">景点勋章</text>
-      <view class="badge-grid">
-        <view
-          v-for="badge in spotBadges"
-          :key="badge.id"
-          class="grid-item"
-          @click="openDetail(badge)"
-        >
-          <BadgeCard :badge="badge" size="medium" />
-          <text class="badge-name">{{ badge.name }}</text>
-        </view>
+    <!-- Tab 选项栏 -->
+    <view class="tab-bar">
+      <view
+        class="tab-item"
+        :class="{ active: activeTab === 'SPOT' }"
+        @click="activeTab = 'SPOT'"
+      >
+        <text>景点勋章</text>
+        <text class="tab-count">{{ spotBadges.length }}</text>
+      </view>
+      <view
+        class="tab-item"
+        :class="{ active: activeTab === 'ACHIEVEMENT' }"
+        @click="activeTab = 'ACHIEVEMENT'"
+      >
+        <text>成就勋章</text>
+        <text class="tab-count">{{ achievementBadges.length }}</text>
       </view>
     </view>
 
-    <!-- 成就勋章 -->
+    <!-- 勋章网格 -->
     <view class="section">
-      <text class="section-title">成就勋章</text>
       <view class="badge-grid">
         <view
-          v-for="badge in achievementBadges"
+          v-for="badge in currentBadges"
           :key="badge.id"
           class="grid-item"
           @click="openDetail(badge)"
@@ -95,18 +79,14 @@ const { authState } = useAuth()
 
 const badges = ref<BadgeDTO[]>([])
 const selectedBadge = ref<BadgeDTO | null>(null)
+const activeTab = ref<'SPOT' | 'ACHIEVEMENT'>('SPOT')
 
 const nickname = computed(() => authState.userInfo?.nickname || '旅行者')
 const avatarUrl = computed(() => authState.userInfo?.avatarUrl || '')
 
 const spotBadges = computed(() => badges.value.filter(b => b.type === 'SPOT'))
 const achievementBadges = computed(() => badges.value.filter(b => b.type === 'ACHIEVEMENT'))
-const recentBadges = computed(() =>
-  badges.value
-    .filter(b => b.unlocked)
-    .sort((a, b) => new Date(b.unlockedAt!).getTime() - new Date(a.unlockedAt!).getTime())
-    .slice(0, 6)
-)
+const currentBadges = computed(() => activeTab.value === 'SPOT' ? spotBadges.value : achievementBadges.value)
 const unlockedCount = computed(() => badges.value.filter(b => b.unlocked).length)
 const total = computed(() => badges.value.length)
 
@@ -179,19 +159,54 @@ function rarityLabel(rarity: string): string {
 .header-name { color: #fff; font-size: 32rpx; font-weight: 600; margin-bottom: 8rpx; }
 .header-count { color: rgba(255,255,255,0.6); font-size: 24rpx; }
 
-.section { margin: 24rpx 0 0; }
-.section-title { font-size: 28rpx; font-weight: 600; color: #1a1a1a; padding: 0 32rpx 20rpx; display: block; }
+/* Tab 选项栏 */
+.tab-bar {
+  display: flex;
+  background: #fff;
+  border-bottom: 1rpx solid #eee;
+}
+.tab-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 28rpx 0;
+  font-size: 28rpx;
+  color: #888;
+  position: relative;
+}
+.tab-item.active {
+  color: #1a1a2e;
+  font-weight: 600;
+}
+.tab-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 20%;
+  right: 20%;
+  height: 4rpx;
+  background: #1a1a2e;
+  border-radius: 2rpx;
+}
+.tab-count {
+  font-size: 22rpx;
+  background: #f0f0f0;
+  color: #888;
+  padding: 2rpx 12rpx;
+  border-radius: 20rpx;
+}
+.tab-item.active .tab-count {
+  background: #1a1a2e;
+  color: #fff;
+}
 
-.recent-scroll { width: 100%; }
-.recent-list { display: flex; flex-direction: row; padding: 0 24rpx 16rpx; }
-.recent-item { display: flex; flex-direction: column; align-items: center; margin-right: 24rpx; width: 160rpx; flex-shrink: 0; }
-.badge-date { font-size: 20rpx; color: #999; margin-top: 4rpx; }
+.section { margin: 24rpx 0 0; }
 
 .badge-grid { display: flex; flex-wrap: wrap; padding: 0 16rpx; }
 .grid-item { width: 25%; display: flex; flex-direction: column; align-items: center; padding: 8rpx; margin-bottom: 16rpx; }
 .badge-name { font-size: 22rpx; color: #333; margin-top: 8rpx; text-align: center; line-height: 1.3; }
-.badge-name.locked { color: #bbb; }
-.badge-condition { font-size: 18rpx; color: #bbb; text-align: center; margin-top: 4rpx; line-height: 1.3; }
 
 .modal-mask {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
