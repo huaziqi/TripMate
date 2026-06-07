@@ -37,11 +37,6 @@ const tabs: TabItem[] = [
     url: '/pages/language/language'
   },
   {
-    key: 'badges',
-    icon: '🏅',
-    url: '/pages/badges/badges'
-  },
-  {
     key: 'mine',
     icon: '👤',
     url: '/pages/mine/mine'
