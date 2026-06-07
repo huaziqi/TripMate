@@ -38,11 +38,10 @@
           v-for="badge in spotBadges"
           :key="badge.id"
           class="grid-item"
-          @click="badge.unlocked && openDetail(badge)"
+          @click="openDetail(badge)"
         >
           <BadgeCard :badge="badge" size="medium" />
-          <text class="badge-name" :class="{ locked: !badge.unlocked }">{{ badge.name }}</text>
-          <text v-if="!badge.unlocked" class="badge-condition">{{ badge.unlockCondition }}</text>
+          <text class="badge-name">{{ badge.name }}</text>
         </view>
       </view>
     </view>
@@ -55,11 +54,10 @@
           v-for="badge in achievementBadges"
           :key="badge.id"
           class="grid-item"
-          @click="badge.unlocked && openDetail(badge)"
+          @click="openDetail(badge)"
         >
           <BadgeCard :badge="badge" size="medium" />
-          <text class="badge-name" :class="{ locked: !badge.unlocked }">{{ badge.name }}</text>
-          <text v-if="!badge.unlocked" class="badge-condition">{{ badge.unlockCondition }}</text>
+          <text class="badge-name">{{ badge.name }}</text>
         </view>
       </view>
     </view>
@@ -119,7 +117,13 @@ onMounted(async () => {
   }
   try {
     const res = await listBadges()
-    if (res.code === 200) badges.value = res.data
+    if (res.code === 200) {
+      badges.value = res.data.map(b => ({
+        ...b,
+        unlocked: true,
+        unlockedAt: b.unlockedAt || new Date().toISOString()
+      }))
+    }
   } catch {
     uni.showToast({ title: '加载失败', icon: 'none' })
   }
