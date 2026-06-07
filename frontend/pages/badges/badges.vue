@@ -91,10 +91,6 @@ const unlockedCount = computed(() => badges.value.filter(b => b.unlocked).length
 const total = computed(() => badges.value.length)
 
 onMounted(async () => {
-  if (!authState.isLoggedIn) {
-    uni.showToast({ title: '请先登录', icon: 'none' })
-    return
-  }
   try {
     const res = await listBadges()
     if (res.code === 200) {

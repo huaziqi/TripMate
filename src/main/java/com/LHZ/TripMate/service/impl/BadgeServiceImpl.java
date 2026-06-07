@@ -26,7 +26,8 @@ public class BadgeServiceImpl implements BadgeService {
     public List<BadgeDTO> listAllBadges(String openid) {
         List<Badge> allBadges = badgeRepository.findAllByOrderBySortOrderAsc();
 
-        Map<Long, UserBadge> unlockedMap = userBadgeRepository
+        Map<Long, UserBadge> unlockedMap = openid == null ? Map.of() :
+                userBadgeRepository
                 .findByOpenidOrderByUnlockedAtDesc(openid)
                 .stream()
                 .collect(Collectors.toMap(UserBadge::getBadgeId, ub -> ub));

@@ -20,7 +20,8 @@ public class BadgeController {
     @GetMapping
     public Result<List<BadgeDTO>> listBadges(
             @AuthenticationPrincipal WxUserDetails userDetails) {
-        return Result.success(badgeService.listAllBadges(userDetails.getUsername()));
+        String openid = userDetails != null ? userDetails.getUsername() : null;
+        return Result.success(badgeService.listAllBadges(openid));
     }
 
     @PostMapping("/{id}/unlock")
