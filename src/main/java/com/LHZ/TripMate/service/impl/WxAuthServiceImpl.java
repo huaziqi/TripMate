@@ -10,9 +10,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -29,8 +33,11 @@ public class WxAuthServiceImpl implements WxAuthService {
         this.wxConfig = wxConfig;
         this.wxUserRepository = wxUserRepository;
         this.jwtUtil = jwtUtil;
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        converter.setSupportedMediaTypes(List.of(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN));
         this.restClient = RestClient.builder()
                 .baseUrl("https://api.weixin.qq.com")
+                .messageConverters(c -> c.add(0, converter))
                 .build();
     }
 

@@ -19,11 +19,39 @@
   font-size: 26rpx;
   color: #999;
 }
+
+/* 功能入口区 */
+.feature-grid.data-v-1cf27b2a {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  background: #ffffff;
+  padding: 32rpx 16rpx 28rpx;
+  margin-top: 2rpx;
+}
+.feature-item.data-v-1cf27b2a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+}
+.feature-icon.data-v-1cf27b2a {
+  width: 96rpx;
+  height: 96rpx;
+  background: #f0f4ff;
+  border-radius: 24rpx;
+  font-size: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.feature-label.data-v-1cf27b2a {
+  font-size: 24rpx;
+  color: #555;
+}
 .section.data-v-1cf27b2a {
   margin: 24rpx 24rpx 0;
 }
-
-/* 与 TabBar 高度（120rpx）+ safe area 保持一致，防止内容被遮挡 */
 .tabbar-placeholder.data-v-1cf27b2a {
   height: 140rpx;
 }

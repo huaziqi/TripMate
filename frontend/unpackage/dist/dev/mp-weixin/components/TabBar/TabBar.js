@@ -20,11 +20,6 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         url: "/pages/guide/guide"
       },
       {
-        key: "elder",
-        icon: "👴",
-        url: "/pages/elder/elder"
-      },
-      {
         key: "language",
         icon: "🌐",
         url: "/pages/language/language"
@@ -38,7 +33,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const switchTab = (item) => {
       if (item.key === props.active)
         return;
-      common_vendor.index.switchTab({
+      common_vendor.index.redirectTo({
         url: item.url
       });
     };

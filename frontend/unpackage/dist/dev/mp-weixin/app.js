@@ -8,6 +8,7 @@ if (!Math) {
   "./pages/guide/guide.js";
   "./pages/elder/elder.js";
   "./pages/language/language.js";
+  "./pages/badges/badges.js";
   "./pages/mine/mine.js";
 }
 const _sfc_main = {

@@ -10,7 +10,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "mine",
   setup(__props) {
     const { authState, login, logout, saveProfile } = composables_useAuth.useAuth();
-    const { rpx } = composables_useElder.useElder();
+    const { rpx, isElderMode, toggleElderMode } = composables_useElder.useElder();
     async function handleLogin() {
       try {
         await login();
@@ -61,8 +61,8 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     function onLanguage() {
       common_vendor.index.navigateTo({ url: "/pages/language/language" });
     }
-    function onElder() {
-      common_vendor.index.navigateTo({ url: "/pages/elder/elder" });
+    function onElderToggle() {
+      toggleElderMode();
     }
     function onAbout() {
       common_vendor.index.showModal({
@@ -95,13 +95,14 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         o: common_vendor.unref(rpx)(28),
         p: common_vendor.o(onLanguage, "9e"),
         q: common_vendor.unref(rpx)(28),
-        r: common_vendor.o(onElder, "b5"),
-        s: common_vendor.unref(rpx)(28),
-        t: common_vendor.o(onAbout, "6b"),
-        v: common_vendor.unref(rpx)(28),
-        w: common_vendor.o(handleLogout, "a2")
+        r: common_vendor.unref(isElderMode),
+        s: common_vendor.o(onElderToggle, "21"),
+        t: common_vendor.unref(rpx)(28),
+        v: common_vendor.o(onAbout, "b4"),
+        w: common_vendor.unref(rpx)(28),
+        x: common_vendor.o(handleLogout, "58")
       }), {
-        x: common_vendor.p({
+        y: common_vendor.p({
           active: "mine"
         })
       });

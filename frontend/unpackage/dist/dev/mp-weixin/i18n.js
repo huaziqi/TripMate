@@ -5,6 +5,7 @@ const tabbar$1 = {
   guide: "攻略",
   elder: "老年版",
   language: "翻译",
+  badges: "勋章",
   mine: "我的"
 };
 const weather$1 = {
@@ -91,6 +92,7 @@ const tabbar = {
   guide: "Guide",
   elder: "Elder",
   language: "Translate",
+  badges: "Badges",
   mine: "Mine"
 };
 const weather = {

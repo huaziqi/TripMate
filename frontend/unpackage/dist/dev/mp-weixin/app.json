@@ -4,6 +4,7 @@
     "pages/guide/guide",
     "pages/elder/elder",
     "pages/language/language",
+    "pages/badges/badges",
     "pages/mine/mine"
   ],
   "window": {

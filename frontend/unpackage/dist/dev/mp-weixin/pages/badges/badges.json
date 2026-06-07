@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "勋章馆",
+  "navigationBarBackgroundColor": "#1a1a2e",
+  "navigationBarTextStyle": "white",
+  "usingComponents": {
+    "tab-bar": "../../components/TabBar/TabBar",
+    "badge-card": "../../components/BadgeCard/BadgeCard",
+    "badge3-d-viewer": "../../components/Badge3DViewer/Badge3DViewer"
+  }
+}
