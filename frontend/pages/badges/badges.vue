@@ -67,7 +67,7 @@
     <!-- 详情弹窗 -->
     <view v-if="selectedBadge" class="modal-mask" @click.self="selectedBadge = null">
       <view class="modal">
-        <BadgeCard :badge="selectedBadge" size="large" />
+        <Badge3DViewer :badge="selectedBadge" />
         <view class="modal-rarity-tag" :style="{ background: rarityColor(selectedBadge.rarity) }">
           {{ rarityLabel(selectedBadge.rarity) }}
         </view>
@@ -88,6 +88,7 @@
 import { ref, computed, onMounted } from 'vue'
 import TabBar from '@/components/TabBar/TabBar.vue'
 import BadgeCard from '@/components/BadgeCard/BadgeCard.vue'
+import Badge3DViewer from '@/components/Badge3DViewer/Badge3DViewer.vue'
 import { useBadgeApi, type BadgeDTO } from '@/api/badge'
 import { useAuth } from '@/composables/useAuth'
 
@@ -190,22 +191,23 @@ function rarityLabel(rarity: string): string {
 
 .modal-mask {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.75);
   display: flex; align-items: center; justify-content: center;
   z-index: 1000;
 }
 .modal {
-  background: #fff; border-radius: 24rpx;
-  padding: 48rpx 40rpx 40rpx;
-  width: 560rpx;
+  background: #1a1a2e;
+  border-radius: 24rpx;
+  padding: 32rpx 40rpx 40rpx;
+  width: 580rpx;
   display: flex; flex-direction: column; align-items: center;
 }
 .modal-rarity-tag { margin-top: 16rpx; padding: 4rpx 20rpx; border-radius: 20rpx; color: #fff; font-size: 22rpx; }
-.modal-name { font-size: 36rpx; font-weight: 700; color: #1a1a1a; margin-top: 16rpx; }
-.modal-desc { font-size: 26rpx; color: #666; margin-top: 12rpx; text-align: center; }
-.modal-date { font-size: 24rpx; color: #999; margin-top: 16rpx; }
-.modal-note { font-size: 22rpx; color: #aaa; margin-top: 8rpx; }
-.modal-close { margin-top: 32rpx; padding: 16rpx 80rpx; background: #1a1a2e; color: #fff; border-radius: 40rpx; font-size: 28rpx; }
+.modal-name { font-size: 36rpx; font-weight: 700; color: #fff; margin-top: 16rpx; }
+.modal-desc { font-size: 26rpx; color: rgba(255,255,255,0.7); margin-top: 12rpx; text-align: center; }
+.modal-date { font-size: 24rpx; color: rgba(255,255,255,0.5); margin-top: 16rpx; }
+.modal-note { font-size: 22rpx; color: rgba(255,255,255,0.4); margin-top: 8rpx; }
+.modal-close { margin-top: 32rpx; padding: 16rpx 80rpx; background: rgba(255,255,255,0.15); color: #fff; border-radius: 40rpx; font-size: 28rpx; }
 
 .tabbar-placeholder { height: 140rpx; }
 </style>
