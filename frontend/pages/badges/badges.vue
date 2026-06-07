@@ -200,9 +200,20 @@ function rarityLabel(rarity: string): string {
 
 .section { margin: 24rpx 0 0; }
 
-.badge-grid { display: flex; flex-wrap: wrap; padding: 0 16rpx; }
-.grid-item { width: 25%; display: flex; flex-direction: column; align-items: center; padding: 8rpx; margin-bottom: 16rpx; }
-.badge-name { font-size: 22rpx; color: #333; margin-top: 8rpx; text-align: center; line-height: 1.3; }
+.badge-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: 16rpx 8rpx;
+}
+.grid-item {
+  width: 160rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 28rpx;
+}
+.badge-name { font-size: 22rpx; color: #333; margin-top: 10rpx; text-align: center; line-height: 1.3; }
 
 .modal-mask {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;

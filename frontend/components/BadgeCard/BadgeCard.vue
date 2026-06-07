@@ -1,6 +1,6 @@
 <template>
   <view class="badge-wrap" :class="[`size-${size}`, { locked: !badge.unlocked }]">
-    <view class="badge-hex" :style="hexStyle">
+    <view class="badge-circle" :style="circleStyle">
       <text class="badge-icon">{{ badge.unlocked ? badge.icon : '❓' }}</text>
     </view>
   </view>
@@ -22,26 +22,32 @@ const rarityColor: Record<string, string> = {
   LEGENDARY: '#ffd700'
 }
 
-const hexStyle = computed(() => {
+const circleStyle = computed(() => {
   if (!props.badge.unlocked) return { background: '#ddd' }
   const color = rarityColor[props.badge.rarity] ?? '#9e9e9e'
-  return { background: `linear-gradient(135deg, ${color}cc, ${color})` }
+  return { background: `linear-gradient(135deg, ${color}99, ${color})` }
 })
 </script>
 
 <style scoped>
-.badge-wrap { display: flex; align-items: center; justify-content: center; }
-
-.badge-hex {
-  display: flex; align-items: center; justify-content: center;
-  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+.badge-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.size-medium .badge-hex { width: 100rpx; height: 116rpx; }
-.size-large  .badge-hex { width: 140rpx; height: 162rpx; }
+.badge-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
 
-.badge-icon { font-size: 40rpx; }
-.size-large .badge-icon { font-size: 56rpx; }
+.size-medium .badge-circle { width: 100rpx; height: 100rpx; }
+.size-large  .badge-circle { width: 140rpx; height: 140rpx; }
 
-.locked .badge-hex { filter: grayscale(1); opacity: 0.5; }
+.badge-icon { font-size: 44rpx; line-height: 1; }
+.size-large .badge-icon { font-size: 64rpx; }
+
+.locked .badge-circle { opacity: 0.4; }
 </style>
