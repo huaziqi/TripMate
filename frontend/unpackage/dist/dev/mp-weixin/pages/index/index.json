@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "首页",
+  "navigationBarBackgroundColor": "#ffffff",
+  "navigationBarTextStyle": "black",
+  "usingComponents": {
+    "tab-bar": "../../components/TabBar/TabBar",
+    "weather-card": "../../components/WeatherCard/WeatherCard"
+  }
+}

@@ -21,7 +21,7 @@
         <text class="feature-icon">🌐</text>
         <text class="feature-label">翻译</text>
       </view>
-      <view class="feature-item" @click="uni.showToast({ title: '敬请期待', icon: 'none' })">
+      <view class="feature-item" @click="showComingSoon">
         <text class="feature-icon">📍</text>
         <text class="feature-label">足迹地图</text>
       </view>
@@ -45,16 +45,24 @@
 <script setup lang="ts">
 import TabBar from '@/components/TabBar/TabBar.vue'
 import WeatherCard from '@/components/WeatherCard/WeatherCard.vue'
-<<<<<<< HEAD
-function goMapTest() {
-	uni.navigateTo({
-		url:'/pages/map-test/map-test'
-	})
-=======
 
 function goTo(url: string) {
-  uni.navigateTo({ url })
->>>>>>> 142619b792c48713bbbb6fd2d7afb0abcccc0aed
+  uni.navigateTo({
+    url
+  })
+}
+
+function goMapTest() {
+  uni.navigateTo({
+    url: '/pages/map-test/map-test'
+  })
+}
+
+function showComingSoon() {
+  uni.showToast({
+    title: '敬请期待',
+    icon: 'none'
+  })
 }
 </script>
 
