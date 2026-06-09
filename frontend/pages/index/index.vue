@@ -11,6 +11,11 @@
     <view class="section">
       <WeatherCard />
     </view>
+	
+	<!--地图测试入口-->
+	<view class="section">
+		<button class="map-btn" @click="goMapTest">地图测试</button>
+	</view>
 
     <!-- 底部 TabBar 占位，防止内容被遮挡 -->
     <view class="tabbar-placeholder" />
@@ -22,6 +27,11 @@
 <script setup lang="ts">
 import TabBar from '@/components/TabBar/TabBar.vue'
 import WeatherCard from '@/components/WeatherCard/WeatherCard.vue'
+function goMapTest() {
+	uni.navigateTo({
+		url:'/pages/map-test/map-test'
+	})
+}
 </script>
 
 <style scoped>
@@ -56,5 +66,16 @@ import WeatherCard from '@/components/WeatherCard/WeatherCard.vue'
 /* 与 TabBar 高度（120rpx）+ safe area 保持一致，防止内容被遮挡 */
 .tabbar-placeholder {
   height: 140rpx;
+}
+
+.map-btn{
+	margin-top: 20rpx;
+	width: 90%;
+	height:88rpx;
+	line-height: 88rpx;
+	border-radius: 20rpx;
+	background:#1677ff;
+	color:#ffffff;
+	font-size:30rpx;
 }
 </style>

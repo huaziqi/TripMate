@@ -4,7 +4,8 @@
     "pages/guide/guide",
     "pages/elder/elder",
     "pages/language/language",
-    "pages/mine/mine"
+    "pages/mine/mine",
+    "pages/map-test/map-test"
   ],
   "window": {
     "navigationBarTextStyle": "black",

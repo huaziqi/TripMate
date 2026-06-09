@@ -27,3 +27,13 @@
 .tabbar-placeholder.data-v-1cf27b2a {
   height: 140rpx;
 }
+.map-btn.data-v-1cf27b2a{
+	margin-top: 20rpx;
+	width: 90%;
+	height:88rpx;
+	line-height: 88rpx;
+	border-radius: 20rpx;
+	background:#1677ff;
+	color:#ffffff;
+	font-size:30rpx;
+}

@@ -31,6 +31,12 @@
 			"style": {
 				"navigationBarTitleText": "我的"
 			}
+		},
+		{
+			"path":"pages/map-test/map-test",
+			"style":{
+			  "navigationBarTitleText":"地图测试" 	
+			}
 		}
 	],
 	"globalStyle": {

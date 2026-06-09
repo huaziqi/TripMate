@@ -60,7 +60,7 @@
                 "desc" : "获取您的位置以查询当地实时天气"
             }
         },
-        "requiredPrivateInfos" : ["getLocation"]
+        "requiredPrivateInfos" : [ "getLocation" ]
     },
     "mp-alipay" : {
         "usingComponents" : true

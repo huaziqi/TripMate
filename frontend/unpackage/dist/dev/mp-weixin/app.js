@@ -9,6 +9,7 @@ if (!Math) {
   "./pages/elder/elder.js";
   "./pages/language/language.js";
   "./pages/mine/mine.js";
+  "./pages/map-test/map-test.js";
 }
 const _sfc_main = {
   onLaunch: function() {
