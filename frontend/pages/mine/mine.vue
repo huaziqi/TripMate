@@ -55,9 +55,9 @@
           <text class="menu-arrow">›</text>
         </view>
         <view class="divider" />
-        <view class="menu-item" @click="onElder">
+        <view class="menu-item">
           <text class="menu-label" :style="{ fontSize: rpx(28) }">长辈模式</text>
-          <text class="menu-arrow">›</text>
+          <switch :checked="isElderMode" color="#07c160" @change="onElderToggle" />
         </view>
         <view class="divider" />
         <view class="menu-item" @click="onAbout">
@@ -84,7 +84,7 @@ import { useElder } from '@/composables/useElder'
 import TabBar from '@/components/TabBar/TabBar.vue'
 
 const { authState, login, logout, saveProfile } = useAuth()
-const { rpx } = useElder()
+const { rpx, isElderMode, toggleElderMode } = useElder()
 
 async function handleLogin() {
   try {
@@ -138,8 +138,8 @@ function onLanguage() {
   uni.navigateTo({ url: '/pages/language/language' })
 }
 
-function onElder() {
-  uni.navigateTo({ url: '/pages/elder/elder' })
+function onElderToggle() {
+  toggleElderMode()
 }
 
 function onAbout() {

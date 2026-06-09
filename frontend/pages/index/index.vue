@@ -7,6 +7,26 @@
       <text class="subtitle">你的智能旅行助手</text>
     </view>
 
+    <!-- 功能入口区 -->
+    <view class="feature-grid">
+      <view class="feature-item" @click="goTo('/pages/badges/badges')">
+        <text class="feature-icon">🏅</text>
+        <text class="feature-label">勋章馆</text>
+      </view>
+      <view class="feature-item" @click="goTo('/pages/guide/guide')">
+        <text class="feature-icon">🗺️</text>
+        <text class="feature-label">旅行攻略</text>
+      </view>
+      <view class="feature-item" @click="goTo('/pages/language/language')">
+        <text class="feature-icon">🌐</text>
+        <text class="feature-label">翻译</text>
+      </view>
+      <view class="feature-item" @click="uni.showToast({ title: '敬请期待', icon: 'none' })">
+        <text class="feature-icon">📍</text>
+        <text class="feature-label">足迹地图</text>
+      </view>
+    </view>
+
     <!-- 天气卡片 -->
     <view class="section">
       <WeatherCard />
@@ -17,9 +37,7 @@
 		<button class="map-btn" @click="goMapTest">地图测试</button>
 	</view>
 
-    <!-- 底部 TabBar 占位，防止内容被遮挡 -->
     <view class="tabbar-placeholder" />
-
     <TabBar active="home" />
   </view>
 </template>
@@ -27,10 +45,16 @@
 <script setup lang="ts">
 import TabBar from '@/components/TabBar/TabBar.vue'
 import WeatherCard from '@/components/WeatherCard/WeatherCard.vue'
+<<<<<<< HEAD
 function goMapTest() {
 	uni.navigateTo({
 		url:'/pages/map-test/map-test'
 	})
+=======
+
+function goTo(url: string) {
+  uni.navigateTo({ url })
+>>>>>>> 142619b792c48713bbbb6fd2d7afb0abcccc0aed
 }
 </script>
 
@@ -59,11 +83,43 @@ function goMapTest() {
   color: #999;
 }
 
+/* 功能入口区 */
+.feature-grid {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  background: #ffffff;
+  padding: 32rpx 16rpx 28rpx;
+  margin-top: 2rpx;
+}
+
+.feature-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.feature-icon {
+  width: 96rpx;
+  height: 96rpx;
+  background: #f0f4ff;
+  border-radius: 24rpx;
+  font-size: 44rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feature-label {
+  font-size: 24rpx;
+  color: #555;
+}
+
 .section {
   margin: 24rpx 24rpx 0;
 }
 
-/* 与 TabBar 高度（120rpx）+ safe area 保持一致，防止内容被遮挡 */
 .tabbar-placeholder {
   height: 140rpx;
 }

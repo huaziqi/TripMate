@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "翻译",
-  "usingComponents": {
-    "tab-bar": "../../components/TabBar/TabBar"
-  }
-}
