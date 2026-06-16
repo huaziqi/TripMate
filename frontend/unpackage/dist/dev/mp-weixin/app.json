@@ -6,7 +6,8 @@
     "pages/language/language",
     "pages/badges/badges",
     "pages/mine/mine",
-    "pages/map-test/map-test"
+    "pages/map-test/map-test",
+    "pages/map/map"
   ],
   "window": {
     "navigationBarTextStyle": "black",

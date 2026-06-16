@@ -21,9 +21,9 @@
         <text class="feature-icon">🌐</text>
         <text class="feature-label">翻译</text>
       </view>
-      <view class="feature-item" @click="showComingSoon">
+      <view class="feature-item" @click="goTo('/pages/map/map')">
         <text class="feature-icon">📍</text>
-        <text class="feature-label">足迹地图</text>
+        <text class="feature-label">景区地图</text>
       </view>
     </view>
 
@@ -32,9 +32,9 @@
       <WeatherCard />
     </view>
 	
-	<!--地图测试入口-->
+	<!--地图入口-->
 	<view class="section">
-		<button class="map-btn" @click="goMapTest">地图测试</button>
+		<button class="map-btn" @click="goMap">景区地图</button>
 	</view>
 
     <view class="tabbar-placeholder" />
@@ -52,9 +52,9 @@ function goTo(url: string) {
   })
 }
 
-function goMapTest() {
+function goMap() {
   uni.navigateTo({
-    url: '/pages/map-test/map-test'
+    url: '/pages/map/map'
   })
 }
 

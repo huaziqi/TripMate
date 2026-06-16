@@ -13,15 +13,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         url
       });
     }
-    function goMapTest() {
+    function goMap() {
       common_vendor.index.navigateTo({
-        url: "/pages/map-test/map-test"
-      });
-    }
-    function showComingSoon() {
-      common_vendor.index.showToast({
-        title: "敬请期待",
-        icon: "none"
+        url: "/pages/map/map"
       });
     }
     return (_ctx, _cache) => {
@@ -29,8 +23,8 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         a: common_vendor.o(($event) => goTo("/pages/badges/badges")),
         b: common_vendor.o(($event) => goTo("/pages/guide/guide")),
         c: common_vendor.o(($event) => goTo("/pages/language/language")),
-        d: common_vendor.o(showComingSoon),
-        e: common_vendor.o(goMapTest),
+        d: common_vendor.o(($event) => goTo("/pages/map/map")),
+        e: common_vendor.o(goMap),
         f: common_vendor.p({
           active: "home"
         })

@@ -4,7 +4,7 @@ const api_location = require("../../api/location.js");
 const defaultLatitude = 29.8266;
 const defaultLongitude = 106.422;
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
-  __name: "map-test",
+  __name: "map",
   setup(__props) {
     const latitude = common_vendor.ref(defaultLatitude);
     const longitude = common_vendor.ref(defaultLongitude);
@@ -40,7 +40,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         type: "gcj02",
         isHighAccuracy: true,
         success: (res) => {
-          common_vendor.index.__f__("log", "at pages/map-test/map-test.vue:106", "定位结果：", res.latitude, res.longitude);
+          common_vendor.index.__f__("log", "at pages/map/map.vue:106", "定位结果：", res.latitude, res.longitude);
           latitude.value = res.latitude;
           longitude.value = res.longitude;
           markers.value = [
@@ -60,7 +60,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           });
         },
         fail: (err) => {
-          common_vendor.index.__f__("log", "at pages/map-test/map-test.vue:130", "定位失败：", err);
+          common_vendor.index.__f__("log", "at pages/map/map.vue:130", "定位失败：", err);
           common_vendor.index.showModal({
             title: "定位失败",
             content: "请检查是否允许小程序获取位置。当前显示默认测试位置。",
@@ -89,9 +89,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         currentAddress.value = "...正在解析地址";
         const result = await api_location.reverseGeocoder(latitudeValue, longitudeValue);
         currentAddress.value = result.recommendAddress || result.address;
-        common_vendor.index.__f__("log", "at pages/map-test/map-test.vue:166", "当前地址", result);
+        common_vendor.index.__f__("log", "at pages/map/map.vue:166", "当前地址", result);
       } catch (err) {
-        common_vendor.index.__f__("log", "at pages/map-test/map-test.vue:168", "地址解析失败：", err);
+        common_vendor.index.__f__("log", "at pages/map/map.vue:168", "地址解析失败：", err);
         currentAddress.value = "地址解析失败";
       }
     }
@@ -114,6 +114,6 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     };
   }
 });
-const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__scopeId", "data-v-6658bc4a"]]);
+const MiniProgramPage = /* @__PURE__ */ common_vendor._export_sfc(_sfc_main, [["__scopeId", "data-v-e06b858f"]]);
 wx.createPage(MiniProgramPage);
-//# sourceMappingURL=../../../.sourcemap/mp-weixin/pages/map-test/map-test.js.map
+//# sourceMappingURL=../../../.sourcemap/mp-weixin/pages/map/map.js.map

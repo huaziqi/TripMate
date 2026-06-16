@@ -41,9 +41,9 @@
 			}
 		},
 		{
-			"path":"pages/map-test/map-test",
+			"path":"pages/map/map",
 			"style":{
-			  "navigationBarTitleText":"地图测试" 	
+			  "navigationBarTitleText":"景区地图" 	
 			}
 		}
 	],

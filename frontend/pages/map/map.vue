@@ -9,8 +9,7 @@
       :scale="16"
       :markers="markers"
 	  :enable-satellite="isSatellite"
-      show-location
-      show-compass
+	  :show-location="false"
     />
 	
 	<!-- 地图类型切换按钮 -->
@@ -117,14 +116,6 @@ function locateCurrentPosition() {
           title: '当前位置',
           width: 36,
           height: 36,
-          callout: {
-            color: '#ffffff',
-            fontSize: 14,
-            borderRadius: 8,
-            bgColor: '#1677ff',
-            padding: 8,
-            display: 'ALWAYS'
-          }
         }
       ]
 	  

@@ -11,6 +11,7 @@ if (!Math) {
   "./pages/badges/badges.js";
   "./pages/mine/mine.js";
   "./pages/map-test/map-test.js";
+  "./pages/map/map.js";
 }
 const _sfc_main = {
   onLaunch: function() {
