@@ -4,6 +4,7 @@ import com.LHZ.TripMate.entity.ScenicSpot;
 import com.LHZ.TripMate.service.ScenicSpotService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.LHZ.TripMate.dto.NearbySpotDTO;
 
 import java.util.List;
 
@@ -36,6 +37,19 @@ public class ScenicSpotController {
     ) {
         return scenicSpotService.searchByName(keyword);
     }
+
+    @GetMapping("/nearby")
+    public List<NearbySpotDTO> findNearby(
+            @RequestParam double latitude,
+            @RequestParam double longitude,
+            @RequestParam(defaultValue = "5") int limit
+    ){
+        return scenicSpotService.findNearby(
+                latitude,
+                longitude,
+                limit
+        );
+    };
 
     /**
      * 根据 ID 查询景点详情

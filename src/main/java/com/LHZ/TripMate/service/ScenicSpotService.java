@@ -1,6 +1,7 @@
 package com.LHZ.TripMate.service;
 
 import com.LHZ.TripMate.entity.ScenicSpot;
+import com.LHZ.TripMate.dto.NearbySpotDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,4 +19,10 @@ public interface ScenicSpotService {
 
     // 保存景点，后面管理员新增景点时也能用
     ScenicSpot save(ScenicSpot scenicSpot);
+
+    List<NearbySpotDTO> findNearby(
+            double latitude,
+            double longitude,
+            int limit
+    );
 }
