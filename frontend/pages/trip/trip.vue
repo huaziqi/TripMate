@@ -112,14 +112,19 @@ const myStrokes = ref<Stroke[]>([])
 const partnerStrokes = ref<Stroke[]>([])
 
 // mapPolylines 是地图组件的 :polylines，lat/lng 驱动，移动/缩放自动跟随
-const mapPolylines = computed(() => [
-  ...myStrokes.value
-    .filter(s => s.points.length >= 2)
-    .map(s => ({ points: s.points, color: '#2196f3BB', width: 5 })),
-  ...partnerStrokes.value
-    .filter(s => s.points.length >= 2)
-    .map(s => ({ points: s.points, color: '#f44336BB', width: 5 })),
-])
+// 使用 ref + 显式更新，避免 UniApp 编译后 computed 对原生组件 prop 响应不稳定
+const mapPolylines = ref<any[]>([])
+
+function updatePolylines() {
+  mapPolylines.value = [
+    ...myStrokes.value
+      .filter(s => s.points.length >= 2)
+      .map(s => ({ points: s.points, color: '#2196f3', width: 5 })),
+    ...partnerStrokes.value
+      .filter(s => s.points.length >= 2)
+      .map(s => ({ points: s.points, color: '#f44336', width: 5 })),
+  ]
+}
 
 // ── 工具 ─────────────────────────────────────────────────────────────────────
 type ToolMode = 'none' | 'pen' | 'eraser'
@@ -288,6 +293,7 @@ function onDrawEnd() {
   const stroke: Stroke = { id, points: [...currentPoints] }
   currentPoints = []
   myStrokes.value = [...myStrokes.value, stroke]
+  updatePolylines()
   sendMatch('drawStroke', { id: stroke.id, points: stroke.points })
 }
 
@@ -297,6 +303,7 @@ function eraseNear(pt: Pt) {
     for (const p of stroke.points) {
       if (Math.abs(p.latitude - pt.latitude) + Math.abs(p.longitude - pt.longitude) < THRESHOLD) {
         myStrokes.value = myStrokes.value.filter(s => s.id !== stroke.id)
+        updatePolylines()
         sendMatch('eraseStroke', { id: stroke.id })
         return
       }
@@ -307,6 +314,7 @@ function eraseNear(pt: Pt) {
 function clearMyStrokes() {
   const ids = myStrokes.value.map(s => s.id)
   myStrokes.value = []
+  updatePolylines()
   ids.forEach(id => sendMatch('eraseStroke', { id }))
 }
 
@@ -325,10 +333,12 @@ function onWsMessage(msg: { type: string; payload: Record<string, any> }) {
     case 'partnerDrawStroke': {
       const { id, points } = msg.payload
       partnerStrokes.value = [...partnerStrokes.value.filter(s => s.id !== id), { id, points }]
+      updatePolylines()
       break
     }
     case 'partnerEraseStroke':
       partnerStrokes.value = partnerStrokes.value.filter(s => s.id !== msg.payload.id)
+      updatePolylines()
       break
   }
 }
