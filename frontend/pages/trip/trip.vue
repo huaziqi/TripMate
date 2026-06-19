@@ -11,12 +11,11 @@
       :show-location="false"
       @regionchange="onRegionChange"
     >
-      <!-- 透明覆盖层，仅在绘图/橡皮模式下拦截触摸 -->
       <cover-view
         v-if="toolMode !== 'none'"
         class="draw-overlay"
         @touchstart="onDrawStart"
-        @touchmove="onDrawMove"
+        @touchmove.stop="onDrawMove"
         @touchend="onDrawEnd"
       />
     </map>
@@ -44,7 +43,7 @@
         <text class="tool-label">清除</text>
       </view>
       <view class="tool-mode-hint" v-if="toolMode !== 'none'">
-        <text>{{ toolMode === 'pen' ? '绘制中' : '擦除中' }} · 点击再次关闭</text>
+        <text>{{ toolMode === 'pen' ? '绘制中' : '擦除中' }} · 再次点击关闭</text>
       </view>
     </view>
 
@@ -68,23 +67,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, getCurrentInstance } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { setMessageHandler, sendMatch, disconnectMatch } from '@/api/match'
 
-// ── 页面参数 ────────────────────────────────────────────────────────────────
+const _instance = getCurrentInstance()
+
+// ── 页面参数 ─────────────────────────────────────────────────────────────────
 const spotName = ref('')
 const partnerNickname = ref('')
 const spotId = ref(0)
 
-// ── 位置 ────────────────────────────────────────────────────────────────────
+// ── 位置 ─────────────────────────────────────────────────────────────────────
 const myLat = ref(29.8266)
 const myLng = ref(106.422)
 const partnerLat = ref<number | null>(null)
 const partnerLng = ref<number | null>(null)
 let locationTimer: ReturnType<typeof setInterval> | null = null
 
-// ── 地图标记 ─────────────────────────────────────────────────────────────────
+// ── 标记 ─────────────────────────────────────────────────────────────────────
 const markers = computed(() => {
   const list: any[] = [
     {
@@ -122,15 +123,16 @@ type ToolMode = 'none' | 'pen' | 'eraser'
 const toolMode = ref<ToolMode>('none')
 
 interface StrokePoint { latitude: number; longitude: number }
-interface Stroke { id: string; points: StrokePoint[]; owner: 'me' | 'partner' }
+interface Stroke { id: string; points: StrokePoint[] }
 
-const myStrokes = ref(new Map<string, Stroke>())
-const partnerStrokes = ref(new Map<string, Stroke>())
+// 用数组确保 Vue 响应式正常追踪
+const myStrokes = ref<Stroke[]>([])
+const partnerStrokes = ref<Stroke[]>([])
 const currentStroke = ref<Stroke | null>(null)
 
-// 地图视野缓存，用于像素 → 经纬度换算
+// 地图上下文 & 视野缓存
 let mapCtx: any = null
-let cachedRegion: { southwest: any; northeast: any } | null = null
+let cachedRegion: { southwest: { latitude: number; longitude: number }; northeast: { latitude: number; longitude: number } } | null = null
 let mapLeft = 0
 let mapTop = 0
 let mapWidth = 0
@@ -138,27 +140,19 @@ let mapHeight = 0
 
 const polylines = computed(() => {
   const lines: any[] = []
-
-  myStrokes.value.forEach(s => {
-    if (s.points.length >= 2) {
-      lines.push({ points: s.points, color: '#2196f3BB', width: 5, arrowLine: false })
-    }
-  })
-
+  for (const s of myStrokes.value) {
+    if (s.points.length >= 2) lines.push({ points: s.points, color: '#2196f3BB', width: 5 })
+  }
   if (currentStroke.value && currentStroke.value.points.length >= 2) {
     lines.push({ points: currentStroke.value.points, color: '#2196f3BB', width: 5 })
   }
-
-  partnerStrokes.value.forEach(s => {
-    if (s.points.length >= 2) {
-      lines.push({ points: s.points, color: '#f44336BB', width: 5, arrowLine: false })
-    }
-  })
-
+  for (const s of partnerStrokes.value) {
+    if (s.points.length >= 2) lines.push({ points: s.points, color: '#f44336BB', width: 5 })
+  }
   return lines
 })
 
-// ── 生命周期 ──────────────────────────────────────────────────────────────────
+// ── 生命周期 ─────────────────────────────────────────────────────────────────
 onLoad((query) => {
   spotId.value = Number(query?.spotId ?? 0)
   spotName.value = decodeURIComponent(query?.spotName ?? '')
@@ -170,22 +164,26 @@ onMounted(() => {
   updateMyLocation()
   locationTimer = setInterval(updateMyLocation, 3000)
 
-  mapCtx = uni.createMapContext('trip-map')
+  // 等地图渲染完成后初始化上下文
+  setTimeout(() => {
+    // UniApp 中必须传组件实例，否则无法找到页面内的原生组件
+    mapCtx = uni.createMapContext('trip-map', _instance)
 
-  // 缓存地图容器位置和尺寸
-  uni.createSelectorQuery()
-    .select('#trip-map')
-    .boundingClientRect((rect: any) => {
-      if (rect) {
-        mapLeft = rect.left
-        mapTop = rect.top
-        mapWidth = rect.width
-        mapHeight = rect.height
-      }
-    })
-    .exec()
+    uni.createSelectorQuery()
+      .in(_instance)
+      .select('#trip-map')
+      .boundingClientRect((rect: any) => {
+        if (rect) {
+          mapLeft = rect.left
+          mapTop = rect.top
+          mapWidth = rect.width
+          mapHeight = rect.height
+        }
+      })
+      .exec()
 
-  refreshRegion()
+    refreshRegion()
+  }, 500)
 })
 
 onUnmounted(() => {
@@ -193,7 +191,7 @@ onUnmounted(() => {
   disconnectMatch()
 })
 
-// ── WebSocket 消息处理 ─────────────────────────────────────────────────────────
+// ── WebSocket 消息 ────────────────────────────────────────────────────────────
 function onWsMessage(msg: { type: string; payload: Record<string, any> }) {
   switch (msg.type) {
     case 'locationUpdate':
@@ -207,19 +205,17 @@ function onWsMessage(msg: { type: string; payload: Record<string, any> }) {
       break
     case 'partnerDrawStroke': {
       const { id, points } = msg.payload
-      partnerStrokes.value.set(id, { id, points, owner: 'partner' })
-      // 触发响应式更新
-      partnerStrokes.value = new Map(partnerStrokes.value)
+      // 过滤掉已存在的同 id（防重复）
+      partnerStrokes.value = [...partnerStrokes.value.filter(s => s.id !== id), { id, points }]
       break
     }
     case 'partnerEraseStroke':
-      partnerStrokes.value.delete(msg.payload.id)
-      partnerStrokes.value = new Map(partnerStrokes.value)
+      partnerStrokes.value = partnerStrokes.value.filter(s => s.id !== msg.payload.id)
       break
   }
 }
 
-// ── 位置更新 ──────────────────────────────────────────────────────────────────
+// ── 位置更新 ─────────────────────────────────────────────────────────────────
 function updateMyLocation() {
   uni.getLocation({
     type: 'gcj02',
@@ -231,44 +227,59 @@ function updateMyLocation() {
   })
 }
 
-// ── 地图视野 ──────────────────────────────────────────────────────────────────
+// ── 地图视野 ─────────────────────────────────────────────────────────────────
 function refreshRegion() {
   mapCtx?.getRegion({
-    success: (res: any) => { cachedRegion = res }
+    success: (res: any) => { cachedRegion = res },
   })
 }
 
 function onRegionChange(e: any) {
+  // 地图拖拽结束后刷新缓存视野
   if (e.type === 'end') refreshRegion()
 }
 
 function pixelToLatLng(clientX: number, clientY: number): StrokePoint | null {
-  if (!cachedRegion || !mapWidth || !mapHeight) return null
+  if (!cachedRegion) return null
+  // mapWidth/mapHeight 未初始化时从系统信息降级
+  const w = mapWidth || uni.getSystemInfoSync().windowWidth
+  const h = mapHeight || uni.getSystemInfoSync().windowHeight * 0.55
   const px = clientX - mapLeft
   const py = clientY - mapTop
-  if (px < 0 || py < 0 || px > mapWidth || py > mapHeight) return null
+  if (px < 0 || py < 0 || px > w || py > h) return null
   const { southwest, northeast } = cachedRegion
   return {
-    latitude:  northeast.latitude  - (py / mapHeight) * (northeast.latitude  - southwest.latitude),
-    longitude: southwest.longitude + (px / mapWidth)  * (northeast.longitude - southwest.longitude),
+    latitude:  northeast.latitude  - (py / h) * (northeast.latitude  - southwest.latitude),
+    longitude: southwest.longitude + (px / w) * (northeast.longitude - southwest.longitude),
   }
 }
 
-// ── 工具栏 ────────────────────────────────────────────────────────────────────
+// ── 工具切换 ─────────────────────────────────────────────────────────────────
 function toggleTool(mode: ToolMode) {
-  toolMode.value = toolMode.value === mode ? 'none' : mode
+  if (toolMode.value === mode) {
+    toolMode.value = 'none'
+  } else {
+    toolMode.value = mode
+    // 切换到绘图模式时立即刷新视野
+    if (!cachedRegion) refreshRegion()
+  }
 }
 
-// ── 绘制事件 ──────────────────────────────────────────────────────────────────
+// ── 触摸绘制 ─────────────────────────────────────────────────────────────────
 function onDrawStart(e: any) {
   if (!e.touches[0]) return
   const { clientX, clientY } = e.touches[0]
 
+  // 若视野尚未缓存，先拉取再等下次触摸
+  if (!cachedRegion) {
+    refreshRegion()
+    return
+  }
+
   if (toolMode.value === 'pen') {
     const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`
-    currentStroke.value = { id, points: [], owner: 'me' }
     const pt = pixelToLatLng(clientX, clientY)
-    if (pt) currentStroke.value.points.push(pt)
+    currentStroke.value = { id, points: pt ? [pt] : [] }
   } else if (toolMode.value === 'eraser') {
     const pt = pixelToLatLng(clientX, clientY)
     if (pt) eraseNear(pt)
@@ -276,17 +287,16 @@ function onDrawStart(e: any) {
 }
 
 function onDrawMove(e: any) {
-  if (!e.touches[0] || toolMode.value !== 'pen' || !currentStroke.value) return
+  if (!e.touches[0] || toolMode.value !== 'pen' || !currentStroke.value || !cachedRegion) return
   const { clientX, clientY } = e.touches[0]
   const pt = pixelToLatLng(clientX, clientY)
   if (!pt) return
 
-  // 最小间距过滤，避免点过于密集
+  // 最小间距去重，避免点过密
   const pts = currentStroke.value.points
   if (pts.length > 0) {
     const last = pts[pts.length - 1]
-    const dist = Math.abs(pt.latitude - last.latitude) + Math.abs(pt.longitude - last.longitude)
-    if (dist < 0.00002) return
+    if (Math.abs(pt.latitude - last.latitude) + Math.abs(pt.longitude - last.longitude) < 0.00001) return
   }
   currentStroke.value.points.push(pt)
 }
@@ -297,20 +307,17 @@ function onDrawEnd() {
   currentStroke.value = null
   if (stroke.points.length < 2) return
 
-  myStrokes.value.set(stroke.id, stroke)
-  myStrokes.value = new Map(myStrokes.value)
+  myStrokes.value = [...myStrokes.value, stroke]
   sendMatch('drawStroke', { id: stroke.id, points: stroke.points })
 }
 
 function eraseNear(pt: StrokePoint) {
-  const THRESHOLD = 0.0004 // 约 44 米
-  for (const [id, stroke] of myStrokes.value.entries()) {
+  const THRESHOLD = 0.0004
+  for (const stroke of myStrokes.value) {
     for (const p of stroke.points) {
-      const d = Math.abs(p.latitude - pt.latitude) + Math.abs(p.longitude - pt.longitude)
-      if (d < THRESHOLD) {
-        myStrokes.value.delete(id)
-        myStrokes.value = new Map(myStrokes.value)
-        sendMatch('eraseStroke', { id })
+      if (Math.abs(p.latitude - pt.latitude) + Math.abs(p.longitude - pt.longitude) < THRESHOLD) {
+        myStrokes.value = myStrokes.value.filter(s => s.id !== stroke.id)
+        sendMatch('eraseStroke', { id: stroke.id })
         return
       }
     }
@@ -318,13 +325,12 @@ function eraseNear(pt: StrokePoint) {
 }
 
 function clearMyStrokes() {
-  const ids = [...myStrokes.value.keys()]
-  myStrokes.value.clear()
-  myStrokes.value = new Map()
+  const ids = myStrokes.value.map(s => s.id)
+  myStrokes.value = []
   ids.forEach(id => sendMatch('eraseStroke', { id }))
 }
 
-// ── 离开 ──────────────────────────────────────────────────────────────────────
+// ── 离开 ─────────────────────────────────────────────────────────────────────
 function leaveTrip() {
   uni.showModal({
     title: '结束旅途',
@@ -339,7 +345,7 @@ function leaveTrip() {
   })
 }
 
-// ── 工具函数 ──────────────────────────────────────────────────────────────────
+// ── 工具函数 ─────────────────────────────────────────────────────────────────
 function haversine(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371000
   const dLat = ((lat2 - lat1) * Math.PI) / 180
@@ -354,7 +360,6 @@ function haversine(lat1: number, lng1: number, lat2: number, lng2: number): numb
 .page { height: 100vh; display: flex; flex-direction: column; }
 .map { width: 100%; flex: 1; }
 
-/* 绘图覆盖层：全覆盖 map，capture touch 事件 */
 .draw-overlay {
   position: absolute;
   top: 0; left: 0;
@@ -362,7 +367,6 @@ function haversine(lat1: number, lng1: number, lat2: number, lng2: number): numb
   background: transparent;
 }
 
-/* 工具栏 */
 .toolbar {
   display: flex; flex-direction: row; align-items: center;
   padding: 12rpx 24rpx; background: #fff;
@@ -382,7 +386,6 @@ function haversine(lat1: number, lng1: number, lat2: number, lng2: number): numb
   font-size: 22rpx; color: #ff6b35;
 }
 
-/* 信息面板 */
 .panel {
   background: #fff;
   padding: 20rpx 32rpx;
