@@ -51,7 +51,11 @@ public class MatchService {
         String sessionId = session.getId();
         confirmMap.remove(sessionId);
         waitingQueue.values().remove(session);
-        matchedPairs.remove(sessionId);
+        WebSocketSession partner = matchedPairs.remove(sessionId);
+        if (partner != null) {
+            matchedPairs.remove(partner.getId());
+            confirmMap.remove(partner.getId());
+        }
     }
 
     public void removeSession(WebSocketSession session) {

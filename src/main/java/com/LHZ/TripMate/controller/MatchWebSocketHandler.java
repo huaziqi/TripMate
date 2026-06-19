@@ -99,7 +99,10 @@ public class MatchWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) {
-        afterConnectionClosed(session, CloseStatus.SERVER_ERROR);
+        Optional<WebSocketSession> partnerOpt = matchService.getPartner(session.getId());
+        sessions.remove(session.getId());
+        matchService.removeSession(session);
+        partnerOpt.ifPresent(p -> sendSilently(p, WsMessage.of("partnerLeft")));
     }
 
     private void send(WebSocketSession session, WsMessage msg) throws Exception {
