@@ -43,7 +43,23 @@
 		{
 			"path":"pages/map/map",
 			"style":{
-			  "navigationBarTitleText":"景区地图" 	
+			  "navigationBarTitleText":"景区地图"
+			}
+		},
+		{
+			"path": "pages/match/match",
+			"style": {
+				"navigationBarTitleText": "开始旅游",
+				"navigationBarBackgroundColor": "#ff6b35",
+				"navigationBarTextStyle": "white"
+			}
+		},
+		{
+			"path": "pages/trip/trip",
+			"style": {
+				"navigationBarTitleText": "旅途中",
+				"navigationBarBackgroundColor": "#1a1a2e",
+				"navigationBarTextStyle": "white"
 			}
 		}
 	],
