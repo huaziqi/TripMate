@@ -8,10 +8,16 @@
         :longitude="myLng"
         :scale="14"
         :markers="markers"
+        :polylines="mapPolylines"
         :show-location="false"
         @regionchange="onRegionChange"
       />
-      <!-- type="2d" canvas 通过同层渲染叠加在 map 上 -->
+      <!--
+        画笔/橡皮模式时 canvas 叠加地图（同层渲染）。
+        此时地图无法拖拽，切回"无"模式后恢复。
+        已完成的笔迹保存在 mapPolylines（lat/lng），
+        随地图移动/缩放自动跟随，canvas 只用于当前笔的实时预览。
+      -->
       <canvas
         v-if="toolMode !== 'none'"
         type="2d"
@@ -36,7 +42,7 @@
         <text class="tool-icon">🗑️</text>
         <text class="tool-label">清除</text>
       </view>
-      <text v-if="toolMode !== 'none'" class="tool-hint">{{ toolMode === 'pen' ? '绘制中' : '擦除中' }}・再按关闭</text>
+      <text v-if="toolMode !== 'none'" class="tool-hint">绘制中・点按钮退出可移动地图</text>
     </view>
 
     <view class="panel">
@@ -98,60 +104,51 @@ const distanceText = computed(() => {
   return d < 1000 ? `${Math.round(d)} 米` : `${(d / 1000).toFixed(1)} 千米`
 })
 
-// ── 涂鸦状态 ─────────────────────────────────────────────────────────────────
-type ToolMode = 'none' | 'pen' | 'eraser'
-const toolMode = ref<ToolMode>('none')
-
+// ── 笔画数据（lat/lng 存储，随地图自动跟随）─────────────────────────────────
 interface Pt { latitude: number; longitude: number }
 interface Stroke { id: string; points: Pt[] }
 
 const myStrokes = ref<Stroke[]>([])
 const partnerStrokes = ref<Stroke[]>([])
-let currentPoints: Pt[] = []
 
-// ── Canvas 上下文 ─────────────────────────────────────────────────────────────
+// mapPolylines 是地图组件的 :polylines，lat/lng 驱动，移动/缩放自动跟随
+const mapPolylines = computed(() => [
+  ...myStrokes.value
+    .filter(s => s.points.length >= 2)
+    .map(s => ({ points: s.points, color: '#2196f3BB', width: 5 })),
+  ...partnerStrokes.value
+    .filter(s => s.points.length >= 2)
+    .map(s => ({ points: s.points, color: '#f44336BB', width: 5 })),
+])
+
+// ── 工具 ─────────────────────────────────────────────────────────────────────
+type ToolMode = 'none' | 'pen' | 'eraser'
+const toolMode = ref<ToolMode>('none')
+
+function toggleTool(mode: ToolMode) {
+  toolMode.value = toolMode.value === mode ? 'none' : mode
+}
+
+// ── Canvas（实时预览当前笔画，完成后交给 mapPolylines）──────────────────────
 let ctx: any = null
 let canvasW = 0
 let canvasH = 0
 let canvasLeft = 0
 let canvasTop = 0
+let currentPoints: Pt[] = []
 
-// ── 地图视野缓存 ──────────────────────────────────────────────────────────────
-let mapCtx: any = null
-let region: { sw: Pt; ne: Pt } | null = null
-
-// ── 生命周期 ─────────────────────────────────────────────────────────────────
-onLoad((query) => {
-  spotId.value = Number(query?.spotId ?? 0)
-  spotName.value = decodeURIComponent(query?.spotName ?? '')
-  partnerNickname.value = decodeURIComponent(query?.partnerNickname ?? '搭子')
-})
-
-onMounted(() => {
-  setMessageHandler(onWsMessage)
-  updateMyLocation()
-  locationTimer = setInterval(updateMyLocation, 3000)
-
-  setTimeout(() => {
-    mapCtx = uni.createMapContext('trip-map', _inst)
-    fetchRegion()
-  }, 500)
-})
-
-onUnmounted(() => {
-  if (locationTimer) clearInterval(locationTimer)
-  disconnectMatch()
-})
-
-// 切到绘图模式时初始化 canvas
-watch(toolMode, async (next, prev) => {
-  if (next !== 'none' && prev === 'none') {
+// 进入绘图模式时初始化 canvas 上下文
+watch(toolMode, async (val, prev) => {
+  if (val !== 'none' && prev === 'none') {
     await nextTick()
     initCanvas()
   }
+  if (val === 'none') {
+    ctx = null
+    currentPoints = []
+  }
 })
 
-// ── Canvas 初始化 ─────────────────────────────────────────────────────────────
 function initCanvas() {
   uni.createSelectorQuery()
     .in(_inst)
@@ -160,7 +157,6 @@ function initCanvas() {
     .exec((res: any[]) => {
       const node = res[0]?.node
       if (!node) return
-
       uni.createSelectorQuery()
         .in(_inst)
         .select('.map-container')
@@ -173,13 +169,30 @@ function initCanvas() {
           node.width = rect.width
           node.height = rect.height
           ctx = node.getContext('2d')
-          redrawAll()
         })
         .exec()
     })
 }
 
 // ── 地图视野 ─────────────────────────────────────────────────────────────────
+let mapCtx: any = null
+let region: { sw: Pt; ne: Pt } | null = null
+
+onMounted(() => {
+  setMessageHandler(onWsMessage)
+  updateMyLocation()
+  locationTimer = setInterval(updateMyLocation, 3000)
+  setTimeout(() => {
+    mapCtx = uni.createMapContext('trip-map', _inst)
+    fetchRegion()
+  }, 500)
+})
+
+onUnmounted(() => {
+  if (locationTimer) clearInterval(locationTimer)
+  disconnectMatch()
+})
+
 function fetchRegion() {
   mapCtx?.getRegion({
     success: (r: any) => {
@@ -192,21 +205,10 @@ function fetchRegion() {
 }
 
 function onRegionChange(e: any) {
-  if (e.type === 'end') {
-    fetchRegion()
-    // 地图移动后用新视野重绘笔迹
-    setTimeout(redrawAll, 100)
-  }
+  if (e.type === 'end') fetchRegion()
 }
 
 // ── 坐标转换 ─────────────────────────────────────────────────────────────────
-function ptToXY(lat: number, lng: number): { x: number; y: number } | null {
-  if (!region || !canvasW || !canvasH) return null
-  const x = ((lng - region.sw.longitude) / (region.ne.longitude - region.sw.longitude)) * canvasW
-  const y = ((region.ne.latitude - lat) / (region.ne.latitude - region.sw.latitude)) * canvasH
-  return { x, y }
-}
-
 function xyToPt(x: number, y: number): Pt | null {
   if (!region || !canvasW || !canvasH) return null
   return {
@@ -215,27 +217,28 @@ function xyToPt(x: number, y: number): Pt | null {
   }
 }
 
-// ── Canvas 绘制 ───────────────────────────────────────────────────────────────
-function redrawAll() {
-  if (!ctx || !canvasW || !canvasH) return
-  ctx.clearRect(0, 0, canvasW, canvasH)
-  for (const s of myStrokes.value) drawStroke(s.points, '#2196f3')
-  if (currentPoints.length >= 2) drawStroke(currentPoints, '#2196f3')
-  for (const s of partnerStrokes.value) drawStroke(s.points, '#f44336')
+function ptToXY(p: Pt): { x: number; y: number } | null {
+  if (!region || !canvasW || !canvasH) return null
+  return {
+    x: ((p.longitude - region.sw.longitude) / (region.ne.longitude - region.sw.longitude)) * canvasW,
+    y: ((region.ne.latitude - p.latitude)  / (region.ne.latitude  - region.sw.latitude))  * canvasH,
+  }
 }
 
-function drawStroke(points: Pt[], color: string) {
-  if (!ctx || points.length < 2) return
-  const first = ptToXY(points[0].latitude, points[0].longitude)
+// ── Canvas 实时预览 ───────────────────────────────────────────────────────────
+function redrawCanvas() {
+  if (!ctx || !canvasW || !canvasH || currentPoints.length < 2) return
+  ctx.clearRect(0, 0, canvasW, canvasH)
+  const first = ptToXY(currentPoints[0])
   if (!first) return
   ctx.beginPath()
-  ctx.strokeStyle = color
-  ctx.lineWidth = 4
+  ctx.strokeStyle = '#2196f3BB'
+  ctx.lineWidth = 5
   ctx.lineCap = 'round'
   ctx.lineJoin = 'round'
   ctx.moveTo(first.x, first.y)
-  for (let i = 1; i < points.length; i++) {
-    const p = ptToXY(points[i].latitude, points[i].longitude)
+  for (let i = 1; i < currentPoints.length; i++) {
+    const p = ptToXY(currentPoints[i])
     if (p) ctx.lineTo(p.x, p.y)
   }
   ctx.stroke()
@@ -245,11 +248,11 @@ function drawStroke(points: Pt[], color: string) {
 function onDrawStart(e: any) {
   const t = e.touches?.[0]
   if (!t) return
+  if (!region) { fetchRegion(); return }
   const x = t.clientX - canvasLeft
   const y = t.clientY - canvasTop
 
   if (toolMode.value === 'pen') {
-    if (!region) { fetchRegion(); return }
     const pt = xyToPt(x, y)
     currentPoints = pt ? [pt] : []
   } else if (toolMode.value === 'eraser') {
@@ -261,31 +264,31 @@ function onDrawStart(e: any) {
 function onDrawMove(e: any) {
   const t = e.touches?.[0]
   if (!t || toolMode.value !== 'pen') return
-  const x = t.clientX - canvasLeft
-  const y = t.clientY - canvasTop
-  const pt = xyToPt(x, y)
+  const pt = xyToPt(t.clientX - canvasLeft, t.clientY - canvasTop)
   if (!pt) return
-
   if (currentPoints.length > 0) {
     const last = currentPoints[currentPoints.length - 1]
-    const d = Math.abs(pt.latitude - last.latitude) + Math.abs(pt.longitude - last.longitude)
-    if (d < 0.00001) return
+    if (Math.abs(pt.latitude - last.latitude) + Math.abs(pt.longitude - last.longitude) < 0.00001) return
   }
   currentPoints.push(pt)
-  redrawAll()
+  redrawCanvas()
 }
 
 function onDrawEnd() {
+  // 清除 canvas 预览层
+  if (ctx) ctx.clearRect(0, 0, canvasW, canvasH)
+
   if (toolMode.value !== 'pen' || currentPoints.length < 2) {
     currentPoints = []
     return
   }
+
+  // 把这一笔提交到 mapPolylines（lat/lng 驱动，永久跟随地图）
   const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`
   const stroke: Stroke = { id, points: [...currentPoints] }
   currentPoints = []
   myStrokes.value = [...myStrokes.value, stroke]
   sendMatch('drawStroke', { id: stroke.id, points: stroke.points })
-  redrawAll()
 }
 
 function eraseNear(pt: Pt) {
@@ -295,7 +298,6 @@ function eraseNear(pt: Pt) {
       if (Math.abs(p.latitude - pt.latitude) + Math.abs(p.longitude - pt.longitude) < THRESHOLD) {
         myStrokes.value = myStrokes.value.filter(s => s.id !== stroke.id)
         sendMatch('eraseStroke', { id: stroke.id })
-        redrawAll()
         return
       }
     }
@@ -306,12 +308,6 @@ function clearMyStrokes() {
   const ids = myStrokes.value.map(s => s.id)
   myStrokes.value = []
   ids.forEach(id => sendMatch('eraseStroke', { id }))
-  redrawAll()
-}
-
-// ── 工具切换 ─────────────────────────────────────────────────────────────────
-function toggleTool(mode: ToolMode) {
-  toolMode.value = toolMode.value === mode ? 'none' : mode
 }
 
 // ── WebSocket 消息 ────────────────────────────────────────────────────────────
@@ -329,12 +325,10 @@ function onWsMessage(msg: { type: string; payload: Record<string, any> }) {
     case 'partnerDrawStroke': {
       const { id, points } = msg.payload
       partnerStrokes.value = [...partnerStrokes.value.filter(s => s.id !== id), { id, points }]
-      redrawAll()
       break
     }
     case 'partnerEraseStroke':
       partnerStrokes.value = partnerStrokes.value.filter(s => s.id !== msg.payload.id)
-      redrawAll()
       break
   }
 }
@@ -351,7 +345,6 @@ function updateMyLocation() {
   })
 }
 
-// ── 结束旅途 ─────────────────────────────────────────────────────────────────
 function leaveTrip() {
   uni.showModal({
     title: '结束旅途', content: '确定要结束本次旅途吗？',
@@ -378,34 +371,18 @@ function haversine(lat1: number, lng1: number, lat2: number, lng2: number): numb
 <style scoped>
 .page { height: 100vh; display: flex; flex-direction: column; }
 
-.map-container {
-  flex: 1;
-  position: relative;
-}
-.map-layer {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-}
-/* canvas 同层渲染叠加在 map 上 */
-.canvas-layer {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: transparent;
-}
+.map-container { flex: 1; position: relative; }
+.map-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+.canvas-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: transparent; }
 
 .toolbar {
   display: flex; align-items: center;
   padding: 12rpx 24rpx; gap: 16rpx;
-  background: #fff;
-  border-top: 1rpx solid #eee;
-  border-bottom: 1rpx solid #eee;
+  background: #fff; border-top: 1rpx solid #eee; border-bottom: 1rpx solid #eee;
 }
 .tool-btn {
   display: flex; flex-direction: column; align-items: center;
-  padding: 10rpx 20rpx; border-radius: 12rpx;
-  background: #f5f6f7;
+  padding: 10rpx 20rpx; border-radius: 12rpx; background: #f5f6f7;
 }
 .tool-btn.active { background: #fff3ee; }
 .tool-icon { font-size: 34rpx; }
@@ -421,7 +398,6 @@ function haversine(lat1: number, lng1: number, lat2: number, lng2: number): numb
 .panel-value { font-size: 28rpx; color: #222; font-weight: 500; }
 .leave-btn {
   margin-top: 20rpx; width: 100%; height: 80rpx; line-height: 80rpx;
-  background: #1a1a2e; color: #fff;
-  border-radius: 40rpx; font-size: 28rpx; border: none;
+  background: #1a1a2e; color: #fff; border-radius: 40rpx; font-size: 28rpx; border: none;
 }
 </style>
