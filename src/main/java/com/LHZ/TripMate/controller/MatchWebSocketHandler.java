@@ -35,11 +35,13 @@ public class MatchWebSocketHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         WsMessage msg = objectMapper.readValue(message.getPayload(), WsMessage.class);
         switch (msg.getType()) {
-            case "join"     -> handleJoin(session, (Map<String, Object>) msg.getPayload());
-            case "confirm"  -> handleConfirm(session);
-            case "cancel"   -> handleCancel(session);
-            case "location" -> handleLocation(session, (Map<String, Object>) msg.getPayload());
-            case "leave"    -> handleLeave(session);
+            case "join"        -> handleJoin(session, (Map<String, Object>) msg.getPayload());
+            case "confirm"     -> handleConfirm(session);
+            case "cancel"      -> handleCancel(session);
+            case "location"    -> handleLocation(session, (Map<String, Object>) msg.getPayload());
+            case "leave"       -> handleLeave(session);
+            case "drawStroke"  -> handleRelay(session, "partnerDrawStroke",  (Map<String, Object>) msg.getPayload());
+            case "eraseStroke" -> handleRelay(session, "partnerEraseStroke", (Map<String, Object>) msg.getPayload());
         }
     }
 
@@ -81,6 +83,11 @@ public class MatchWebSocketHandler extends TextWebSocketHandler {
     private void handleLocation(WebSocketSession session, Map<String, Object> payload) {
         matchService.getPartner(session.getId())
                 .ifPresent(p -> sendSilently(p, WsMessage.of("locationUpdate", payload)));
+    }
+
+    private void handleRelay(WebSocketSession session, String targetType, Map<String, Object> payload) {
+        matchService.getPartner(session.getId())
+                .ifPresent(p -> sendSilently(p, WsMessage.of(targetType, payload)));
     }
 
     private void handleLeave(WebSocketSession session) {
