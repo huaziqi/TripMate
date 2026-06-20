@@ -24,6 +24,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final WxUserRepository wxUserRepository;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.startsWith("/ws");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain chain)
@@ -36,8 +42,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         String token = header.substring(7);
-        String subject = jwtUtil.extractUsername(token);
-        String userType = jwtUtil.extractUserType(token);
+        String subject;
+        String userType;
+        try {
+            subject = jwtUtil.extractUsername(token);
+            userType = jwtUtil.extractUserType(token);
+        } catch (Exception e) {
+            chain.doFilter(request, response);
+            return;
+        }
 
         if (subject != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             if ("WX_USER".equals(userType)) {

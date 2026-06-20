@@ -28,7 +28,7 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/ws/**").permitAll()
+                .requestMatchers("/ws", "/ws/**").permitAll()
                 .requestMatchers("/api/admin/login", "/api/wx/login", "/api/badges").permitAll()
                     .requestMatchers("/api/spots/**", "/api/weather/**").permitAll()
                     .requestMatchers("/api/**").authenticated()
