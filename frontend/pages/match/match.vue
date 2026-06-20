@@ -53,11 +53,41 @@
     <view v-else-if="step === 'matched'" class="step-matched">
       <view class="matched-card">
         <text class="matched-title">🎉 发现搭子！</text>
-        <text class="matched-partner">{{ partnerNickname }}</text>
+
+        <!-- 双人头像昵称 -->
+        <view class="duo-row">
+          <view class="user-col">
+            <image v-if="myAvatarUrl" class="avatar" :src="myAvatarUrl" mode="aspectFill" />
+            <view v-else class="avatar avatar-placeholder">
+              <text class="avatar-letter">{{ myNickname?.[0] ?? '我' }}</text>
+            </view>
+            <text class="user-name">{{ myNickname }}</text>
+            <view class="ready-tag" :class="{ ready: myReady }">
+              {{ myReady ? '✓ 已准备' : '待确认' }}
+            </view>
+          </view>
+
+          <text class="vs-text">VS</text>
+
+          <view class="user-col">
+            <image v-if="partnerAvatarUrl" class="avatar" :src="partnerAvatarUrl" mode="aspectFill" />
+            <view v-else class="avatar avatar-placeholder partner">
+              <text class="avatar-letter">{{ partnerNickname?.[0] ?? '他' }}</text>
+            </view>
+            <text class="user-name">{{ partnerNickname }}</text>
+            <view class="ready-tag" :class="{ ready: partnerReady }">
+              {{ partnerReady ? '✓ 已准备' : '待确认' }}
+            </view>
+          </view>
+        </view>
+
         <text class="matched-spot">目的地：{{ selectedSpot?.name }}</text>
         <text class="countdown-tip">{{ countdown }} 秒后自动取消</text>
+
         <view class="matched-actions">
-          <button class="confirm-btn" @click="confirmMatch">确认出发</button>
+          <button class="confirm-btn" :disabled="myReady" @click="confirmMatch">
+            {{ myReady ? '已确认出发' : '确认出发' }}
+          </button>
           <button class="cancel-btn-sm" @click="cancelMatch">取消</button>
         </view>
       </view>
@@ -81,7 +111,12 @@ const spots = ref<Spot[]>([])
 const loading = ref(true)
 const keyword = ref('')
 const selectedSpot = ref<Spot | null>(null)
+const myNickname = ref('')
+const myAvatarUrl = ref('')
+const myReady = ref(false)
 const partnerNickname = ref('')
+const partnerAvatarUrl = ref('')
+const partnerReady = ref(false)
 const countdown = ref(15)
 
 let countdownTimer: ReturnType<typeof setInterval> | null = null
@@ -117,9 +152,9 @@ function startMatch() {
   }
 
   step.value = 'waiting'
-  connectMatch(token, onWsMessage)
 
-  setTimeout(() => {
+  connectMatch(token, onWsMessage, () => {
+    // onOpen: 连接建立后再发 join，避免 readyState not OPEN 错误
     uni.getLocation({
       type: 'gcj02',
       success: (loc) => {
@@ -137,18 +172,25 @@ function startMatch() {
           latitude: 0,
           longitude: 0,
         })
-      }
+      },
     })
-  }, 500)
+  })
 }
 
 function onWsMessage(msg: { type: string; payload: Record<string, any> }) {
   if (msg.type === 'waiting') {
     step.value = 'waiting'
   } else if (msg.type === 'matched') {
+    myNickname.value = msg.payload.myNickname ?? '我'
+    myAvatarUrl.value = msg.payload.myAvatarUrl ?? ''
+    myReady.value = false
     partnerNickname.value = msg.payload.partnerNickname ?? '旅行者'
+    partnerAvatarUrl.value = msg.payload.partnerAvatarUrl ?? ''
+    partnerReady.value = false
     step.value = 'matched'
     startCountdown()
+  } else if (msg.type === 'partnerConfirmed') {
+    partnerReady.value = true
   } else if (msg.type === 'confirmed') {
     clearCountdown()
     transitioning = true
@@ -163,6 +205,8 @@ function onWsMessage(msg: { type: string; payload: Record<string, any> }) {
 }
 
 function confirmMatch() {
+  if (myReady.value) return
+  myReady.value = true
   sendMatch('confirm')
 }
 
@@ -250,13 +294,40 @@ function clearCountdown() {
 .matched-card {
   background: #fff; border-radius: 32rpx; padding: 60rpx 48rpx;
   width: 100%; display: flex; flex-direction: column; align-items: center;
-  gap: 20rpx; box-shadow: 0 8rpx 32rpx rgba(0,0,0,0.1);
+  gap: 24rpx; box-shadow: 0 8rpx 32rpx rgba(0,0,0,0.1);
 }
 .matched-title { font-size: 40rpx; font-weight: 700; }
-.matched-partner { font-size: 52rpx; font-weight: 700; color: #ff6b35; }
+
+.duo-row {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; gap: 16rpx; margin: 8rpx 0;
+}
+.user-col {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 12rpx;
+}
+.avatar {
+  width: 120rpx; height: 120rpx; border-radius: 60rpx;
+  background: #f0f2f5; border: 4rpx solid #eee;
+}
+.avatar-placeholder {
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #ff6b35, #f7931e);
+}
+.avatar-placeholder.partner {
+  background: linear-gradient(135deg, #2196f3, #00bcd4);
+}
+.avatar-letter { font-size: 48rpx; color: #fff; font-weight: 700; }
+.user-name { font-size: 28rpx; font-weight: 600; color: #222; text-align: center; }
+.ready-tag {
+  font-size: 22rpx; padding: 6rpx 18rpx; border-radius: 20rpx;
+  background: #f0f2f5; color: #aaa;
+}
+.ready-tag.ready { background: #e8f5e9; color: #2e7d32; }
+.vs-text { font-size: 36rpx; font-weight: 700; color: #ccc; flex-shrink: 0; }
+
 .matched-spot { font-size: 28rpx; color: #666; }
 .countdown-tip { font-size: 24rpx; color: #aaa; }
-.matched-actions { display: flex; gap: 24rpx; margin-top: 20rpx; width: 100%; }
+.matched-actions { display: flex; gap: 24rpx; margin-top: 8rpx; width: 100%; }
 .confirm-btn {
   flex: 2; height: 88rpx; line-height: 88rpx;
   background: linear-gradient(135deg, #ff6b35, #f7931e);
