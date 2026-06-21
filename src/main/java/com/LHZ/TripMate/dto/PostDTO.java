@@ -27,5 +27,6 @@ public class PostDTO {
         private Long id;
         private String nickname;
         private String avatarUrl;
+        private boolean following;
     }
 }

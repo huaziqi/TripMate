@@ -55,13 +55,21 @@ public class MatchWebSocketHandler extends TextWebSocketHandler {
             send(session, WsMessage.of("waiting"));
         } else {
             WebSocketSession partner = partnerOpt.get();
-            String myNickname = getNickname(matchService.getOpenid(session.getId()));
-            String partnerNickname = getNickname(matchService.getOpenid(partner.getId()));
+            String myOpenid      = matchService.getOpenid(session.getId());
+            String partnerOpenid = matchService.getOpenid(partner.getId());
+            String myNickname      = getNickname(myOpenid);
+            String myAvatar        = getAvatarUrl(myOpenid);
+            String partnerNickname = getNickname(partnerOpenid);
+            String partnerAvatar   = getAvatarUrl(partnerOpenid);
 
-            send(session, WsMessage.of("matched",
-                    Map.of("partnerNickname", partnerNickname, "spotName", spotName)));
-            send(partner, WsMessage.of("matched",
-                    Map.of("partnerNickname", myNickname, "spotName", spotName)));
+            send(session, WsMessage.of("matched", Map.of(
+                    "myNickname", myNickname, "myAvatarUrl", myAvatar,
+                    "partnerNickname", partnerNickname, "partnerAvatarUrl", partnerAvatar,
+                    "spotName", spotName)));
+            send(partner, WsMessage.of("matched", Map.of(
+                    "myNickname", partnerNickname, "myAvatarUrl", partnerAvatar,
+                    "partnerNickname", myNickname, "partnerAvatarUrl", myAvatar,
+                    "spotName", spotName)));
         }
     }
 
@@ -71,6 +79,10 @@ public class MatchWebSocketHandler extends TextWebSocketHandler {
             send(session, WsMessage.of("confirmed"));
             matchService.getPartner(session.getId())
                     .ifPresent(p -> sendSilently(p, WsMessage.of("confirmed")));
+        } else {
+            // 单方已确认，通知对方"搭子已准备"
+            matchService.getPartner(session.getId())
+                    .ifPresent(p -> sendSilently(p, WsMessage.of("partnerConfirmed")));
         }
     }
 
@@ -127,5 +139,11 @@ public class MatchWebSocketHandler extends TextWebSocketHandler {
                 .map(u -> u.getNickname() != null && !u.getNickname().isBlank()
                         ? u.getNickname() : "旅行者")
                 .orElse("旅行者");
+    }
+
+    private String getAvatarUrl(String openid) {
+        return wxUserRepository.findByOpenid(openid)
+                .map(u -> u.getAvatarUrl() != null ? u.getAvatarUrl() : "")
+                .orElse("");
     }
 }

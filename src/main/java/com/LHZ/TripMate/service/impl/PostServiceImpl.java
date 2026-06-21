@@ -21,6 +21,7 @@ public class PostServiceImpl implements PostService {
     private final PostFavoriteRepository favoriteRepo;
     private final PostCommentRepository commentRepo;
     private final WxUserRepository wxUserRepo;
+    private final UserFollowRepository followRepo;
 
     @Override
     @Transactional
@@ -53,7 +54,7 @@ public class PostServiceImpl implements PostService {
             WxUser user = wxUserRepo.findById(p.getUserId()).orElse(null);
             boolean liked = currentUserId != null && likeRepo.existsByPostIdAndUserId(p.getId(), currentUserId);
             boolean faved = currentUserId != null && favoriteRepo.existsByPostIdAndUserId(p.getId(), currentUserId);
-            return toDTO(p, user, liked, faved);
+            return toDTO(p, user, liked, faved, currentUserId);
         }).toList();
 
         return new PageResult<>(items, posts.getTotalElements(), page, size);
@@ -70,7 +71,7 @@ public class PostServiceImpl implements PostService {
         WxUser user = wxUserRepo.findById(post.getUserId()).orElse(null);
         boolean liked = currentUserId != null && likeRepo.existsByPostIdAndUserId(id, currentUserId);
         boolean faved = currentUserId != null && favoriteRepo.existsByPostIdAndUserId(id, currentUserId);
-        return toDTO(post, user, liked, faved);
+        return toDTO(post, user, liked, faved, currentUserId);
     }
 
     @Override
@@ -190,6 +191,10 @@ public class PostServiceImpl implements PostService {
     // ---- 私有辅助 ----
 
     private PostDTO toDTO(Post p, WxUser user, boolean liked, boolean favorited) {
+        return toDTO(p, user, liked, favorited, null);
+    }
+
+    private PostDTO toDTO(Post p, WxUser user, boolean liked, boolean favorited, Long currentUserId) {
         return PostDTO.builder()
                 .id(p.getId())
                 .title(p.getTitle())
@@ -201,18 +206,25 @@ public class PostServiceImpl implements PostService {
                 .likeCount(p.getLikeCount())
                 .commentCount(p.getCommentCount())
                 .createdAt(p.getCreatedAt())
-                .author(toAuthorDTO(user))
+                .author(toAuthorDTO(user, currentUserId))
                 .liked(liked)
                 .favorited(favorited)
                 .build();
     }
 
     private PostDTO.AuthorDTO toAuthorDTO(WxUser user) {
+        return toAuthorDTO(user, null);
+    }
+
+    private PostDTO.AuthorDTO toAuthorDTO(WxUser user, Long currentUserId) {
         if (user == null) return PostDTO.AuthorDTO.builder().build();
+        boolean following = currentUserId != null &&
+                followRepo.existsByFollowerIdAndFollowingId(currentUserId, user.getId());
         return PostDTO.AuthorDTO.builder()
                 .id(user.getId())
                 .nickname(user.getNickname())
                 .avatarUrl(user.getAvatarUrl())
+                .following(following)
                 .build();
     }
 }
