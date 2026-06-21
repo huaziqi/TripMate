@@ -45,6 +45,11 @@
 
       <!-- 功能菜单 -->
       <view class="menu-group">
+        <view class="menu-item" @click="onMyPosts">
+          <text class="menu-label" :style="{ fontSize: rpx(28) }">我的攻略</text>
+          <text class="menu-arrow">›</text>
+        </view>
+        <view class="divider" />
         <view class="menu-item" @click="onCollect">
           <text class="menu-label" :style="{ fontSize: rpx(28) }">我的收藏</text>
           <text class="menu-arrow">›</text>
@@ -130,8 +135,12 @@ async function onNicknameBlur(e: any) {
   }
 }
 
+function onMyPosts() {
+  uni.navigateTo({ url: '/pages/mine/my-posts/my-posts' })
+}
+
 function onCollect() {
-  uni.showToast({ title: '敬请期待', icon: 'none' })
+  uni.navigateTo({ url: '/pages/mine/my-favorites/my-favorites' })
 }
 
 function onLanguage() {
