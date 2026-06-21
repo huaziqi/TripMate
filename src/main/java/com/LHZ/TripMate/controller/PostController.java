@@ -106,7 +106,7 @@ public class PostController {
         if (dto.getContent() == null || dto.getContent().isBlank()) return Result.fail("评论不能为空");
         if (dto.getContent().length() > 500) return Result.fail("评论最多 500 字");
         try {
-            return Result.success(postService.addComment(id, dto.getContent(), userDetails.getWxUser().getId()));
+            return Result.success(postService.addComment(id, dto, userDetails.getWxUser().getId()));
         } catch (Exception e) {
             return Result.fail(e.getMessage());
         }

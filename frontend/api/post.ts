@@ -37,6 +37,7 @@ export interface CommentItem {
   content: string
   createdAt: string
   author: PostAuthor
+  replies?: CommentItem[]
 }
 
 export function fetchPosts(params: {
@@ -77,8 +78,8 @@ export function fetchComments(id: number, params: { page?: number; size?: number
   return get<PageResult<CommentItem>>(`/api/posts/${id}/comments`, params as any)
 }
 
-export function createComment(id: number, content: string) {
-  return post<CommentItem>(`/api/posts/${id}/comments`, { content })
+export function createComment(id: number, content: string, parentId?: number) {
+  return post<CommentItem>(`/api/posts/${id}/comments`, { content, parentId })
 }
 
 export function fetchMyPosts(params: { page?: number; size?: number }) {

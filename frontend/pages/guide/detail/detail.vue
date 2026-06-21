@@ -53,6 +53,13 @@
             <text class="c-name">{{ c.author?.nickname || '旅行者' }}</text>
             <text class="c-content">{{ c.content }}</text>
             <text class="c-time">{{ formatTime(c.createdAt) }}</text>
+            <!-- 子评论 replies -->
+            <view v-for="reply in c.replies" :key="reply.id" class="reply-item">
+              <text class="reply-author">{{ reply.author?.nickname || '旅行者' }}：</text>
+              <text class="reply-content">{{ reply.content }}</text>
+            </view>
+            <!-- 回复按钮 -->
+            <text class="reply-btn" @click="onReply(c)">回复</text>
           </view>
         </view>
         <view v-if="commentNoMore && comments.length > 0" class="load-more-tip"><text>已显示全部评论</text></view>
@@ -79,12 +86,12 @@
 
     <!-- 评论输入 popup -->
     <view v-if="showInput" class="comment-popup" @click.stop>
-      <view class="comment-popup-mask" @click="showInput = false" />
+      <view class="comment-popup-mask" @click="showInput = false; replyingTo = null" />
       <view class="comment-popup-box">
         <textarea
           v-model="commentText"
           class="comment-textarea"
-          placeholder="说点什么..."
+          :placeholder="replyingTo ? `回复 ${replyingTo.author?.nickname || '旅行者'}...` : '说说你的想法（500字内）'"
           :maxlength="500"
           auto-focus
         />
@@ -126,6 +133,7 @@ const commentNoMore = ref(false)
 const showInput = ref(false)
 const commentText = ref('')
 const submitting = ref(false)
+const replyingTo = ref<CommentItem | null>(null)
 
 onMounted(() => {
   const pages = getCurrentPages()
@@ -171,6 +179,16 @@ function focusComment() {
     uni.showToast({ title: '请先登录', icon: 'none' })
     return
   }
+  replyingTo.value = null
+  showInput.value = true
+}
+
+function onReply(comment: CommentItem) {
+  if (!authState.isLoggedIn) {
+    uni.showToast({ title: '请先登录', icon: 'none' })
+    return
+  }
+  replyingTo.value = comment
   showInput.value = true
 }
 
@@ -178,12 +196,22 @@ async function submitComment() {
   if (!commentText.value.trim()) return
   submitting.value = true
   try {
-    const res = await createComment(postId.value, commentText.value)
+    const res = await createComment(postId.value, commentText.value, replyingTo.value?.id ?? undefined)
     if (res.code === 200) {
-      comments.value.unshift(res.data)
+      if (replyingTo.value) {
+        // 将回复插入到对应顶层评论的 replies 中
+        const parent = comments.value.find(c => c.id === replyingTo.value!.id)
+        if (parent) {
+          if (!parent.replies) parent.replies = []
+          parent.replies.push(res.data)
+        }
+      } else {
+        comments.value.unshift(res.data)
+      }
       if (post.value) post.value.commentCount++
       commentText.value = ''
       showInput.value = false
+      replyingTo.value = null
       uni.showToast({ title: '评论成功', icon: 'success' })
     }
   } finally {
@@ -243,6 +271,11 @@ async function onFavorite() {
 .c-name { font-size: 24rpx; font-weight: 600; color: #555; }
 .c-content { font-size: 28rpx; color: #1a1a1a; }
 .c-time { font-size: 22rpx; color: #bbb; }
+
+.reply-item { padding: 8rpx 0 8rpx 48rpx; display: flex; flex-direction: row; flex-wrap: wrap; }
+.reply-author { font-size: 24rpx; color: #1677ff; font-weight: 500; }
+.reply-content { font-size: 24rpx; color: #333; }
+.reply-btn { font-size: 22rpx; color: #999; margin-left: 16rpx; margin-top: 8rpx; display: inline-block; }
 
 .load-more-tip { text-align: center; padding: 20rpx; font-size: 24rpx; color: #bbb; }
 .load-more-btn { margin: 16rpx 0; background: #f5f5f5; color: #666; font-size: 26rpx; border: none; border-radius: 8rpx; }

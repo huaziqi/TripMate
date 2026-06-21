@@ -14,5 +14,6 @@ public class PostComment {
     @Column(name = "user_id", nullable = false) private Long userId;
     @Column(nullable = false, length = 500) private String content;
     @Column(name = "created_at", updatable = false) private LocalDateTime createdAt;
+    @Column(name = "parent_id") private Long parentId;   // null = 顶层评论
     @PrePersist void prePersist() { createdAt = LocalDateTime.now(); }
 }

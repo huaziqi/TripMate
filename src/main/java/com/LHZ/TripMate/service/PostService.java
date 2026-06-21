@@ -14,7 +14,7 @@ public interface PostService {
     Map<String, Object> toggleFavorite(Long postId, Long userId);
 
     PageResult<PostCommentDTO> listComments(Long postId, int page, int size);
-    PostCommentDTO addComment(Long postId, String content, Long userId);
+    PostCommentDTO addComment(Long postId, CommentCreateDTO dto, Long userId);
 
     PageResult<PostDTO> myPosts(Long userId, int page, int size);
     PageResult<PostDTO> myFavorites(Long userId, int page, int size);

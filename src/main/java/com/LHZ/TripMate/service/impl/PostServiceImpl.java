@@ -128,38 +128,47 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PageResult<PostCommentDTO> listComments(Long postId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").ascending());
-        Page<PostComment> pg = commentRepo.findByPostId(postId, pageable);
-        List<PostCommentDTO> items = pg.getContent().stream().map(c -> {
-            WxUser user = wxUserRepo.findById(c.getUserId()).orElse(null);
-            return PostCommentDTO.builder()
-                    .id(c.getId())
-                    .content(c.getContent())
-                    .createdAt(c.getCreatedAt())
-                    .author(toAuthorDTO(user))
-                    .build();
+        Sort sort = Sort.by(Sort.Direction.ASC, "createdAt");
+        List<PostComment> roots = commentRepo.findByPostIdAndParentIdIsNull(postId, sort);
+        long total = roots.size();
+        int fromIdx = page * size;
+        int toIdx = Math.min(fromIdx + size, roots.size());
+        List<PostComment> pageRoots = (fromIdx < roots.size()) ? roots.subList(fromIdx, toIdx) : List.of();
+
+        List<PostCommentDTO> items = pageRoots.stream().map(root -> {
+            List<PostComment> children = commentRepo.findByParentId(root.getId(), sort);
+            List<PostCommentDTO> replyDTOs = children.stream()
+                    .map(c -> toCommentDTO(c, List.of())).toList();
+            return toCommentDTO(root, replyDTOs);
         }).toList();
-        return new PageResult<>(items, pg.getTotalElements(), page, size);
+        return new PageResult<>(items, total, page, size);
     }
 
     @Override
     @Transactional
-    public PostCommentDTO addComment(Long postId, String content, Long userId) {
+    public PostCommentDTO addComment(Long postId, CommentCreateDTO dto, Long userId) {
         postRepo.findById(postId)
                 .filter(p -> "PUBLISHED".equals(p.getStatus()))
                 .orElseThrow(() -> new RuntimeException("帖子不存在"));
         PostComment c = new PostComment();
         c.setPostId(postId);
         c.setUserId(userId);
-        c.setContent(content.trim());
+        c.setContent(dto.getContent().trim());
+        c.setParentId(dto.getParentId());
         c = commentRepo.save(c);
         postRepo.incrementCommentCount(postId);
         WxUser user = wxUserRepo.findById(userId).orElse(null);
+        return toCommentDTO(c, List.of());
+    }
+
+    private PostCommentDTO toCommentDTO(PostComment c, List<PostCommentDTO> replies) {
+        WxUser u = wxUserRepo.findById(c.getUserId()).orElse(null);
         return PostCommentDTO.builder()
                 .id(c.getId())
                 .content(c.getContent())
                 .createdAt(c.getCreatedAt())
-                .author(toAuthorDTO(user))
+                .author(toAuthorDTO(u))
+                .replies(replies)
                 .build();
     }
 
