@@ -32,6 +32,7 @@ public class SecurityConfig {
                 .requestMatchers("/ws", "/ws/**").permitAll()
                 .requestMatchers("/api/admin/login", "/api/wx/login", "/api/badges").permitAll()
                     .requestMatchers("/api/spots/**", "/api/weather/**", "/api/translate").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/posts/my", "/api/posts/my/favorites").authenticated()
                     .requestMatchers(HttpMethod.GET, "/api/posts", "/api/posts/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                     .requestMatchers("/api/**").authenticated()

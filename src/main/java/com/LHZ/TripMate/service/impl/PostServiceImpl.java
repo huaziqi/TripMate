@@ -85,14 +85,16 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public Map<String, Object> toggleLike(Long postId, Long userId) {
+        Post post = postRepo.findById(postId)
+                .orElseThrow(() -> new RuntimeException("帖子不存在"));
         Optional<PostLike> existing = likeRepo.findByPostIdAndUserId(postId, userId);
         boolean liked;
-        int delta;
+        int newCount;
         if (existing.isPresent()) {
             likeRepo.delete(existing.get());
             postRepo.decrementLikeCount(postId);
             liked = false;
-            delta = -1;
+            newCount = Math.max(0, post.getLikeCount() - 1);
         } else {
             PostLike like = new PostLike();
             like.setPostId(postId);
@@ -100,14 +102,9 @@ public class PostServiceImpl implements PostService {
             likeRepo.save(like);
             postRepo.incrementLikeCount(postId);
             liked = true;
-            delta = 1;
+            newCount = post.getLikeCount() + 1;
         }
-        // 用内存计算避免 @Modifying 后立即查库的一致性问题
-        int currentCount = postRepo.findById(postId).map(Post::getLikeCount).orElse(0);
-        // currentCount already reflects the DB update since we're in the same transaction
-        // but to be safe, fall back to computing from the cached value
-        int likeCount = Math.max(0, currentCount);
-        return Map.of("liked", liked, "likeCount", likeCount);
+        return Map.of("liked", liked, "likeCount", newCount);
     }
 
     @Override
