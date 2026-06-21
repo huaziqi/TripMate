@@ -1,4 +1,55 @@
 {
+  "translate": {
+    "title": "Translate",
+    "tabs": {
+      "text": "Text",
+      "phrases": "Phrases",
+      "history": "History"
+    },
+    "placeholder": "Enter text to translate (max 500 chars)",
+    "charCount": "{count}/500",
+    "btn": "Translate",
+    "translating": "Translating...",
+    "copy": "Copy",
+    "copied": "Copied",
+    "swap": "Swap",
+    "clear": "Clear",
+    "result": "Translation",
+    "noResult": "Translation will appear here",
+    "history": {
+      "empty": "No translation history",
+      "clearAll": "Clear All",
+      "confirmClear": "Clear all translation history?"
+    },
+    "phrases": {
+      "greeting": "Greetings",
+      "dining": "Dining",
+      "transport": "Transport",
+      "shopping": "Shopping",
+      "hotel": "Hotel",
+      "emergency": "Emergency",
+      "scenic": "Attractions",
+      "time": "Time",
+      "tapToTranslate": "Tap a phrase to translate"
+    },
+    "lang": {
+      "zh": "Chinese",
+      "en": "English",
+      "ja": "Japanese",
+      "ko": "Korean",
+      "fr": "French",
+      "es": "Spanish",
+      "de": "German",
+      "ru": "Russian",
+      "ar": "Arabic",
+      "th": "Thai"
+    },
+    "error": {
+      "empty": "Please enter text to translate",
+      "failed": "Translation failed, check your network",
+      "sameLang": "Source and target language cannot be the same"
+    }
+  },
   "tabbar": {
     "home": "Home",
     "guide": "Guide",

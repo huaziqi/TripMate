@@ -48,7 +48,10 @@ function useApi() {
   function post(url, body, options) {
     return request("POST", url, body, options);
   }
-  return { get, post };
+  function del(url, options) {
+    return request("POST", url + "/delete", void 0, options);
+  }
+  return { get, post, del };
 }
 exports.useApi = useApi;
 //# sourceMappingURL=../../.sourcemap/mp-weixin/utils/useApi.js.map

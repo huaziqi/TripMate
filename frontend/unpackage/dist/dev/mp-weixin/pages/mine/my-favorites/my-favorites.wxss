@@ -1,0 +1,22 @@
+
+.page.data-v-8bfef58f { min-height: 100vh; background: #f7f8fa;
+}
+.list.data-v-8bfef58f { height: 100vh;
+}
+.empty.data-v-8bfef58f { padding: 120rpx 0; text-align: center; font-size: 28rpx; color: #bbb;
+}
+.post-card.data-v-8bfef58f {
+  background: #fff; margin: 16rpx 24rpx; padding: 0;
+  border-radius: 16rpx; overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.05);
+}
+.cover.data-v-8bfef58f { width: 100%; height: 240rpx; display: block;
+}
+.post-title.data-v-8bfef58f { display: block; font-size: 30rpx; font-weight: 600; color: #1a1a1a; padding: 20rpx 24rpx 12rpx;
+}
+.post-meta.data-v-8bfef58f { display: flex; justify-content: space-between; padding: 0 24rpx 20rpx;
+}
+.meta-text.data-v-8bfef58f { font-size: 24rpx; color: #999;
+}
+.tip.data-v-8bfef58f { text-align: center; padding: 24rpx; font-size: 24rpx; color: #bbb;
+}

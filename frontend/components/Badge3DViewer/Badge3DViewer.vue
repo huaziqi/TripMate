@@ -34,6 +34,7 @@ let scene: any
 let camera: any
 let coin: any
 let rafId: number
+let canvasNode: any   // keep reference for canvas.requestAnimationFrame / cancelAnimationFrame
 let autoSpin = true
 let touchPrev = { x: 0, y: 0 }
 
@@ -42,12 +43,13 @@ onMounted(() => {
   query.select(`#${canvasId}`).node().exec((res: any[]) => {
     const canvas = res[0]?.node
     if (!canvas) return
+    canvasNode = canvas
     initScene(canvas)
   })
 })
 
 onUnmounted(() => {
-  if (rafId) cancelAnimationFrame(rafId)
+  if (rafId && canvasNode) canvasNode.cancelAnimationFrame(rafId)
   renderer?.dispose()
 })
 
@@ -112,7 +114,8 @@ function initScene(canvas: any) {
 }
 
 function animate() {
-  rafId = requestAnimationFrame(animate)
+  // Must use canvas.requestAnimationFrame in WeChat Mini Program — the global RAF does not exist
+  rafId = canvasNode.requestAnimationFrame(animate)
   if (autoSpin && coin) coin.rotation.z += 0.008
   renderer?.render(scene, camera)
 }

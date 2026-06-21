@@ -1,5 +1,7 @@
 {
-  "navigationBarTitleText": "翻译",
+  "navigationBarTitleText": "翻译 / Translate",
+  "navigationBarBackgroundColor": "#1677ff",
+  "navigationBarTextStyle": "white",
   "usingComponents": {
     "tab-bar": "../../components/TabBar/TabBar"
   }

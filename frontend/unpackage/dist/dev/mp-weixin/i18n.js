@@ -1,12 +1,64 @@
 "use strict";
 const common_vendor = require("./common/vendor.js");
+const translate$1 = {
+  title: "翻译",
+  tabs: {
+    text: "文本翻译",
+    phrases: "常用短语",
+    history: "翻译历史"
+  },
+  placeholder: "请输入要翻译的文字（最多 500 字）",
+  charCount: "{count}/500",
+  btn: "翻译",
+  translating: "翻译中...",
+  copy: "复制",
+  copied: "已复制",
+  swap: "互换",
+  clear: "清空",
+  result: "翻译结果",
+  noResult: "翻译结果将显示在这里",
+  history: {
+    empty: "暂无翻译历史",
+    clearAll: "清空历史",
+    confirmClear: "确认清空所有翻译历史？"
+  },
+  phrases: {
+    greeting: "问候",
+    dining: "餐饮",
+    transport: "交通",
+    shopping: "购物",
+    hotel: "住宿",
+    emergency: "紧急",
+    scenic: "景点",
+    time: "时间",
+    tapToTranslate: "点击短语快速翻译"
+  },
+  lang: {
+    zh: "中文",
+    en: "英语",
+    ja: "日语",
+    ko: "韩语",
+    fr: "法语",
+    es: "西班牙语",
+    de: "德语",
+    ru: "俄语",
+    ar: "阿拉伯语",
+    th: "泰语"
+  },
+  error: {
+    empty: "请输入要翻译的文字",
+    failed: "翻译失败，请检查网络后重试",
+    sameLang: "源语言和目标语言不能相同"
+  }
+};
 const tabbar$1 = {
   home: "首页",
   guide: "攻略",
   elder: "老年版",
   language: "翻译",
   badges: "勋章",
-  mine: "我的"
+  mine: "我的",
+  match: "出发"
 };
 const weather$1 = {
   card: {
@@ -84,8 +136,60 @@ const weather$1 = {
   }
 };
 const zh = {
+  translate: translate$1,
   tabbar: tabbar$1,
   weather: weather$1
+};
+const translate = {
+  title: "Translate",
+  tabs: {
+    text: "Text",
+    phrases: "Phrases",
+    history: "History"
+  },
+  placeholder: "Enter text to translate (max 500 chars)",
+  charCount: "{count}/500",
+  btn: "Translate",
+  translating: "Translating...",
+  copy: "Copy",
+  copied: "Copied",
+  swap: "Swap",
+  clear: "Clear",
+  result: "Translation",
+  noResult: "Translation will appear here",
+  history: {
+    empty: "No translation history",
+    clearAll: "Clear All",
+    confirmClear: "Clear all translation history?"
+  },
+  phrases: {
+    greeting: "Greetings",
+    dining: "Dining",
+    transport: "Transport",
+    shopping: "Shopping",
+    hotel: "Hotel",
+    emergency: "Emergency",
+    scenic: "Attractions",
+    time: "Time",
+    tapToTranslate: "Tap a phrase to translate"
+  },
+  lang: {
+    zh: "Chinese",
+    en: "English",
+    ja: "Japanese",
+    ko: "Korean",
+    fr: "French",
+    es: "Spanish",
+    de: "German",
+    ru: "Russian",
+    ar: "Arabic",
+    th: "Thai"
+  },
+  error: {
+    empty: "Please enter text to translate",
+    failed: "Translation failed, check your network",
+    sameLang: "Source and target language cannot be the same"
+  }
 };
 const tabbar = {
   home: "Home",
@@ -93,7 +197,8 @@ const tabbar = {
   elder: "Elder",
   language: "Translate",
   badges: "Badges",
-  mine: "Mine"
+  mine: "Mine",
+  match: "Go"
 };
 const weather = {
   card: {
@@ -171,14 +276,31 @@ const weather = {
   }
 };
 const en = {
+  translate,
   tabbar,
   weather
 };
+const LOCALE_KEY = "app_locale";
+let savedLocale = "zh";
+try {
+  const stored = common_vendor.index.getStorageSync(LOCALE_KEY);
+  if (stored === "en" || stored === "zh")
+    savedLocale = stored;
+} catch {
+}
 const i18n = common_vendor.createI18n({
   legacy: false,
-  locale: "zh",
+  locale: savedLocale,
   fallbackLocale: "en",
   messages: { zh, en }
 });
+function setLocale(lang) {
+  i18n.global.locale.value = lang;
+  try {
+    common_vendor.index.setStorageSync(LOCALE_KEY, lang);
+  } catch {
+  }
+}
 exports.i18n = i18n;
+exports.setLocale = setLocale;
 //# sourceMappingURL=../.sourcemap/mp-weixin/i18n.js.map

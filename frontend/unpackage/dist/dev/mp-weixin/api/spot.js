@@ -1,24 +1,14 @@
 "use strict";
-const common_vendor = require("../common/vendor.js");
-const BASE_URL = "http://127.0.0.1:8080";
-function searchScenicSpots(keyword) {
-  return new Promise((resolve, reject) => {
-    common_vendor.index.request({
-      url: `${BASE_URL}/api/spots/search`,
-      method: "GET",
-      data: {
-        keyword
-      },
-      success: (res) => {
-        if (res.statusCode >= 200 && res.statusCode < 300 && Array.isArray(res.data)) {
-          resolve(res.data);
-          return;
-        }
-        reject(new Error(`搜索接口异常：${res.statusCode}`));
-      },
-      fail: reject
-    });
-  });
+const utils_useApi = require("../utils/useApi.js");
+function useSpotApi() {
+  const { get } = utils_useApi.useApi();
+  function listSpots() {
+    return get("/api/spots").then((r) => r.data ?? []);
+  }
+  function searchSpots(keyword) {
+    return get("/api/spots/search", { keyword }).then((r) => r.data ?? []);
+  }
+  return { listSpots, searchSpots };
 }
-exports.searchScenicSpots = searchScenicSpots;
+exports.useSpotApi = useSpotApi;
 //# sourceMappingURL=../../.sourcemap/mp-weixin/api/spot.js.map

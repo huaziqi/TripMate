@@ -92,15 +92,7 @@ onMounted(() => {
 // ----------------------------------------------------------------
 // 方法
 // ----------------------------------------------------------------
-// 开发调试用，真机或上线时删除这两行，改为实际定位
-const DEV_MOCK_LOCATION = { longitude: 116.39, latitude: 39.91 } // 北京
-const USE_MOCK = true // 改为 true 跳过 GPS，直接用上面的坐标
-
 function getLocation() {
-  if (USE_MOCK) {
-    loadWeather(DEV_MOCK_LOCATION.longitude, DEV_MOCK_LOCATION.latitude)
-    return
-  }
   uni.getLocation({
     type: 'gcj02',
     success: ({ longitude, latitude }) => loadWeather(longitude, latitude),

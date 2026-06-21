@@ -55,8 +55,14 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         common_vendor.index.showToast({ title: "更新失败", icon: "none" });
       }
     }
+    function onNotifications() {
+      common_vendor.index.navigateTo({ url: "/pages/notifications/notifications" });
+    }
+    function onMyPosts() {
+      common_vendor.index.navigateTo({ url: "/pages/mine/my-posts/my-posts" });
+    }
     function onCollect() {
-      common_vendor.index.showToast({ title: "敬请期待", icon: "none" });
+      common_vendor.index.navigateTo({ url: "/pages/mine/my-favorites/my-favorites" });
     }
     function onLanguage() {
       common_vendor.index.navigateTo({ url: "/pages/language/language" });
@@ -78,31 +84,35 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       }, !common_vendor.unref(authState).isLoggedIn ? {
         b: common_vendor.unref(rpx)(28),
         c: common_vendor.unref(rpx)(30),
-        d: common_vendor.o(handleLogin)
+        d: common_vendor.o(handleLogin, "e9")
       } : common_vendor.e({
         e: (_a = common_vendor.unref(authState).userInfo) == null ? void 0 : _a.avatarUrl
       }, ((_b = common_vendor.unref(authState).userInfo) == null ? void 0 : _b.avatarUrl) ? {
         f: common_vendor.unref(authState).userInfo.avatarUrl
       } : {}, {
-        g: common_vendor.o(onChooseAvatar),
+        g: common_vendor.o(onChooseAvatar, "b0"),
         h: ((_c = common_vendor.unref(authState).userInfo) == null ? void 0 : _c.nickname) || "微信用户",
         i: common_vendor.unref(rpx)(34),
-        j: common_vendor.o(onNicknameBlur),
+        j: common_vendor.o(onNicknameBlur, "09"),
         k: common_vendor.t((_e = (_d = common_vendor.unref(authState).userInfo) == null ? void 0 : _d.openid) == null ? void 0 : _e.slice(0, 12)),
         l: common_vendor.unref(rpx)(22),
         m: common_vendor.unref(rpx)(28),
-        n: common_vendor.o(onCollect),
+        n: common_vendor.o(onNotifications, "22"),
         o: common_vendor.unref(rpx)(28),
-        p: common_vendor.o(onLanguage),
+        p: common_vendor.o(onMyPosts, "6c"),
         q: common_vendor.unref(rpx)(28),
-        r: common_vendor.unref(isElderMode),
-        s: common_vendor.o(onElderToggle),
-        t: common_vendor.unref(rpx)(28),
-        v: common_vendor.o(onAbout),
-        w: common_vendor.unref(rpx)(28),
-        x: common_vendor.o(handleLogout)
+        r: common_vendor.o(onCollect, "81"),
+        s: common_vendor.unref(rpx)(28),
+        t: common_vendor.o(onLanguage, "05"),
+        v: common_vendor.unref(rpx)(28),
+        w: common_vendor.unref(isElderMode),
+        x: common_vendor.o(onElderToggle, "b8"),
+        y: common_vendor.unref(rpx)(28),
+        z: common_vendor.o(onAbout, "eb"),
+        A: common_vendor.unref(rpx)(28),
+        B: common_vendor.o(handleLogout, "29")
       }), {
-        y: common_vendor.p({
+        C: common_vendor.p({
           active: "mine"
         })
       });

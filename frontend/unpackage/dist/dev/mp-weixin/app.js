@@ -11,6 +11,14 @@ if (!Math) {
   "./pages/badges/badges.js";
   "./pages/mine/mine.js";
   "./pages/map/map.js";
+  "./pages/match/match.js";
+  "./pages/trip/trip.js";
+  "./pages/guide/detail/detail.js";
+  "./pages/guide/create/create.js";
+  "./pages/mine/my-posts/my-posts.js";
+  "./pages/mine/my-favorites/my-favorites.js";
+  "./pages/notifications/notifications.js";
+  "./pages/guide/search/search.js";
 }
 const _sfc_main = {
   onLaunch: function() {

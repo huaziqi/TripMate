@@ -1,4 +1,55 @@
 {
+  "translate": {
+    "title": "翻译",
+    "tabs": {
+      "text": "文本翻译",
+      "phrases": "常用短语",
+      "history": "翻译历史"
+    },
+    "placeholder": "请输入要翻译的文字（最多 500 字）",
+    "charCount": "{count}/500",
+    "btn": "翻译",
+    "translating": "翻译中...",
+    "copy": "复制",
+    "copied": "已复制",
+    "swap": "互换",
+    "clear": "清空",
+    "result": "翻译结果",
+    "noResult": "翻译结果将显示在这里",
+    "history": {
+      "empty": "暂无翻译历史",
+      "clearAll": "清空历史",
+      "confirmClear": "确认清空所有翻译历史？"
+    },
+    "phrases": {
+      "greeting": "问候",
+      "dining": "餐饮",
+      "transport": "交通",
+      "shopping": "购物",
+      "hotel": "住宿",
+      "emergency": "紧急",
+      "scenic": "景点",
+      "time": "时间",
+      "tapToTranslate": "点击短语快速翻译"
+    },
+    "lang": {
+      "zh": "中文",
+      "en": "英语",
+      "ja": "日语",
+      "ko": "韩语",
+      "fr": "法语",
+      "es": "西班牙语",
+      "de": "德语",
+      "ru": "俄语",
+      "ar": "阿拉伯语",
+      "th": "泰语"
+    },
+    "error": {
+      "empty": "请输入要翻译的文字",
+      "failed": "翻译失败，请检查网络后重试",
+      "sameLang": "源语言和目标语言不能相同"
+    }
+  },
   "tabbar": {
     "home": "首页",
     "guide": "攻略",

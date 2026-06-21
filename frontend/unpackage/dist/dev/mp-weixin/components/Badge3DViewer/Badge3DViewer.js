@@ -20,6 +20,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     let camera;
     let coin;
     let rafId;
+    let canvasNode;
     let autoSpin = true;
     let touchPrev = { x: 0, y: 0 };
     common_vendor.onMounted(() => {
@@ -29,12 +30,13 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         const canvas = (_a = res[0]) == null ? void 0 : _a.node;
         if (!canvas)
           return;
+        canvasNode = canvas;
         initScene(canvas);
       });
     });
     common_vendor.onUnmounted(() => {
-      if (rafId)
-        cancelAnimationFrame(rafId);
+      if (rafId && canvasNode)
+        canvasNode.cancelAnimationFrame(rafId);
       renderer == null ? void 0 : renderer.dispose();
     });
     function initScene(canvas) {
@@ -85,7 +87,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       animate();
     }
     function animate() {
-      rafId = requestAnimationFrame(animate);
+      rafId = canvasNode.requestAnimationFrame(animate);
       if (autoSpin && coin)
         coin.rotation.z += 8e-3;
       renderer == null ? void 0 : renderer.render(scene, camera);
@@ -113,9 +115,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     return (_ctx, _cache) => {
       return {
         a: canvasId,
-        b: common_vendor.o(onTouchStart),
-        c: common_vendor.o(onTouchMove),
-        d: common_vendor.o(onTouchEnd)
+        b: common_vendor.o(onTouchStart, "5b"),
+        c: common_vendor.o(onTouchMove, "e3"),
+        d: common_vendor.o(onTouchEnd, "5d")
       };
     };
   }

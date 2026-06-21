@@ -28,12 +28,14 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     common_vendor.onMounted(() => {
       getLocation();
     });
-    const DEV_MOCK_LOCATION = { longitude: 116.39, latitude: 39.91 };
     function getLocation() {
-      {
-        loadWeather(DEV_MOCK_LOCATION.longitude, DEV_MOCK_LOCATION.latitude);
-        return;
-      }
+      common_vendor.index.getLocation({
+        type: "gcj02",
+        success: ({ longitude, latitude }) => loadWeather(longitude, latitude),
+        fail: () => {
+          locationStatus.value = "failed";
+        }
+      });
     }
     async function loadWeather(longitude, latitude) {
       try {

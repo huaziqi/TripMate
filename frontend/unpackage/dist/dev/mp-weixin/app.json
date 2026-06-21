@@ -6,7 +6,15 @@
     "pages/language/language",
     "pages/badges/badges",
     "pages/mine/mine",
-    "pages/map/map"
+    "pages/map/map",
+    "pages/match/match",
+    "pages/trip/trip",
+    "pages/guide/detail/detail",
+    "pages/guide/create/create",
+    "pages/mine/my-posts/my-posts",
+    "pages/mine/my-favorites/my-favorites",
+    "pages/notifications/notifications",
+    "pages/guide/search/search"
   ],
   "window": {
     "navigationBarTextStyle": "black",
