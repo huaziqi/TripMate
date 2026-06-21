@@ -4,6 +4,7 @@ import com.LHZ.TripMate.dto.*;
 import com.LHZ.TripMate.entity.*;
 import com.LHZ.TripMate.entity.WxUser;
 import com.LHZ.TripMate.repository.*;
+import com.LHZ.TripMate.service.NotificationService;
 import com.LHZ.TripMate.service.PostService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class PostServiceImpl implements PostService {
     private final PostCommentRepository commentRepo;
     private final WxUserRepository wxUserRepo;
     private final UserFollowRepository followRepo;
+    private final NotificationService notifService;
 
     @Override
     @Transactional
@@ -104,6 +106,8 @@ public class PostServiceImpl implements PostService {
             postRepo.incrementLikeCount(postId);
             liked = true;
             newCount = post.getLikeCount() + 1;
+            notifService.create(Notification.Type.LIKE_POST, userId, post.getUserId(),
+                    post.getId(), post.getTitle(), null);
         }
         return Map.of("liked", liked, "likeCount", newCount);
     }
@@ -147,7 +151,7 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public PostCommentDTO addComment(Long postId, CommentCreateDTO dto, Long userId) {
-        postRepo.findById(postId)
+        Post post = postRepo.findById(postId)
                 .filter(p -> "PUBLISHED".equals(p.getStatus()))
                 .orElseThrow(() -> new RuntimeException("帖子不存在"));
         PostComment c = new PostComment();
@@ -158,6 +162,8 @@ public class PostServiceImpl implements PostService {
         c = commentRepo.save(c);
         postRepo.incrementCommentCount(postId);
         WxUser user = wxUserRepo.findById(userId).orElse(null);
+        notifService.create(Notification.Type.COMMENT_POST, userId, post.getUserId(),
+                post.getId(), post.getTitle(), c.getContent());
         return toCommentDTO(c, List.of());
     }
 

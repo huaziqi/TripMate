@@ -1,9 +1,11 @@
 package com.LHZ.TripMate.service.impl;
 
 import com.LHZ.TripMate.dto.FollowStatsDTO;
+import com.LHZ.TripMate.entity.Notification;
 import com.LHZ.TripMate.entity.UserFollow;
 import com.LHZ.TripMate.repository.UserFollowRepository;
 import com.LHZ.TripMate.service.FollowService;
+import com.LHZ.TripMate.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,7 @@ import java.util.Optional;
 public class FollowServiceImpl implements FollowService {
 
     private final UserFollowRepository followRepo;
+    private final NotificationService notifService;
 
     @Override
     @Transactional
@@ -31,6 +34,8 @@ public class FollowServiceImpl implements FollowService {
             followRepo.save(UserFollow.builder()
                     .followerId(currentUserId).followingId(targetUserId).build());
             following = true;
+            notifService.create(Notification.Type.NEW_FOLLOWER, currentUserId, targetUserId,
+                    null, null, null);
         }
         long followerCount = followRepo.countByFollowingId(targetUserId);
         return Map.of("following", following, "followerCount", followerCount);
