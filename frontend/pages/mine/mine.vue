@@ -45,6 +45,11 @@
 
       <!-- 功能菜单 -->
       <view class="menu-group">
+        <view class="menu-item" @click="onNotifications">
+          <text class="menu-label" :style="{ fontSize: rpx(28) }">消息通知</text>
+          <text class="menu-arrow">›</text>
+        </view>
+        <view class="divider" />
         <view class="menu-item" @click="onMyPosts">
           <text class="menu-label" :style="{ fontSize: rpx(28) }">我的攻略</text>
           <text class="menu-arrow">›</text>
@@ -133,6 +138,10 @@ async function onNicknameBlur(e: any) {
   } catch {
     uni.showToast({ title: '更新失败', icon: 'none' })
   }
+}
+
+function onNotifications() {
+  uni.navigateTo({ url: '/pages/notifications/notifications' })
 }
 
 function onMyPosts() {
