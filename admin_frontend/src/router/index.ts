@@ -13,6 +13,7 @@ const router = createRouter({
         { path: 'dashboard', component: () => import('@/views/dashboard/DashboardView.vue') },
         { path: 'users', component: () => import('@/views/users/UsersView.vue'), meta: { requiresSuperAdmin: true } },
         { path: 'settings', component: () => import('@/views/settings/SettingsView.vue'), meta: { requiresSuperAdmin: true } },
+        { path: 'posts', component: () => import('@/views/posts/PostsView.vue'), meta: { requiresSuperAdmin: true } },
       ],
     },
   ],
