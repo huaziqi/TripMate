@@ -89,3 +89,7 @@ export function fetchMyPosts(params: { page?: number; size?: number }) {
 export function fetchMyFavorites(params: { page?: number; size?: number }) {
   return get<PageResult<PostItem>>('/api/posts/my/favorites', params as any)
 }
+
+export function searchPosts(q: string, page = 0, size = 10) {
+  return get<PageResult<PostItem>>(`/api/posts/search?q=${encodeURIComponent(q)}&page=${page}&size=${size}`)
+}

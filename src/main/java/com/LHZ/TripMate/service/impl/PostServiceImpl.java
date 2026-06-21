@@ -203,6 +203,19 @@ public class PostServiceImpl implements PostService {
         return new PageResult<>(items, Math.max(effectiveTotal, 0), page, size);
     }
 
+    @Override
+    public PageResult<PostDTO> search(String q, int page, int size, Long currentUserId) {
+        if (q == null || q.isBlank()) return new PageResult<>(List.of(), 0, page, size);
+        Page<Post> pg = postRepo.search(q.trim(), PageRequest.of(page, size));
+        var items = pg.getContent().stream().map(p -> {
+            WxUser user = wxUserRepo.findById(p.getUserId()).orElse(null);
+            boolean liked = currentUserId != null && likeRepo.existsByPostIdAndUserId(p.getId(), currentUserId);
+            boolean faved = currentUserId != null && favoriteRepo.existsByPostIdAndUserId(p.getId(), currentUserId);
+            return toDTO(p, user, liked, faved, currentUserId);
+        }).toList();
+        return new PageResult<>(items, pg.getTotalElements(), page, size);
+    }
+
     // ---- 私有辅助 ----
 
     private PostDTO toDTO(Post p, WxUser user, boolean liked, boolean favorited) {

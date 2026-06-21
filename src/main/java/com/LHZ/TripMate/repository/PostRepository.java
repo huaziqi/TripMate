@@ -31,4 +31,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Modifying
     @Query("UPDATE Post p SET p.viewCount = p.viewCount + 1 WHERE p.id = :id")
     void incrementViewCount(@Param("id") Long id);
+
+    @Query("SELECT p FROM Post p WHERE p.status = 'PUBLISHED' AND " +
+           "(LOWER(p.title) LIKE LOWER(CONCAT('%', :q, '%')) OR " +
+            "LOWER(p.content) LIKE LOWER(CONCAT('%', :q, '%'))) " +
+           "ORDER BY p.createdAt DESC")
+    Page<Post> search(@Param("q") String q, Pageable pageable);
 }

@@ -2,18 +2,23 @@
 <template>
   <view class="page">
 
-    <!-- 分类 Tab 横向滚动 -->
-    <scroll-view class="category-bar" scroll-x>
-      <view class="category-list">
-        <view
-          v-for="c in categories"
-          :key="c.value"
-          class="category-item"
-          :class="{ active: activeCategory === c.value }"
-          @click="onCategory(c.value)"
-        >{{ c.label }}</view>
+    <!-- 分类 Tab 横向滚动 + 搜索入口 -->
+    <view class="top-bar">
+      <scroll-view class="category-bar" scroll-x>
+        <view class="category-list">
+          <view
+            v-for="c in categories"
+            :key="c.value"
+            class="category-item"
+            :class="{ active: activeCategory === c.value }"
+            @click="onCategory(c.value)"
+          >{{ c.label }}</view>
+        </view>
+      </scroll-view>
+      <view class="search-icon" @click="uni.navigateTo({ url: '/pages/guide/search/search' })">
+        <text class="search-icon-text">🔍</text>
       </view>
-    </scroll-view>
+    </view>
 
     <!-- 排序切换 -->
     <view class="sort-bar">
@@ -185,8 +190,13 @@ function goCreate() {
 <style scoped>
 .page { min-height: 100vh; background: #f7f8fa; display: flex; flex-direction: column; }
 
+/* 顶部栏（分类 + 搜索） */
+.top-bar { display: flex; align-items: center; background: #fff; border-bottom: 1rpx solid #eee; flex-shrink: 0; }
+.search-icon { padding: 0 24rpx; flex-shrink: 0; display: flex; align-items: center; }
+.search-icon-text { font-size: 40rpx; }
+
 /* 分类条 */
-.category-bar { background: #fff; border-bottom: 1rpx solid #eee; flex-shrink: 0; }
+.category-bar { flex: 1; }
 .category-list { display: flex; flex-direction: row; padding: 0 16rpx; white-space: nowrap; }
 .category-item {
   display: inline-block;

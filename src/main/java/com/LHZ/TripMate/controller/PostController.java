@@ -91,6 +91,16 @@ public class PostController {
         return Result.success(postService.toggleFavorite(id, userDetails.getWxUser().getId()));
     }
 
+    @GetMapping("/search")
+    public Result<PageResult<PostDTO>> search(
+            @RequestParam String q,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal(errorOnInvalidType = false) WxUserDetails userDetails) {
+        Long uid = userDetails != null ? userDetails.getWxUser().getId() : null;
+        return Result.success(postService.search(q, page, size, uid));
+    }
+
     @GetMapping("/{id}/comments")
     public Result<PageResult<PostCommentDTO>> comments(
             @PathVariable Long id,

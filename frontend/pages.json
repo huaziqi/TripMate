@@ -99,6 +99,14 @@
 				"navigationBarBackgroundColor": "#ffffff",
 				"navigationBarTextStyle": "black"
 			}
+		},
+		{
+			"path": "pages/guide/search/search",
+			"style": {
+				"navigationBarTitleText": "搜索攻略",
+				"navigationBarBackgroundColor": "#ffffff",
+				"navigationBarTextStyle": "black"
+			}
 		}
 	],
 	"globalStyle": {

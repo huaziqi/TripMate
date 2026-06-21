@@ -18,4 +18,6 @@ public interface PostService {
 
     PageResult<PostDTO> myPosts(Long userId, int page, int size);
     PageResult<PostDTO> myFavorites(Long userId, int page, int size);
+
+    PageResult<PostDTO> search(String q, int page, int size, Long currentUserId);
 }
