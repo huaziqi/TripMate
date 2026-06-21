@@ -23,7 +23,9 @@
 		{
 			"path": "pages/language/language",
 			"style": {
-				"navigationBarTitleText": "翻译"
+				"navigationBarTitleText": "翻译 / Translate",
+				"navigationBarBackgroundColor": "#1677ff",
+				"navigationBarTextStyle": "white"
 			}
 		},
 		{
@@ -60,6 +62,34 @@
 				"navigationBarTitleText": "旅途中",
 				"navigationBarBackgroundColor": "#1a1a2e",
 				"navigationBarTextStyle": "white"
+			}
+		},
+		{
+			"path": "pages/guide/detail/detail",
+			"style": {
+				"navigationBarTitleText": "攻略详情",
+				"navigationBarBackgroundColor": "#ffffff",
+				"navigationBarTextStyle": "black"
+			}
+		},
+		{
+			"path": "pages/guide/create/create",
+			"style": {
+				"navigationBarTitleText": "发布攻略",
+				"navigationBarBackgroundColor": "#ffffff",
+				"navigationBarTextStyle": "black"
+			}
+		},
+		{
+			"path": "pages/mine/my-posts/my-posts",
+			"style": {
+				"navigationBarTitleText": "我的攻略"
+			}
+		},
+		{
+			"path": "pages/mine/my-favorites/my-favorites",
+			"style": {
+				"navigationBarTitleText": "我的收藏"
 			}
 		}
 	],
