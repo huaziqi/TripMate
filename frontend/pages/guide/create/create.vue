@@ -143,8 +143,11 @@ async function submit() {
     if (res.code === 200) {
       uni.showToast({ title: '发布成功', icon: 'success' })
       setTimeout(() => uni.navigateBack(), 1200)
+      // submitting 保持 true，防止 1.2s 内重复点击（页面即将销毁）
+    } else {
+      submitting.value = false
     }
-  } finally {
+  } catch {
     submitting.value = false
   }
 }

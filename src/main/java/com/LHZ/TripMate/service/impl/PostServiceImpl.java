@@ -183,7 +183,8 @@ public class PostServiceImpl implements PostService {
             WxUser user = wxUserRepo.findById(post.getUserId()).orElse(null);
             return toDTO(post, user, true, true);
         }).filter(Objects::nonNull).toList();
-        return new PageResult<>(items, pg.getTotalElements(), page, size);
+        long effectiveTotal = pg.getTotalElements() - (pg.getNumberOfElements() - items.size());
+        return new PageResult<>(items, Math.max(effectiveTotal, 0), page, size);
     }
 
     // ---- 私有辅助 ----

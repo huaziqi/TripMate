@@ -232,9 +232,8 @@ async function onFavorite() {
 /* 底部操作栏 */
 .action-bar {
   position: fixed; left: 0; right: 0; bottom: 0;
-  padding-bottom: env(safe-area-inset-bottom);
   background: #fff; border-top: 1rpx solid #eee;
-  display: flex; align-items: center; padding: 16rpx 24rpx;
+  display: flex; align-items: center; padding: 16rpx 24rpx calc(16rpx + env(safe-area-inset-bottom));
   gap: 16rpx;
 }
 .comment-input-wrap {
