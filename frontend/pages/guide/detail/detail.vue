@@ -24,6 +24,12 @@
             <text class="author-name">{{ post.author?.nickname || '旅行者' }}</text>
             <text class="post-time">{{ formatTime(post.createdAt) }} · {{ categoryLabel(post.category) }}</text>
           </view>
+          <view
+            v-if="authState.isLoggedIn && post?.author?.id"
+            class="follow-btn"
+            :class="{ followed: following }"
+            @click="onFollow"
+          >{{ following ? '已关注' : '+ 关注' }}</view>
         </view>
 
         <!-- 标题 + 正文 -->
@@ -96,8 +102,10 @@
 import { ref, onMounted } from 'vue'
 import { fetchPostDetail, fetchComments, createComment, toggleLike, toggleFavorite, type PostItem, type CommentItem } from '@/api/post'
 import { useAuth } from '@/composables/useAuth'
+import { toggleFollow } from '@/api/follow'
 
 const { authState } = useAuth()
+const following = ref(false)
 
 const categoryMap: Record<string, string> = {
   SCENIC: '景点攻略', FOOD: '美食推荐', TRANSPORT: '交通住宿',
@@ -131,7 +139,18 @@ onMounted(() => {
 
 async function loadDetail() {
   const res = await fetchPostDetail(postId.value)
-  if (res.code === 200) post.value = res.data
+  if (res.code === 200) {
+    post.value = res.data
+    following.value = res.data.author?.following ?? false
+  }
+}
+
+async function onFollow() {
+  if (!post.value?.author?.id) return
+  const res = await toggleFollow(post.value.author.id)
+  if (res.code === 200) {
+    following.value = res.data.following
+  }
 }
 
 async function loadComments(reset = false) {
@@ -253,4 +272,11 @@ async function onFavorite() {
 .comment-popup-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 16rpx; }
 .char-count { font-size: 22rpx; color: #bbb; }
 .submit-btn { background: #1677ff; color: #fff; border: none; border-radius: 32rpx; padding: 0 40rpx; height: 64rpx; line-height: 64rpx; font-size: 28rpx; }
+
+.follow-btn {
+  padding: 8rpx 24rpx; border-radius: 32rpx;
+  border: 1rpx solid #1677ff; color: #1677ff; font-size: 22rpx;
+  margin-left: 16rpx;
+}
+.follow-btn.followed { background: #1677ff; color: #fff; }
 </style>
