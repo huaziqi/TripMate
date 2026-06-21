@@ -99,5 +99,12 @@ export function useApi() {
     return request<T>('POST', url, body, options)
   }
 
-  return { get, post }
+  function del<T = any>(
+    url: string,
+    options?: RequestOptions
+  ): Promise<ApiResponse<T>> {
+    return request<T>('POST', url + '/delete', undefined, options)
+  }
+
+  return { get, post, del }
 }
