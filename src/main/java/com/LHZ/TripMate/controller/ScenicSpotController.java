@@ -1,5 +1,6 @@
 package com.LHZ.TripMate.controller;
 
+import com.LHZ.TripMate.common.Result;
 import com.LHZ.TripMate.entity.ScenicSpot;
 import com.LHZ.TripMate.service.ScenicSpotService;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +24,8 @@ public class ScenicSpotController {
      * GET /api/spots
      */
     @GetMapping
-    public List<ScenicSpot> findAll() {
-        return scenicSpotService.findAll();
+    public Result<List<ScenicSpot>> findAll() {
+        return Result.success(scenicSpotService.findAll());
     }
 
     /**
