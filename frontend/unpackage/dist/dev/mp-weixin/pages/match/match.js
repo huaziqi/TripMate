@@ -131,7 +131,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       return common_vendor.e({
         a: step.value === "select"
       }, step.value === "select" ? common_vendor.e({
-        b: common_vendor.o([($event) => keyword.value = $event.detail.value, onSearch]),
+        b: common_vendor.o([($event) => keyword.value = $event.detail.value, onSearch], "3c"),
         c: keyword.value,
         d: loading.value
       }, loading.value ? {} : spots.value.length === 0 ? {} : {}, {
@@ -148,10 +148,10 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         }),
         g: common_vendor.t(selectedSpot.value ? `前往 ${selectedSpot.value.name}，开始匹配` : "请先选择景点"),
         h: !selectedSpot.value,
-        i: common_vendor.o(startMatch)
+        i: common_vendor.o(startMatch, "f3")
       }) : step.value === "waiting" ? {
         k: common_vendor.t((_a = selectedSpot.value) == null ? void 0 : _a.name),
-        l: common_vendor.o(cancelMatch)
+        l: common_vendor.o(cancelMatch, "59")
       } : step.value === "matched" ? common_vendor.e({
         n: myAvatarUrl.value
       }, myAvatarUrl.value ? {
@@ -175,8 +175,8 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         B: common_vendor.t(countdown.value),
         C: common_vendor.t(myReady.value ? "已确认出发" : "确认出发"),
         D: myReady.value,
-        E: common_vendor.o(confirmMatch),
-        F: common_vendor.o(cancelMatch)
+        E: common_vendor.o(confirmMatch, "04"),
+        F: common_vendor.o(cancelMatch, "6a")
       }) : {}, {
         j: step.value === "waiting",
         m: step.value === "matched"

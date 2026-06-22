@@ -97,13 +97,13 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             d: common_vendor.o(($event) => onCategory(c.value), c.value)
           };
         }),
-        b: common_vendor.o(($event) => _ctx.uni.navigateTo({
+        b: common_vendor.o(($event) => common_vendor.index.navigateTo({
           url: "/pages/guide/search/search"
-        })),
+        }), "e0"),
         c: sort.value === "new" ? 1 : "",
-        d: common_vendor.o(($event) => onSort("new")),
+        d: common_vendor.o(($event) => onSort("new"), "e9"),
         e: sort.value === "hot" ? 1 : "",
-        f: common_vendor.o(($event) => onSort("hot")),
+        f: common_vendor.o(($event) => onSort("hot"), "dc"),
         g: posts.value.length === 0 && !loading.value
       }, posts.value.length === 0 && !loading.value ? {} : {}, {
         h: common_vendor.f(posts.value, (item, k0, i0) => {
@@ -130,10 +130,10 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       }, loading.value ? {} : {}, {
         j: noMore.value && posts.value.length > 0
       }, noMore.value && posts.value.length > 0 ? {} : {}, {
-        k: common_vendor.o(loadMore),
+        k: common_vendor.o(loadMore, "79"),
         l: refreshing.value,
-        m: common_vendor.o(onRefresh),
-        n: common_vendor.o(goCreate),
+        m: common_vendor.o(onRefresh, "52"),
+        n: common_vendor.o(goCreate, "44"),
         o: common_vendor.p({
           active: "guide"
         })

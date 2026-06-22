@@ -43,10 +43,10 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     }
     return (_ctx, _cache) => {
       return common_vendor.e({
-        a: common_vendor.o(doSearch),
+        a: common_vendor.o(doSearch, "0e"),
         b: keyword.value,
-        c: common_vendor.o(($event) => keyword.value = $event.detail.value),
-        d: common_vendor.o(doSearch),
+        c: common_vendor.o(($event) => keyword.value = $event.detail.value, "ab"),
+        d: common_vendor.o(doSearch, "24"),
         e: results.value.length === 0 && searched.value && !loading.value
       }, results.value.length === 0 && searched.value && !loading.value ? {} : {}, {
         f: common_vendor.f(results.value, (item, k0, i0) => {
@@ -62,14 +62,14 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             f: common_vendor.t(item.likeCount),
             g: common_vendor.t(item.commentCount),
             h: item.id,
-            i: common_vendor.o(($event) => _ctx.uni.navigateTo({
+            i: common_vendor.o(($event) => common_vendor.index.navigateTo({
               url: `/pages/guide/detail/detail?id=${item.id}`
             }), item.id)
           });
         }),
         g: !noMore.value && results.value.length > 0
       }, !noMore.value && results.value.length > 0 ? {
-        h: common_vendor.o(loadMore)
+        h: common_vendor.o(loadMore, "9f")
       } : {}, {
         i: noMore.value && results.value.length > 0
       }, noMore.value && results.value.length > 0 ? {} : {}, {

@@ -84,33 +84,33 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       }, !common_vendor.unref(authState).isLoggedIn ? {
         b: common_vendor.unref(rpx)(28),
         c: common_vendor.unref(rpx)(30),
-        d: common_vendor.o(handleLogin)
+        d: common_vendor.o(handleLogin, "9a")
       } : common_vendor.e({
         e: (_a = common_vendor.unref(authState).userInfo) == null ? void 0 : _a.avatarUrl
       }, ((_b = common_vendor.unref(authState).userInfo) == null ? void 0 : _b.avatarUrl) ? {
         f: common_vendor.unref(authState).userInfo.avatarUrl
       } : {}, {
-        g: common_vendor.o(onChooseAvatar),
+        g: common_vendor.o(onChooseAvatar, "a3"),
         h: ((_c = common_vendor.unref(authState).userInfo) == null ? void 0 : _c.nickname) || "微信用户",
         i: common_vendor.unref(rpx)(34),
-        j: common_vendor.o(onNicknameBlur),
+        j: common_vendor.o(onNicknameBlur, "f1"),
         k: common_vendor.t((_e = (_d = common_vendor.unref(authState).userInfo) == null ? void 0 : _d.openid) == null ? void 0 : _e.slice(0, 12)),
         l: common_vendor.unref(rpx)(22),
         m: common_vendor.unref(rpx)(28),
-        n: common_vendor.o(onNotifications),
+        n: common_vendor.o(onNotifications, "3e"),
         o: common_vendor.unref(rpx)(28),
-        p: common_vendor.o(onMyPosts),
+        p: common_vendor.o(onMyPosts, "59"),
         q: common_vendor.unref(rpx)(28),
-        r: common_vendor.o(onCollect),
+        r: common_vendor.o(onCollect, "a5"),
         s: common_vendor.unref(rpx)(28),
-        t: common_vendor.o(onLanguage),
+        t: common_vendor.o(onLanguage, "70"),
         v: common_vendor.unref(rpx)(28),
         w: common_vendor.unref(isElderMode),
-        x: common_vendor.o(onElderToggle),
+        x: common_vendor.o(onElderToggle, "72"),
         y: common_vendor.unref(rpx)(28),
-        z: common_vendor.o(onAbout),
+        z: common_vendor.o(onAbout, "38"),
         A: common_vendor.unref(rpx)(28),
-        B: common_vendor.o(handleLogout)
+        B: common_vendor.o(handleLogout, "b8")
       }), {
         C: common_vendor.p({
           active: "mine"

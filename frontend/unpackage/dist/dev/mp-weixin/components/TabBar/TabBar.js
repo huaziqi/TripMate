@@ -36,7 +36,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           };
         }),
         b: common_vendor.t(common_vendor.unref(t)("tabbar.match")),
-        c: common_vendor.o(goMatch),
+        c: common_vendor.o(goMatch, "fd"),
         d: common_vendor.f(rightTabs, (item, k0, i0) => {
           return {
             a: common_vendor.t(item.icon),

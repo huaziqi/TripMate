@@ -208,12 +208,12 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     });
     return (_ctx, _cache) => {
       return common_vendor.e({
-        a: common_vendor.o(handleSearch),
+        a: common_vendor.o(handleSearch, "6f"),
         b: keyword.value,
-        c: common_vendor.o(($event) => keyword.value = $event.detail.value),
+        c: common_vendor.o(($event) => keyword.value = $event.detail.value, "89"),
         d: common_vendor.t(searching.value ? "搜索中" : "搜索"),
         e: searching.value,
-        f: common_vendor.o(handleSearch),
+        f: common_vendor.o(handleSearch, "6a"),
         g: searchResults.value.length > 0
       }, searchResults.value.length > 0 ? {
         h: common_vendor.f(searchResults.value, (spot, k0, i0) => {
@@ -235,9 +235,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         k: markers.value,
         l: isSatellite.value,
         m: mapType.value === "normal" ? 1 : "",
-        n: common_vendor.o(($event) => switchMapType("normal")),
+        n: common_vendor.o(($event) => switchMapType("normal"), "4b"),
         o: mapType.value === "satellite" ? 1 : "",
-        p: common_vendor.o(($event) => switchMapType("satellite")),
+        p: common_vendor.o(($event) => switchMapType("satellite"), "fa"),
         q: loadingNearby.value
       }, loadingNearby.value ? {} : {}, {
         r: !loadingNearby.value && nearbySpots.value.length === 0
@@ -255,7 +255,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         })
       }, {
         t: common_vendor.t(currentAddress.value),
-        v: common_vendor.o(locateCurrentPosition)
+        v: common_vendor.o(locateCurrentPosition, "0c")
       });
     };
   }

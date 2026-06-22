@@ -408,16 +408,16 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         f: myLng.value,
         g: markers.value,
         h: mapPolylines.value,
-        i: common_vendor.o(onRegionChange),
+        i: common_vendor.o(onRegionChange, "3c"),
         j: common_vendor.s(toolMode.value !== "none" ? "pointer-events:auto;" : "pointer-events:none;"),
-        k: common_vendor.o(onDrawStart),
-        l: common_vendor.o(onDrawMove),
-        m: common_vendor.o(onDrawEnd),
+        k: common_vendor.o(onDrawStart, "4b"),
+        l: common_vendor.o(onDrawMove, "7c"),
+        m: common_vendor.o(onDrawEnd, "fd"),
         n: toolMode.value === "pen" ? 1 : "",
-        o: common_vendor.o(($event) => toggleTool("pen")),
+        o: common_vendor.o(($event) => toggleTool("pen"), "48"),
         p: toolMode.value === "eraser" ? 1 : "",
-        q: common_vendor.o(($event) => toggleTool("eraser")),
-        r: common_vendor.o(clearMyStrokes),
+        q: common_vendor.o(($event) => toggleTool("eraser"), "88"),
+        r: common_vendor.o(clearMyStrokes, "68"),
         s: toolMode.value !== "none"
       }, toolMode.value !== "none" ? {} : {}, {
         t: common_vendor.t(spotName.value),
@@ -427,7 +427,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         y: common_vendor.t(completedCount.value),
         z: common_vendor.t(challenges.value.length),
         A: common_vendor.t(showChallenges.value ? "▲" : "▼"),
-        B: common_vendor.o(($event) => showChallenges.value = !showChallenges.value),
+        B: common_vendor.o(($event) => showChallenges.value = !showChallenges.value, "b7"),
         C: showChallenges.value
       }, showChallenges.value ? {
         D: common_vendor.f(challenges.value, (c, k0, i0) => {
@@ -441,7 +441,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           };
         })
       } : {}, {
-        E: common_vendor.o(leaveTrip)
+        E: common_vendor.o(leaveTrip, "aa")
       });
     };
   }
