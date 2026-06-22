@@ -173,7 +173,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       }, common_vendor.unref(authState).isLoggedIn && ((_g = (_f = post.value) == null ? void 0 : _f.author) == null ? void 0 : _g.id) ? {
         j: common_vendor.t(following.value ? "已关注" : "+ 关注"),
         k: following.value ? 1 : "",
-        l: common_vendor.o(onFollow, "15")
+        l: common_vendor.o(onFollow)
       } : {}, {
         m: common_vendor.t(post.value.title),
         n: common_vendor.t(post.value.content),
@@ -208,28 +208,28 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       }, commentNoMore.value && comments.value.length > 0 ? {} : {}, {
         v: !commentNoMore.value && comments.value.length > 0
       }, !commentNoMore.value && comments.value.length > 0 ? {
-        w: common_vendor.o(loadMoreComments, "f8")
+        w: common_vendor.o(loadMoreComments)
       } : {}), {
-        x: common_vendor.o(focusComment, "09"),
+        x: common_vendor.o(focusComment),
         y: common_vendor.t(((_h = post.value) == null ? void 0 : _h.liked) ? "❤️" : "🤍"),
         z: common_vendor.t(((_i = post.value) == null ? void 0 : _i.likeCount) || 0),
-        A: common_vendor.o(onLike, "b5"),
+        A: common_vendor.o(onLike),
         B: common_vendor.t(((_j = post.value) == null ? void 0 : _j.favorited) ? "⭐" : "☆"),
-        C: common_vendor.o(onFavorite, "1c"),
+        C: common_vendor.o(onFavorite),
         D: showInput.value
       }, showInput.value ? {
         E: common_vendor.o(($event) => {
           showInput.value = false;
           replyingTo.value = null;
-        }, "cb"),
+        }),
         F: replyingTo.value ? `回复 ${((_k = replyingTo.value.author) == null ? void 0 : _k.nickname) || "旅行者"}...` : "说说你的想法（500字内）",
         G: commentText.value,
-        H: common_vendor.o(($event) => commentText.value = $event.detail.value, "b5"),
+        H: common_vendor.o(($event) => commentText.value = $event.detail.value),
         I: common_vendor.t(commentText.value.length),
         J: submitting.value,
-        K: common_vendor.o(submitComment, "16"),
+        K: common_vendor.o(submitComment),
         L: common_vendor.o(() => {
-        }, "ed")
+        })
       } : {});
     };
   }

@@ -50,6 +50,26 @@ function getNearbySpots(latitude, longitude, limit = 3) {
     });
   });
 }
+function getScenicSpotById(id) {
+  return new Promise((resolve, reject) => {
+    common_vendor.index.request({
+      url: `${BASE_URL}/api/spots/${id}`,
+      method: "GET",
+      success: (res) => {
+        common_vendor.index.__f__("log", "at api/spot.ts:103", "景点详情响应：", res.data);
+        if (res.statusCode >= 200 && res.statusCode < 300 && res.data) {
+          resolve(res.data);
+          return;
+        }
+        reject(new Error(`景点详情接口异常：${res.statusCode}`));
+      },
+      fail: (error) => {
+        common_vendor.index.__f__("error", "at api/spot.ts:118", "景点详情请求失败：", error);
+        reject(error);
+      }
+    });
+  });
+}
 function useSpotApi() {
   const { get } = utils_useApi.useApi();
   function listSpots() {
@@ -61,6 +81,7 @@ function useSpotApi() {
   return { listSpots, searchSpots };
 }
 exports.getNearbySpots = getNearbySpots;
+exports.getScenicSpotById = getScenicSpotById;
 exports.searchScenicSpots = searchScenicSpots;
 exports.useSpotApi = useSpotApi;
 //# sourceMappingURL=../../.sourcemap/mp-weixin/api/spot.js.map

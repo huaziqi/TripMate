@@ -31,6 +31,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         }
       });
     }
+    function onSpotFavorites() {
+      common_vendor.index.navigateTo({ url: "/pages/spot-favorites/spot-favorites" });
+    }
     async function onChooseAvatar(e) {
       var _a;
       const newAvatarUrl = e.detail.avatarUrl;
@@ -84,35 +87,37 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       }, !common_vendor.unref(authState).isLoggedIn ? {
         b: common_vendor.unref(rpx)(28),
         c: common_vendor.unref(rpx)(30),
-        d: common_vendor.o(handleLogin, "9a")
+        d: common_vendor.o(handleLogin)
       } : common_vendor.e({
         e: (_a = common_vendor.unref(authState).userInfo) == null ? void 0 : _a.avatarUrl
       }, ((_b = common_vendor.unref(authState).userInfo) == null ? void 0 : _b.avatarUrl) ? {
         f: common_vendor.unref(authState).userInfo.avatarUrl
       } : {}, {
-        g: common_vendor.o(onChooseAvatar, "a3"),
+        g: common_vendor.o(onChooseAvatar),
         h: ((_c = common_vendor.unref(authState).userInfo) == null ? void 0 : _c.nickname) || "微信用户",
         i: common_vendor.unref(rpx)(34),
-        j: common_vendor.o(onNicknameBlur, "f1"),
+        j: common_vendor.o(onNicknameBlur),
         k: common_vendor.t((_e = (_d = common_vendor.unref(authState).userInfo) == null ? void 0 : _d.openid) == null ? void 0 : _e.slice(0, 12)),
         l: common_vendor.unref(rpx)(22),
         m: common_vendor.unref(rpx)(28),
-        n: common_vendor.o(onNotifications, "3e"),
+        n: common_vendor.o(onNotifications),
         o: common_vendor.unref(rpx)(28),
-        p: common_vendor.o(onMyPosts, "59"),
+        p: common_vendor.o(onMyPosts),
         q: common_vendor.unref(rpx)(28),
-        r: common_vendor.o(onCollect, "a5"),
+        r: common_vendor.o(onCollect),
         s: common_vendor.unref(rpx)(28),
-        t: common_vendor.o(onLanguage, "70"),
+        t: common_vendor.o(onSpotFavorites),
         v: common_vendor.unref(rpx)(28),
-        w: common_vendor.unref(isElderMode),
-        x: common_vendor.o(onElderToggle, "72"),
-        y: common_vendor.unref(rpx)(28),
-        z: common_vendor.o(onAbout, "38"),
+        w: common_vendor.o(onLanguage),
+        x: common_vendor.unref(rpx)(28),
+        y: common_vendor.unref(isElderMode),
+        z: common_vendor.o(onElderToggle),
         A: common_vendor.unref(rpx)(28),
-        B: common_vendor.o(handleLogout, "b8")
+        B: common_vendor.o(onAbout),
+        C: common_vendor.unref(rpx)(28),
+        D: common_vendor.o(handleLogout)
       }), {
-        C: common_vendor.p({
+        E: common_vendor.p({
           active: "mine"
         })
       });

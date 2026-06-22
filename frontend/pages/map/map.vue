@@ -10,7 +10,6 @@
           confirm-type="search"
           @confirm="handleSearch"
         />
-
         <button
           class="search-btn"
           :disabled="searching"
@@ -21,10 +20,7 @@
       </view>
 
       <!-- 搜索结果 -->
-      <view
-        v-if="searchResults.length > 0"
-        class="search-results"
-      >
+      <view v-if="searchResults.length > 0" class="search-results">
         <view
           v-for="spot in searchResults"
           :key="spot.id"
@@ -32,22 +28,26 @@
           @tap="selectSpot(spot)"
         >
           <view class="result-content">
-            <text class="result-main"></text>
-            <text class="result-name">{{ spot.name }}</text>
-            <text class="result-category">{{ spot.category }}</text>
+            <view class="result-main">
+              <text class="result-name">{{ spot.name }}</text>
+              <text class="result-category">{{ spot.category }}</text>
+            </view>
+            <text class="result-address">{{ spot.address }}</text>
           </view>
-
-          <text class="result-address">
-            {{ spot.address }}
-          </text>
-
-          <!-- 距离显示移到 v-for 内部 -->
-          <text
-            v-if="spot.distance !== undefined"
-            class="result-distance"
-          >
-            {{ formatDistance(spot.distance) }}
-          </text>
+          <view class="result-right">
+            <text
+              v-if="spot.distance !== undefined"
+              class="result-distance"
+            >
+              {{ formatDistance(spot.distance) }}
+            </text>
+            <text
+              class="detail-link"
+              @tap.stop="goSpotDetail(spot.id)"
+            >
+              详情
+            </text>
+          </view>
         </view>
       </view>
     </view>
@@ -63,8 +63,6 @@
         :enable-satellite="isSatellite"
         :show-location="false"
       />
-
-      <!-- 地图类型切换按钮 -->
       <cover-view class="map-type-switch">
         <cover-view
           class="map-type-item"
@@ -73,7 +71,6 @@
         >
           普通
         </cover-view>
-
         <cover-view
           class="map-type-item"
           :class="{ active: mapType === 'satellite' }"
@@ -88,48 +85,33 @@
     <view class="nearby-section">
       <view class="nearby-header">
         <text class="nearby-title">附近景点推荐</text>
-        <text v-if="loadingNearby" class="nearby-loading">
-          加载中...
-        </text>
+        <text v-if="loadingNearby" class="nearby-loading">加载中...</text>
       </view>
 
-      <view
-        v-if="!loadingNearby && nearbySpots.length === 0"
-        class="empty-text"
-      >
+      <view v-if="!loadingNearby && nearbySpots.length === 0" class="empty-text">
         暂无附近景点
       </view>
-	
-	  <scroll-view
-	    v-else
-		scroll-y
-		class="nearby-scroll"
-	  >
-      <view
-        v-for="(spot, index) in nearbySpots"
-        :key="spot.id"
-        class="nearby-item"
-        @tap="selectSpot(spot)"
-      >
-        <view class="nearby-main">
-          <view class="nearby-name-line">
-            <text class="nearby-name">{{ spot.name }}</text>
 
-            <text v-if="index === 0" class="nearest-tag">
-              最近
-            </text>
+      <scroll-view v-else scroll-y class="nearby-scroll">
+        <view
+          v-for="(spot, index) in nearbySpots"
+          :key="spot.id"
+          class="nearby-item"
+          @tap="selectSpot(spot)"
+        >
+          <view class="nearby-main">
+            <view class="nearby-name-line">
+              <text class="nearby-name">{{ spot.name }}</text>
+              <text v-if="index === 0" class="nearest-tag">最近</text>
+            </view>
+            <text class="nearby-address">{{ spot.address }}</text>
           </view>
-
-          <text class="nearby-address">
-            {{ spot.address }}
-          </text>
+          <view class="nearby-right">
+            <text class="nearby-distance">{{ formatDistance(spot.distance) }}</text>
+            <text class="detail-link" @tap.stop="goSpotDetail(spot.id)">详情</text>
+          </view>
         </view>
-
-        <text class="nearby-distance">
-          {{ formatDistance(spot.distance) }}
-        </text>
-      </view>
-	  </scroll-view>
+      </scroll-view>
     </view>
 
     <view class="panel">
@@ -137,10 +119,7 @@
         <text>当前位置：</text>
         <text>{{ currentAddress }}</text>
       </view>
-
-      <button class="btn" @click="locateCurrentPosition">
-        定位到当前位置
-      </button>
+      <button class="btn" @click="locateCurrentPosition">定位到当前位置</button>
     </view>
   </view>
 </template>
@@ -178,6 +157,8 @@ const nearbySpots = ref<NearbySpot[]>([])
 const loadingNearby = ref(false)
 const userLatitude = ref<number | null>(null)
 const userLongitude = ref<number | null>(null)
+
+const USER_ID = 1
 
 function switchMapType(type: 'normal' | 'satellite') {
   mapType.value = type
@@ -308,6 +289,12 @@ function calculateDistance(
   )
 
   return earthRadius * c
+}
+
+function goSpotDetail(id:number){
+	uni.navigateTo({
+		url:`/pages/spot-detail/spot-detail?id=${id}`
+	})
 }
 
 async function updateAddress(latitudeValue: number, longitudeValue: number) {
@@ -688,5 +675,30 @@ defineExpose({
 
 .nearby-scroll{
 	max-height: 420rpx;
+}
+
+.result-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10rpx;
+  margin-left: 20rpx;
+}
+
+.detail-link {
+  padding: 6rpx 16rpx;
+  border-radius: 999rpx;
+  background: #eef4ff;
+  color: #1677ff;
+  font-size: 24rpx;
+}
+
+.nearby-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10rpx;
+  margin-left: 20rpx;
+  flex-shrink: 0;
 }
 </style>

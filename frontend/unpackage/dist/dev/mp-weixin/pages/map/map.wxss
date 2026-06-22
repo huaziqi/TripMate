@@ -221,3 +221,25 @@
 .nearby-scroll.data-v-e06b858f{
 	max-height: 420rpx;
 }
+.result-right.data-v-e06b858f {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10rpx;
+  margin-left: 20rpx;
+}
+.detail-link.data-v-e06b858f {
+  padding: 6rpx 16rpx;
+  border-radius: 999rpx;
+  background: #eef4ff;
+  color: #1677ff;
+  font-size: 24rpx;
+}
+.nearby-right.data-v-e06b858f {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10rpx;
+  margin-left: 20rpx;
+  flex-shrink: 0;
+}

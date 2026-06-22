@@ -90,7 +90,39 @@ export function getNearbySpots(
       }
     })
   })
-}import { useApi } from '@/utils/useApi'
+}
+export function getScenicSpotById(
+  id: number
+): Promise<ScenicSpot> {
+  return new Promise((resolve, reject) => {
+    uni.request({
+      url: `${BASE_URL}/api/spots/${id}`,
+      method: 'GET',
+
+      success: (res) => {
+        console.log('景点详情响应：', res.data)
+
+        if (
+          res.statusCode >= 200 &&
+          res.statusCode < 300 &&
+          res.data
+        ) {
+          resolve(res.data as ScenicSpot)
+          return
+        }
+
+        reject(new Error(`景点详情接口异常：${res.statusCode}`))
+      },
+
+      fail: (error) => {
+        console.error('景点详情请求失败：', error)
+        reject(error)
+      }
+    })
+  })
+}
+
+import { useApi } from '@/utils/useApi'
 
 export interface Spot {
   id: number

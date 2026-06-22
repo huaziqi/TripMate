@@ -19,6 +19,8 @@ if (!Math) {
   "./pages/mine/my-favorites/my-favorites.js";
   "./pages/notifications/notifications.js";
   "./pages/guide/search/search.js";
+  "./pages/spot-detail/spot-detail.js";
+  "./pages/spot-favorites/spot-favorites.js";
 }
 const _sfc_main = {
   onLaunch: function() {

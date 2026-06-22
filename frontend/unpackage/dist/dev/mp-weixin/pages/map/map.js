@@ -49,7 +49,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         type: "gcj02",
         isHighAccuracy: true,
         success: async (res) => {
-          common_vendor.index.__f__("log", "at pages/map/map.vue:215", "定位结果：", res.latitude, res.longitude);
+          common_vendor.index.__f__("log", "at pages/map/map.vue:196", "定位结果：", res.latitude, res.longitude);
           userLatitude.value = res.latitude;
           userLongitude.value = res.longitude;
           latitude.value = res.latitude;
@@ -72,7 +72,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           });
         },
         fail: (err) => {
-          common_vendor.index.__f__("log", "at pages/map/map.vue:245", "定位失败：", err);
+          common_vendor.index.__f__("log", "at pages/map/map.vue:226", "定位失败：", err);
         },
         complete: () => {
           common_vendor.index.hideLoading();
@@ -112,14 +112,19 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       );
       return earthRadius * c;
     }
+    function goSpotDetail(id) {
+      common_vendor.index.navigateTo({
+        url: `/pages/spot-detail/spot-detail?id=${id}`
+      });
+    }
     async function updateAddress(latitudeValue, longitudeValue) {
       try {
         currentAddress.value = "...正在解析地址";
         const result = await api_location.reverseGeocoder(latitudeValue, longitudeValue);
         currentAddress.value = result.recommendAddress || result.address;
-        common_vendor.index.__f__("log", "at pages/map/map.vue:321", "当前地址", result);
+        common_vendor.index.__f__("log", "at pages/map/map.vue:308", "当前地址", result);
       } catch (err) {
-        common_vendor.index.__f__("log", "at pages/map/map.vue:323", "地址解析失败：", err);
+        common_vendor.index.__f__("log", "at pages/map/map.vue:310", "地址解析失败：", err);
         currentAddress.value = "地址解析失败";
       }
     }
@@ -160,7 +165,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           });
         }
       } catch (error) {
-        common_vendor.index.__f__("error", "at pages/map/map.vue:376", "搜索景点失败：", error);
+        common_vendor.index.__f__("error", "at pages/map/map.vue:363", "搜索景点失败：", error);
         common_vendor.index.showToast({
           title: "搜索失败",
           icon: "none"
@@ -177,9 +182,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           currentLongitude,
           10
         );
-        common_vendor.index.__f__("log", "at pages/map/map.vue:400", "最近景点：", nearbySpots.value);
+        common_vendor.index.__f__("log", "at pages/map/map.vue:387", "最近景点：", nearbySpots.value);
       } catch (error) {
-        common_vendor.index.__f__("error", "at pages/map/map.vue:402", "加载附近景点失败：", error);
+        common_vendor.index.__f__("error", "at pages/map/map.vue:389", "加载附近景点失败：", error);
         common_vendor.index.showToast({
           title: "附近景点加载失败",
           icon: "none"
@@ -208,12 +213,12 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     });
     return (_ctx, _cache) => {
       return common_vendor.e({
-        a: common_vendor.o(handleSearch, "6f"),
+        a: common_vendor.o(handleSearch),
         b: keyword.value,
-        c: common_vendor.o(($event) => keyword.value = $event.detail.value, "89"),
+        c: common_vendor.o(($event) => keyword.value = $event.detail.value),
         d: common_vendor.t(searching.value ? "搜索中" : "搜索"),
         e: searching.value,
-        f: common_vendor.o(handleSearch, "6a"),
+        f: common_vendor.o(handleSearch),
         g: searchResults.value.length > 0
       }, searchResults.value.length > 0 ? {
         h: common_vendor.f(searchResults.value, (spot, k0, i0) => {
@@ -225,8 +230,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           }, spot.distance !== void 0 ? {
             e: common_vendor.t(formatDistance(spot.distance))
           } : {}, {
-            f: spot.id,
-            g: common_vendor.o(($event) => selectSpot(spot), spot.id)
+            f: common_vendor.o(($event) => goSpotDetail(spot.id), spot.id),
+            g: spot.id,
+            h: common_vendor.o(($event) => selectSpot(spot), spot.id)
           });
         })
       } : {}, {
@@ -235,9 +241,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         k: markers.value,
         l: isSatellite.value,
         m: mapType.value === "normal" ? 1 : "",
-        n: common_vendor.o(($event) => switchMapType("normal"), "4b"),
+        n: common_vendor.o(($event) => switchMapType("normal")),
         o: mapType.value === "satellite" ? 1 : "",
-        p: common_vendor.o(($event) => switchMapType("satellite"), "fa"),
+        p: common_vendor.o(($event) => switchMapType("satellite")),
         q: loadingNearby.value
       }, loadingNearby.value ? {} : {}, {
         r: !loadingNearby.value && nearbySpots.value.length === 0
@@ -249,13 +255,14 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           }, index === 0 ? {} : {}, {
             c: common_vendor.t(spot.address),
             d: common_vendor.t(formatDistance(spot.distance)),
-            e: spot.id,
-            f: common_vendor.o(($event) => selectSpot(spot), spot.id)
+            e: common_vendor.o(($event) => goSpotDetail(spot.id), spot.id),
+            f: spot.id,
+            g: common_vendor.o(($event) => selectSpot(spot), spot.id)
           });
         })
       }, {
         t: common_vendor.t(currentAddress.value),
-        v: common_vendor.o(locateCurrentPosition, "0c")
+        v: common_vendor.o(locateCurrentPosition)
       });
     };
   }

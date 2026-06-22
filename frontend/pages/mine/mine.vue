@@ -56,9 +56,14 @@
         </view>
         <view class="divider" />
         <view class="menu-item" @click="onCollect">
-          <text class="menu-label" :style="{ fontSize: rpx(28) }">我的收藏</text>
+          <text class="menu-label" :style="{ fontSize: rpx(28) }">攻略收藏</text>
           <text class="menu-arrow">›</text>
         </view>
+		<view class="divider" />
+		<view class="menu-item" @click="onSpotFavorites">
+		  <text class="menu-label" :style="{ fontSize: rpx(28) }">景点收藏</text>
+		  <text class="menu-arrow">›</text>
+		</view>
         <view class="divider" />
         <view class="menu-item" @click="onLanguage">
           <text class="menu-label" :style="{ fontSize: rpx(28) }">语言设置</text>
@@ -116,6 +121,10 @@ function handleLogout() {
       }
     }
   })
+}
+
+function onSpotFavorites() {
+  uni.navigateTo({ url: '/pages/spot-favorites/spot-favorites' })
 }
 
 async function onChooseAvatar(e: any) {
