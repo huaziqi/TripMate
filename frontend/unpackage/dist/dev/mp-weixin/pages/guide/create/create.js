@@ -73,7 +73,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     return (_ctx, _cache) => {
       return common_vendor.e({
         a: form.value.title,
-        b: common_vendor.o(($event) => form.value.title = $event.detail.value, "a8"),
+        b: common_vendor.o(($event) => form.value.title = $event.detail.value),
         c: common_vendor.t(form.value.title.length),
         d: common_vendor.f(categories, (c, k0, i0) => {
           return {
@@ -84,7 +84,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           };
         }),
         e: form.value.content,
-        f: common_vendor.o(($event) => form.value.content = $event.detail.value, "57"),
+        f: common_vendor.o(($event) => form.value.content = $event.detail.value),
         g: common_vendor.t(form.value.content.length),
         h: common_vendor.f(form.value.imageUrls, (url, i, i0) => {
           return {
@@ -95,11 +95,11 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         }),
         i: form.value.imageUrls.length < 3
       }, form.value.imageUrls.length < 3 ? {
-        j: common_vendor.o(chooseImage, "84")
+        j: common_vendor.o(chooseImage)
       } : {}, {
         k: common_vendor.t(submitting.value ? "发布中..." : "发布攻略"),
         l: submitting.value,
-        m: common_vendor.o(submit, "55")
+        m: common_vendor.o(submit)
       });
     };
   }

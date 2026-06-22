@@ -1,142 +1,143 @@
 <template>
   <view class="page">
-	  <!-- 景点搜索栏 -->
-	  <view class="search-section">
-	    <view class="search-bar">
-	      <input
-	        v-model="keyword"
-	        class="search-input"
-	        placeholder="请输入景点名称"
-	        confirm-type="search"
-	        @confirm="handleSearch"
-	      />
-	  
-	      <button
-	        class="search-btn"
-	        :loading="searching"
-	        @tap="handleSearch"
-	      >
-	        搜索
-	      </button>
-	    </view>
-	  
-	    <!-- 搜索结果 -->
-	    <view
-	      v-if="searchResults.length > 0"
-	      class="search-results"
-	    >
-	      <view
-	        v-for="spot in searchResults"
-	        :key="spot.id"
-	        class="result-item"
-	        @tap="selectSpot(spot)"
-	      >
-	        <view class="result-content">
-	          <text class="result-main">
-			  <text class="result-name">{{ spot.name }}</text>
-	          <text class="result-category">{{ spot.category }}</text>
-	        </view>
-	  
-	        <text class="result-address">
-	          {{ spot.address }}
-	        </text>
-	      </view>
-		  <text
-		      v-if="spot.distance !== undefined"
-		      class="result-distance"
-		    >
-		      {{ formatDistance(spot.distance) }}
-		    </text>
-	    </view>
-	  </view>
-	  <view class="map-wrapper">
-    <map
-      id="myMap"
-      class="map"
-      :latitude="latitude"
-      :longitude="longitude"
-      :scale="16"
-      :markers="markers"
-	  :enable-satellite="isSatellite"
-	  :show-location="false"
-    />
+    <!-- 景点搜索栏 -->
+    <view class="search-section">
+      <view class="search-bar">
+        <input
+          v-model="keyword"
+          class="search-input"
+          placeholder="请输入景点名称"
+          confirm-type="search"
+          @confirm="handleSearch"
+        />
+
+        <button
+          class="search-btn"
+          :disabled="searching"
+          @tap="handleSearch"
+        >
+          {{ searching ? '搜索中' : '搜索' }}
+        </button>
+      </view>
+
+      <!-- 搜索结果 -->
+      <view
+        v-if="searchResults.length > 0"
+        class="search-results"
+      >
+        <view
+          v-for="spot in searchResults"
+          :key="spot.id"
+          class="result-item"
+          @tap="selectSpot(spot)"
+        >
+          <view class="result-content">
+            <text class="result-main"></text>
+            <text class="result-name">{{ spot.name }}</text>
+            <text class="result-category">{{ spot.category }}</text>
+          </view>
+
+          <text class="result-address">
+            {{ spot.address }}
+          </text>
+
+          <!-- 距离显示移到 v-for 内部 -->
+          <text
+            v-if="spot.distance !== undefined"
+            class="result-distance"
+          >
+            {{ formatDistance(spot.distance) }}
+          </text>
+        </view>
+      </view>
+    </view>
+
+    <view class="map-wrapper">
+      <map
+        id="myMap"
+        class="map"
+        :latitude="latitude"
+        :longitude="longitude"
+        :scale="16"
+        :markers="markers"
+        :enable-satellite="isSatellite"
+        :show-location="false"
+      />
+
+      <!-- 地图类型切换按钮 -->
+      <cover-view class="map-type-switch">
+        <cover-view
+          class="map-type-item"
+          :class="{ active: mapType === 'normal' }"
+          @click="switchMapType('normal')"
+        >
+          普通
+        </cover-view>
+
+        <cover-view
+          class="map-type-item"
+          :class="{ active: mapType === 'satellite' }"
+          @click="switchMapType('satellite')"
+        >
+          卫星
+        </cover-view>
+      </cover-view>
+    </view>
+
+    <!-- 附近景点推荐 -->
+    <view class="nearby-section">
+      <view class="nearby-header">
+        <text class="nearby-title">附近景点推荐</text>
+        <text v-if="loadingNearby" class="nearby-loading">
+          加载中...
+        </text>
+      </view>
+
+      <view
+        v-if="!loadingNearby && nearbySpots.length === 0"
+        class="empty-text"
+      >
+        暂无附近景点
+      </view>
 	
-	<!-- 地图类型切换按钮 -->
-	      <cover-view class="map-type-switch">
-	        <cover-view
-	          class="map-type-item"
-	          :class="{ active: mapType === 'normal' }"
-	          @click="switchMapType('normal')"
-	        >
-	          普通
-	        </cover-view>
-	
-	        <cover-view
-	          class="map-type-item"
-	          :class="{ active: mapType === 'satellite' }"
-	          @click="switchMapType('satellite')"
-	        >
-	          卫星
-	        </cover-view>
-	      </cover-view>
-	    </view>
-		
-		<!-- 附近景点推荐 -->
-		<view class="nearby-section">
-		  <view class="nearby-header">
-		    <text class="nearby-title">附近景点推荐</text>
-		    <text v-if="loadingNearby" class="nearby-loading">
-		      加载中...
-		    </text>
-		  </view>
-		
-		  <view
-		    v-if="!loadingNearby && nearbySpots.length === 0"
-		    class="empty-text"
-		  >
-		    暂无附近景点
-		  </view>
-		
-		  <view
-		    v-for="(spot, index) in nearbySpots"
-		    :key="spot.id"
-		    class="nearby-item"
-		    @tap="selectSpot(spot)"
-		  >
-		    <view class="nearby-main">
-		      <view class="nearby-name-line">
-		        <text class="nearby-name">{{ spot.name }}</text>
-		
-		        <text v-if="index === 0" class="nearest-tag">
-		          最近
-		        </text>
-		      </view>
-		
-		      <text class="nearby-address">
-		        {{ spot.address }}
-		      </text>
-		    </view>
-		
-		    <text class="nearby-distance">
-		      {{ formatDistance(spot.distance) }}
-		    </text>
-		  </view>
-		</view>
-		
+	  <scroll-view
+	    v-else
+		scroll-y
+		class="nearby-scroll"
+	  >
+      <view
+        v-for="(spot, index) in nearbySpots"
+        :key="spot.id"
+        class="nearby-item"
+        @tap="selectSpot(spot)"
+      >
+        <view class="nearby-main">
+          <view class="nearby-name-line">
+            <text class="nearby-name">{{ spot.name }}</text>
+
+            <text v-if="index === 0" class="nearest-tag">
+              最近
+            </text>
+          </view>
+
+          <text class="nearby-address">
+            {{ spot.address }}
+          </text>
+        </view>
+
+        <text class="nearby-distance">
+          {{ formatDistance(spot.distance) }}
+        </text>
+      </view>
+	  </scroll-view>
+    </view>
 
     <view class="panel">
-      <view class="title">当前位置地图</view>
+      <view class="address">
+        <text>当前位置：</text>
+        <text>{{ currentAddress }}</text>
+      </view>
 
-      <view class="row">纬度：{{ latitude }}</view>
-      <view class="row">经度：{{ longitude }}</view>
-	  <view class="row">地图模式：{{ mapType === 'normal' ? '普通地图' : '卫星地图' }}</view>
-	  
-	  
-	  <view class="address">
-		  <text>当前位置：</text>
-		  <text>{{ currentAddress }}</text>
-	  </view>
-          
       <button class="btn" @click="locateCurrentPosition">
         定位到当前位置
       </button>
@@ -145,7 +146,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, defineExpose } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import { reverseGeocoder } from '@/api/location'
 import {
@@ -164,8 +165,8 @@ const longitude = ref(defaultLongitude)
 const currentAddress = ref('正在获取地址')
 const mapType = ref<'normal' | 'satellite'>('normal')
 
-const isSatellite = computed(()=>{
-	return mapType.value === 'satellite'
+const isSatellite = computed(() => {
+  return mapType.value === 'satellite'
 })
 
 const keyword = ref('')
@@ -178,9 +179,8 @@ const loadingNearby = ref(false)
 const userLatitude = ref<number | null>(null)
 const userLongitude = ref<number | null>(null)
 
-
-function switchMapType(type:'normal' | 'satellite'){
-	mapType.value = type
+function switchMapType(type: 'normal' | 'satellite') {
+  mapType.value = type
 }
 
 const markers = ref([
@@ -211,12 +211,12 @@ function locateCurrentPosition() {
   uni.getLocation({
     type: 'gcj02',
     isHighAccuracy: true,
-    success:async (res) => {
+    success: async (res) => {
       console.log('定位结果：', res.latitude, res.longitude)
 
-	  userLatitude.value = res.latitude
-	  userLongitude.value = res.longitude
-	
+      userLatitude.value = res.latitude
+      userLongitude.value = res.longitude
+
       latitude.value = res.latitude
       longitude.value = res.longitude
 
@@ -230,12 +230,12 @@ function locateCurrentPosition() {
           height: 36,
         }
       ]
-	  
-	  //原有的逆地址解析
-	  await updateAddress(res.latitude, res.longitude)
-	  
-	  await loadNearbySpots(res.latitude, res.longitude)
-	
+
+      // 原有的逆地址解析
+      await updateAddress(res.latitude, res.longitude)
+
+      await loadNearbySpots(res.latitude, res.longitude)
+
       uni.showToast({
         title: '定位成功',
         icon: 'success'
@@ -243,8 +243,12 @@ function locateCurrentPosition() {
     },
     fail: (err) => {
       console.log('定位失败：', err)
-	  }
-})
+    },
+    complete: () => {
+      uni.hideLoading()  // 确保定位 loading 关闭
+    }
+  })
+}
 
 type SelectableSpot = {
   id: number
@@ -295,8 +299,8 @@ function calculateDistance(
   const a =
     Math.sin(latDifference / 2) ** 2 +
     Math.cos(lat1) *
-      Math.cos(lat2) *
-      Math.sin(lngDifference / 2) ** 2
+    Math.cos(lat2) *
+    Math.sin(lngDifference / 2) ** 2
 
   const c = 2 * Math.atan2(
     Math.sqrt(a),
@@ -306,19 +310,19 @@ function calculateDistance(
   return earthRadius * c
 }
 
-async function updateAddress(latitudeValue: number, longitudeValue: number){
-	try{
-		currentAddress.value = '...正在解析地址'
-		
-		const result = await reverseGeocoder(latitudeValue, longitudeValue)
-		
-		currentAddress.value = result.recommendAddress || result.address
-	
-		console.log('当前地址',result)
-	}catch(err){
-		console.log('地址解析失败：',err)
-		currentAddress.value = '地址解析失败'
-	}	
+async function updateAddress(latitudeValue: number, longitudeValue: number) {
+  try {
+    currentAddress.value = '...正在解析地址'
+
+    const result = await reverseGeocoder(latitudeValue, longitudeValue)
+
+    currentAddress.value = result.recommendAddress || result.address
+
+    console.log('当前地址', result)
+  } catch (err) {
+    console.log('地址解析失败：', err)
+    currentAddress.value = '地址解析失败'
+  }
 }
 
 async function handleSearch() {
@@ -338,41 +342,48 @@ async function handleSearch() {
     const spots = await searchScenicSpots(value)
 
     searchResults.value = spots.map((spot) => {
-          let distance: number | undefined
-    
-          if (
-            userLatitude.value !== null &&
-            userLongitude.value !== null
-          ) {
-            distance = calculateDistance(
-              userLatitude.value,
-              userLongitude.value,
-              Number(spot.latitude),
-              Number(spot.longitude)
-            )
-          }
-    
-          return {
-            ...spot,
-            distance
-          }
-        })
-    
-        searchResults.value.sort((a, b) => {
-          return (a.distance ?? Infinity) - (b.distance ?? Infinity)
-        })
-      } catch (error) {
-        console.error('搜索景点失败：', error)
-    
-        uni.showToast({
-          title: '搜索失败',
-          icon: 'none'
-        })
-      } finally {
-        searching.value = false
+      let distance: number | undefined
+
+      if (
+        userLatitude.value !== null &&
+        userLongitude.value !== null
+      ) {
+        distance = calculateDistance(
+          userLatitude.value,
+          userLongitude.value,
+          Number(spot.latitude),
+          Number(spot.longitude)
+        )
       }
+
+      return {
+        ...spot,
+        distance
+      }
+    })
+
+    searchResults.value.sort((a, b) => {
+      return (a.distance ?? Infinity) - (b.distance ?? Infinity)
+    })
+
+    if (searchResults.value.length === 0) {
+      uni.showToast({
+        title: '未找到相关景点',
+        icon: 'none'
+      })
     }
-	
+  } catch (error) {
+    console.error('搜索景点失败：', error)
+
+    uni.showToast({
+      title: '搜索失败',
+      icon: 'none'
+    })
+  } finally {
+    searching.value = false
+  }
+}
+
 async function loadNearbySpots(
   currentLatitude: number,
   currentLongitude: number
@@ -383,7 +394,7 @@ async function loadNearbySpots(
     nearbySpots.value = await getNearbySpots(
       currentLatitude,
       currentLongitude,
-      3
+      10
     )
 
     console.log('最近景点：', nearbySpots.value)
@@ -673,5 +684,9 @@ defineExpose({
   text-align: center;
   color: #999999;
   font-size: 26rpx;
+}
+
+.nearby-scroll{
+	max-height: 420rpx;
 }
 </style>

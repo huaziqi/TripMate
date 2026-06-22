@@ -105,8 +105,21 @@
   box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.12);
 }
 .result-item.data-v-e06b858f {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 22rpx 24rpx;
   border-bottom: 1rpx solid #eeeeee;
+}
+.result-content.data-v-e06b858f {
+  flex: 1;
+  min-width: 0;
+}
+.result-distance.data-v-e06b858f {
+  margin-left: 20rpx;
+  flex-shrink: 0;
+  font-size: 24rpx;
+  color: #1677ff;
 }
 .result-item.data-v-e06b858f:last-child {
   border-bottom: none;
@@ -133,4 +146,78 @@
   margin-top: 8rpx;
   color: #888888;
   font-size: 24rpx;
+}
+.nearby-section.data-v-e06b858f {
+  margin: 20rpx 24rpx;
+  overflow: hidden;
+  border-radius: 20rpx;
+  background: #ffffff;
+  box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+.nearby-header.data-v-e06b858f {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx;
+  border-bottom: 1rpx solid #eeeeee;
+}
+.nearby-title.data-v-e06b858f {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #222222;
+}
+.nearby-loading.data-v-e06b858f {
+  font-size: 24rpx;
+  color: #999999;
+}
+.nearby-item.data-v-e06b858f {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22rpx 24rpx;
+  border-bottom: 1rpx solid #eeeeee;
+}
+.nearby-item.data-v-e06b858f:last-child {
+  border-bottom: none;
+}
+.nearby-main.data-v-e06b858f {
+  flex: 1;
+  min-width: 0;
+}
+.nearby-name-line.data-v-e06b858f {
+  display: flex;
+  align-items: center;
+}
+.nearby-name.data-v-e06b858f {
+  font-size: 29rpx;
+  font-weight: 600;
+  color: #222222;
+}
+.nearest-tag.data-v-e06b858f {
+  margin-left: 12rpx;
+  padding: 3rpx 10rpx;
+  border-radius: 10rpx;
+  background: #fff1e8;
+  color: #ff6b00;
+  font-size: 21rpx;
+}
+.nearby-address.data-v-e06b858f {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #888888;
+}
+.nearby-distance.data-v-e06b858f {
+  margin-left: 20rpx;
+  font-size: 25rpx;
+  color: #1677ff;
+}
+.empty-text.data-v-e06b858f {
+  padding: 30rpx;
+  text-align: center;
+  color: #999999;
+  font-size: 26rpx;
+}
+.nearby-scroll.data-v-e06b858f{
+	max-height: 420rpx;
 }

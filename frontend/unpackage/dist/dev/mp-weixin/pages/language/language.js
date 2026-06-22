@@ -470,10 +470,10 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         a: common_vendor.unref(rpx)(22),
         b: common_vendor.unref(rpx)(22),
         c: currentLocale.value === "zh" ? 1 : "",
-        d: common_vendor.o(($event) => switchUiLang("zh"), "5c"),
+        d: common_vendor.o(($event) => switchUiLang("zh")),
         e: common_vendor.unref(rpx)(22),
         f: currentLocale.value === "en" ? 1 : "",
-        g: common_vendor.o(($event) => switchUiLang("en"), "31"),
+        g: common_vendor.o(($event) => switchUiLang("en")),
         h: common_vendor.f(tabs.value, (tab, k0, i0) => {
           return common_vendor.e({
             a: common_vendor.t(tab.label),
@@ -506,28 +506,28 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         o: common_vendor.t(fromLangInfo.value.flag),
         p: common_vendor.t(fromLangInfo.value.name),
         q: common_vendor.unref(rpx)(26),
-        r: common_vendor.o(($event) => showLangPicker("from"), "e9"),
-        s: common_vendor.o(swapLang, "07"),
+        r: common_vendor.o(($event) => showLangPicker("from")),
+        s: common_vendor.o(swapLang),
         t: common_vendor.t(toLangInfo.value.flag),
         v: common_vendor.t(toLangInfo.value.name),
         w: common_vendor.unref(rpx)(26),
-        x: common_vendor.o(($event) => showLangPicker("to"), "56"),
+        x: common_vendor.o(($event) => showLangPicker("to")),
         y: common_vendor.unref(t)("translate.placeholder"),
         z: inputText.value,
         A: common_vendor.unref(rpx)(28),
-        B: common_vendor.o(onInput, "be"),
+        B: common_vendor.o(onInput),
         C: common_vendor.t(inputText.value.length),
         D: inputText.value.length > 450 ? 1 : "",
         E: common_vendor.unref(rpx)(22),
         F: inputText.value
       }, inputText.value ? {
         G: common_vendor.unref(rpx)(22),
-        H: common_vendor.o(clearInput, "d0")
+        H: common_vendor.o(clearInput)
       } : {}, {
         I: inputText.value
       }, inputText.value ? {
         J: common_vendor.unref(rpx)(22),
-        K: common_vendor.o(pasteFromClipboard, "93")
+        K: common_vendor.o(pasteFromClipboard)
       } : {}, {
         L: translating.value
       }, translating.value ? {} : {}, {
@@ -535,7 +535,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         N: translating.value || !inputText.value.trim(),
         O: translating.value || !inputText.value.trim() ? 1 : "",
         P: common_vendor.unref(rpx)(30),
-        Q: common_vendor.o(doTranslate, "7e"),
+        Q: common_vendor.o(doTranslate),
         R: common_vendor.t(common_vendor.unref(t)("translate.result")),
         S: common_vendor.unref(rpx)(22),
         T: detectedLang.value && fromLang.value === "auto"
@@ -545,10 +545,10 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       } : {}, {
         W: resultText.value
       }, resultText.value ? {
-        X: common_vendor.o(speakResult, "43"),
+        X: common_vendor.o(speakResult),
         Y: common_vendor.t(copied.value ? "✓ " + common_vendor.unref(t)("translate.copied") : common_vendor.unref(t)("translate.copy")),
         Z: common_vendor.unref(rpx)(22),
-        aa: common_vendor.o(copyResult, "f1")
+        aa: common_vendor.o(copyResult)
       } : {}, {
         ab: resultText.value
       }, resultText.value ? {
@@ -570,10 +570,10 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       }, activeTab.value === "phrases" ? common_vendor.e({
         an: phraseSearch.value,
         ao: common_vendor.unref(rpx)(26),
-        ap: common_vendor.o((e) => phraseSearch.value = e.detail.value, "0b"),
+        ap: common_vendor.o((e) => phraseSearch.value = e.detail.value),
         aq: phraseSearch.value
       }, phraseSearch.value ? {
-        ar: common_vendor.o(($event) => phraseSearch.value = "", "16")
+        ar: common_vendor.o(($event) => phraseSearch.value = "")
       } : {}, {
         as: common_vendor.unref(rpx)(24),
         at: common_vendor.f(common_vendor.unref(phraseTargetLangs), (lang, k0, i0) => {
@@ -652,12 +652,12 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         aQ: common_vendor.t(common_vendor.unref(history).length),
         aR: common_vendor.unref(rpx)(24),
         aS: common_vendor.unref(rpx)(24),
-        aT: common_vendor.o(onClearHistory, "a6"),
+        aT: common_vendor.o(onClearHistory),
         aU: historyLangPairs.value.length > 1
       }, historyLangPairs.value.length > 1 ? {
         aV: common_vendor.unref(rpx)(22),
         aW: historyFilter.value === "" ? 1 : "",
-        aX: common_vendor.o(($event) => historyFilter.value = "", "23"),
+        aX: common_vendor.o(($event) => historyFilter.value = ""),
         aY: common_vendor.f(historyLangPairs.value, (pair, k0, i0) => {
           return {
             a: common_vendor.t(pair),
@@ -695,7 +695,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         bj: phraseResult.value
       }, phraseResult.value ? {
         bk: common_vendor.unref(rpx)(28),
-        bl: common_vendor.o(closePhraseResult, "cd"),
+        bl: common_vendor.o(closePhraseResult),
         bm: common_vendor.t(phraseResult.value.source),
         bn: common_vendor.unref(rpx)(28),
         bo: common_vendor.t(langNameByCode(phraseTargetLang.value)),
@@ -704,18 +704,18 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         br: common_vendor.unref(rpx)(34),
         bs: common_vendor.t(phraseCopied.value ? "✓ 已复制" : "📋 复制"),
         bt: common_vendor.unref(rpx)(26),
-        bv: common_vendor.o(copyPhraseResult, "ff"),
+        bv: common_vendor.o(copyPhraseResult),
         bw: common_vendor.unref(rpx)(26),
-        bx: common_vendor.o(usePhraseInText, "f7"),
+        bx: common_vendor.o(usePhraseInText),
         by: common_vendor.o(() => {
-        }, "31"),
-        bz: common_vendor.o(closePhraseResult, "aa")
+        }),
+        bz: common_vendor.o(closePhraseResult)
       } : {}, {
         bA: langPickerVisible.value
       }, langPickerVisible.value ? {
         bB: common_vendor.t(pickerTarget.value === "from" ? "选择源语言" : "选择目标语言"),
         bC: common_vendor.unref(rpx)(28),
-        bD: common_vendor.o(($event) => langPickerVisible.value = false, "39"),
+        bD: common_vendor.o(($event) => langPickerVisible.value = false),
         bE: common_vendor.f(pickerLangs.value, (lang, k0, i0) => {
           return common_vendor.e({
             a: common_vendor.t(lang.flag),
@@ -729,8 +729,8 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         }),
         bF: common_vendor.unref(rpx)(28),
         bG: common_vendor.o(() => {
-        }, "c5"),
-        bH: common_vendor.o(($event) => langPickerVisible.value = false, "f4")
+        }),
+        bH: common_vendor.o(($event) => langPickerVisible.value = false)
       } : {}, {
         bI: common_vendor.p({
           active: "language"

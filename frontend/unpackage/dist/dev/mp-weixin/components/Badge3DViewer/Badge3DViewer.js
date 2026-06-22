@@ -115,9 +115,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     return (_ctx, _cache) => {
       return {
         a: canvasId,
-        b: common_vendor.o(onTouchStart, "5b"),
-        c: common_vendor.o(onTouchMove, "e3"),
-        d: common_vendor.o(onTouchEnd, "5d")
+        b: common_vendor.o(onTouchStart),
+        c: common_vendor.o(onTouchMove),
+        d: common_vendor.o(onTouchEnd)
       };
     };
   }

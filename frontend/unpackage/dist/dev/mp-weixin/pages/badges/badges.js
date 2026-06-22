@@ -81,10 +81,10 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         e: common_vendor.t(total.value),
         f: common_vendor.t(spotBadges.value.length),
         g: activeTab.value === "SPOT" ? 1 : "",
-        h: common_vendor.o(($event) => activeTab.value = "SPOT", "e2"),
+        h: common_vendor.o(($event) => activeTab.value = "SPOT"),
         i: common_vendor.t(achievementBadges.value.length),
         j: activeTab.value === "ACHIEVEMENT" ? 1 : "",
-        k: common_vendor.o(($event) => activeTab.value = "ACHIEVEMENT", "d0"),
+        k: common_vendor.o(($event) => activeTab.value = "ACHIEVEMENT"),
         l: common_vendor.f(currentBadges.value, (badge, k0, i0) => {
           return {
             a: "4c6063a8-0-" + i0,
@@ -111,8 +111,8 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       }, selectedBadge.value.note ? {
         v: common_vendor.t(selectedBadge.value.note)
       } : {}, {
-        w: common_vendor.o(($event) => selectedBadge.value = null, "79"),
-        x: common_vendor.o(($event) => selectedBadge.value = null, "e8")
+        w: common_vendor.o(($event) => selectedBadge.value = null),
+        x: common_vendor.o(($event) => selectedBadge.value = null)
       }) : {}, {
         y: common_vendor.p({
           active: "badges"

@@ -34,6 +34,7 @@ export function searchScenicSpots(
       data: {
         keyword
       },
+	  timeout:500,
       success: (res) => {
         if (
           res.statusCode >= 200 &&
@@ -46,8 +47,11 @@ export function searchScenicSpots(
 
         reject(new Error(`搜索接口异常：${res.statusCode}`))
       },
-      fail: reject
-    })
+      fail: (err) => {
+              console.error('搜索请求失败：', err)
+              reject(err)             // 超时或网络错误都会走到这里
+    }
+	})
   })
 }
 
