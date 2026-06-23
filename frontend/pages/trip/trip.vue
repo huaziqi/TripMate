@@ -101,6 +101,55 @@
 
       <button class="leave-btn" @click="leaveTrip">结束旅途</button>
     </view>
+
+    <!-- ── AI 聊天悬浮按钮 ─────────────────────────────────────────── -->
+    <view class="ai-fab" @click="toggleChat">
+      <text class="ai-fab-icon">🤖</text>
+    </view>
+
+    <!-- ── AI 聊天抽屉 ────────────────────────────────────────────── -->
+    <view v-if="chatOpen" class="chat-drawer">
+      <view class="chat-header">
+        <text class="chat-title">🤖 AI 旅行向导</text>
+        <text class="chat-close" @click="toggleChat">✕</text>
+      </view>
+
+      <scroll-view class="chat-messages" scroll-y :scroll-into-view="scrollTarget">
+        <view v-if="chatMessages.length === 0" class="chat-empty">
+          <text class="chat-empty-text">你好！我是{{ spotName || '景区' }}的AI向导，有什么想了解的吗？</text>
+        </view>
+        <view
+          v-for="(msg, idx) in chatMessages"
+          :key="idx"
+          :id="'msg-' + idx"
+          class="chat-msg"
+          :class="msg.role === 'user' ? 'chat-msg-user' : 'chat-msg-ai'"
+        >
+          <text class="chat-bubble">{{ msg.content }}</text>
+          <view v-if="msg.role === 'assistant' && msg.audioUrl" class="chat-audio-btn" @click="playAudio(msg.audioUrl)">
+            <text>🔊</text>
+          </view>
+        </view>
+        <view v-if="aiLoading" class="chat-msg chat-msg-ai">
+          <text class="chat-bubble chat-thinking">AI 思考中…</text>
+        </view>
+        <view id="chat-bottom" />
+      </scroll-view>
+
+      <view class="chat-input-row">
+        <input
+          class="chat-input"
+          v-model="chatInput"
+          placeholder="问问AI向导…"
+          :disabled="aiLoading"
+          confirm-type="send"
+          @confirm="sendChat"
+        />
+        <view class="chat-send-btn" :class="{ disabled: aiLoading || !chatInput.trim() }" @click="sendChat">
+          <text>发送</text>
+        </view>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -108,6 +157,7 @@
 import { ref, computed, watch, onMounted, onUnmounted, getCurrentInstance, nextTick } from 'vue'
 import { onLoad, onBackPress } from '@dcloudio/uni-app'
 import { setMessageHandler, sendMatch, disconnectMatch } from '@/api/match'
+import { sendTripChat, type ChatMessage } from '@/api/tripChat'
 
 const _inst = getCurrentInstance()
 
@@ -516,6 +566,71 @@ function updateMyLocation() {
   })
 }
 
+// ── AI 聊天 ──────────────────────────────────────────────────────────────────
+interface AiMessage extends ChatMessage {
+  audioUrl?: string
+}
+
+const chatOpen = ref(false)
+const chatInput = ref('')
+const chatMessages = ref<AiMessage[]>([])
+const aiLoading = ref(false)
+const scrollTarget = ref('chat-bottom')
+
+function toggleChat() {
+  chatOpen.value = !chatOpen.value
+}
+
+async function sendChat() {
+  const text = chatInput.value.trim()
+  if (!text || aiLoading.value) return
+
+  chatMessages.value.push({ role: 'user', content: text })
+  chatInput.value = ''
+  aiLoading.value = true
+  scrollTarget.value = 'chat-bottom'
+
+  try {
+    const history: ChatMessage[] = chatMessages.value
+      .slice(-6)
+      .map(m => ({ role: m.role, content: m.content }))
+
+    const res = await sendTripChat({
+      message: text,
+      spotName: spotName.value || '景区',
+      history: history.slice(0, -1), // 最后一条是刚加的 user，不重复传
+    })
+
+    if (res.code === 200) {
+      const aiMsg: AiMessage = {
+        role: 'assistant',
+        content: res.data.text,
+        audioUrl: res.data.audioUrl,
+      }
+      chatMessages.value.push(aiMsg)
+      // 自动播放语音
+      if (res.data.audioUrl) {
+        playAudio(res.data.audioUrl)
+      }
+    } else {
+      chatMessages.value.push({ role: 'assistant', content: res.message || 'AI 暂时无法回答，请稍后再试' })
+    }
+  } catch {
+    chatMessages.value.push({ role: 'assistant', content: '网络异常，请稍后重试' })
+  } finally {
+    aiLoading.value = false
+    scrollTarget.value = 'chat-bottom'
+  }
+}
+
+function playAudio(url: string) {
+  try {
+    const audio = uni.createInnerAudioContext()
+    audio.src = url
+    audio.play()
+  } catch (_) {}
+}
+
 function leaveTrip() {
   uni.showModal({
     title: '结束旅途',
@@ -721,4 +836,120 @@ function haversine(lat1: number, lng1: number, lat2: number, lng2: number): numb
   margin-top: 20rpx; width: 100%; height: 80rpx; line-height: 80rpx;
   background: #1a1a2e; color: #fff; border-radius: 40rpx; font-size: 28rpx; border: none;
 }
+
+/* ── AI 聊天悬浮按钮 ─────────────────────────────────────────────── */
+.ai-fab {
+  position: fixed;
+  right: 32rpx;
+  bottom: 340rpx;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50rpx;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6rpx 24rpx rgba(102, 126, 234, 0.5);
+  z-index: 200;
+}
+.ai-fab-icon { font-size: 48rpx; }
+
+/* ── AI 聊天抽屉 ──────────────────────────────────────────────────── */
+.chat-drawer {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: 60vh;
+  background: #fff;
+  border-radius: 32rpx 32rpx 0 0;
+  box-shadow: 0 -8rpx 40rpx rgba(0,0,0,0.15);
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 32rpx 16rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  flex-shrink: 0;
+}
+.chat-title { font-size: 30rpx; font-weight: 600; color: #1a1a2e; }
+.chat-close { font-size: 36rpx; color: #aaa; padding: 8rpx; }
+
+.chat-messages {
+  flex: 1;
+  padding: 16rpx 24rpx;
+  overflow: hidden;
+}
+
+.chat-empty { padding: 40rpx 0; text-align: center; }
+.chat-empty-text { font-size: 26rpx; color: #999; line-height: 1.6; }
+
+.chat-msg {
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 20rpx;
+  gap: 12rpx;
+}
+.chat-msg-user { flex-direction: row-reverse; }
+.chat-msg-ai { flex-direction: row; }
+
+.chat-bubble {
+  max-width: 70%;
+  padding: 18rpx 24rpx;
+  border-radius: 24rpx;
+  font-size: 26rpx;
+  line-height: 1.6;
+  display: block;
+}
+.chat-msg-user .chat-bubble {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  border-bottom-right-radius: 8rpx;
+}
+.chat-msg-ai .chat-bubble {
+  background: #f5f6fa;
+  color: #333;
+  border-bottom-left-radius: 8rpx;
+}
+.chat-thinking { color: #aaa; font-style: italic; }
+
+.chat-audio-btn {
+  font-size: 32rpx;
+  padding: 8rpx;
+  flex-shrink: 0;
+}
+
+.chat-input-row {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 24rpx;
+  padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
+  border-top: 1rpx solid #f0f0f0;
+  gap: 16rpx;
+  flex-shrink: 0;
+}
+.chat-input {
+  flex: 1;
+  height: 72rpx;
+  background: #f5f6fa;
+  border-radius: 36rpx;
+  padding: 0 28rpx;
+  font-size: 26rpx;
+  color: #333;
+}
+.chat-send-btn {
+  min-width: 100rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  text-align: center;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  border-radius: 36rpx;
+  font-size: 26rpx;
+  padding: 0 24rpx;
+}
+.chat-send-btn.disabled { opacity: 0.5; }
 </style>
