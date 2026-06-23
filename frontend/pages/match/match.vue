@@ -238,7 +238,7 @@ function clearCountdown() {
 </script>
 
 <style scoped>
-.page { min-height: 100vh; background: #f5f6f7; display: flex; flex-direction: column; }
+.page { height: 100vh; background: #f5f6f7; display: flex; flex-direction: column; overflow: hidden; }
 
 .step-select { flex: 1; display: flex; flex-direction: column; }
 .search-bar { padding: 20rpx 24rpx; background: #fff; border-bottom: 1rpx solid #eee; }
@@ -247,7 +247,7 @@ function clearCountdown() {
   border-radius: 36rpx; padding: 0 28rpx;
   font-size: 28rpx; box-sizing: border-box;
 }
-.spot-list { flex: 1; }
+.spot-list { flex: 1; overflow: hidden; }
 .hint { text-align: center; color: #aaa; font-size: 28rpx; padding: 60rpx 0; }
 .spot-item {
   background: #fff; margin: 16rpx 24rpx; padding: 28rpx 32rpx;
@@ -256,7 +256,13 @@ function clearCountdown() {
 .spot-item.selected { border-color: #ff6b35; background: #fff8f5; }
 .spot-name { font-size: 30rpx; font-weight: 600; color: #222; display: block; }
 .spot-region { font-size: 24rpx; color: #888; margin-top: 6rpx; display: block; }
-.bottom-bar { padding: 24rpx; background: #fff; border-top: 1rpx solid #eee; }
+.bottom-bar {
+  padding: 24rpx;
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  background: #fff;
+  border-top: 1rpx solid #eee;
+  flex-shrink: 0;
+}
 .start-btn {
   width: 100%; height: 88rpx; line-height: 88rpx;
   background: linear-gradient(135deg, #ff6b35, #f7931e);
