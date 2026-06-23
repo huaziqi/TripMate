@@ -6,7 +6,7 @@
     <swiper v-if="post && post.imageUrls && post.imageUrls.length > 0"
       class="swiper" indicator-dots autoplay circular>
       <swiper-item v-for="(url, i) in post.imageUrls" :key="i">
-        <image class="swiper-img" :src="url" mode="aspectFill" />
+        <image class="swiper-img" :src="url" mode="aspectFill" @error="() => {}" />
       </swiper-item>
     </swiper>
 

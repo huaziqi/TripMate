@@ -11,15 +11,17 @@ const NORMAL_SCALE    = 1
 const isElderMode = ref<boolean>(false)
 const fontScale   = ref<number>(NORMAL_SCALE)
 
-// 应用启动时从持久化存储中恢复状态
-try {
-  const stored = uni.getStorageSync(ELDER_MODE_KEY)
-  if (stored === true) {
-    isElderMode.value = true
-    fontScale.value   = ELDER_SCALE
+// 由 App.vue onLaunch 调用，bridge 就绪后再读取持久化状态
+export function initElder() {
+  try {
+    const stored = uni.getStorageSync(ELDER_MODE_KEY)
+    if (stored === true) {
+      isElderMode.value = true
+      fontScale.value   = ELDER_SCALE
+    }
+  } catch {
+    // 读取失败时保持默认值
   }
-} catch {
-  // 读取失败时保持默认值，不影响正常使用
 }
 
 // ----------------------------------------------------------------

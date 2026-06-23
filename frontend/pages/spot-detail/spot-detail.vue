@@ -12,10 +12,11 @@
       <!-- 顶部图片区域 -->
       <view class="cover">
         <image
-          v-if="spot.imageUrl"
+          v-if="spot.imageUrl && !coverError"
           class="cover-image"
           :src="spot.imageUrl"
           mode="aspectFill"
+          @error="coverError = true"
         />
 
         <view v-else class="cover-placeholder">
@@ -104,6 +105,7 @@ import { useAuth } from '@/composables/useAuth'
 
 const loading = ref(false)
 const spot = ref<ScenicSpot | null>(null)
+const coverError = ref(false)
 const isFavorited = ref(false)
 const { authState, login } = useAuth()
 
