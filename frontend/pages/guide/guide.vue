@@ -104,7 +104,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
+import { onShow } from '@dcloudio/uni-app'
 import TabBar from '@/components/TabBar/TabBar.vue'
 import { fetchPosts, type PostItem } from '@/api/post'
 import { useAuth } from '@/composables/useAuth'
@@ -133,7 +134,7 @@ const loading = ref(false)
 const noMore = ref(false)
 const refreshing = ref(false)
 
-onMounted(() => load(true))
+onShow(() => load(true))
 
 function onCategory(v: string) {
   if (activeCategory.value === v) return
@@ -153,8 +154,9 @@ async function load(reset = false) {
   if (noMore.value) return
   loading.value = true
   try {
-    const category = activeCategory.value === 'ALL' ? undefined : activeCategory.value
-    const res = await fetchPosts({ category, sort: sort.value, page: page.value, size: 10 })
+    const params: Record<string, any> = { sort: sort.value, page: page.value, size: 10 }
+    if (activeCategory.value !== 'ALL') params.category = activeCategory.value
+    const res = await fetchPosts(params)
     if (res.code === 200) {
       const items = res.data.items
       posts.value = reset ? items : [...posts.value, ...items]

@@ -48,7 +48,7 @@ public class PostServiceImpl implements PostService {
                 : Sort.by(Sort.Order.desc("createdAt"));
         Pageable pageable = PageRequest.of(page, size, s);
 
-        Page<Post> posts = (category == null || category.isBlank() || "ALL".equals(category))
+        Page<Post> posts = (category == null || category.isBlank() || "ALL".equals(category) || "undefined".equals(category))
                 ? postRepo.findByStatus("PUBLISHED", pageable)
                 : postRepo.findByStatusAndCategory("PUBLISHED", category, pageable);
 
