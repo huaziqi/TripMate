@@ -10,9 +10,11 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import tools.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/guide")
@@ -20,6 +22,7 @@ import java.util.List;
 public class GuideChatController {
 
     private final GuideService guideService;
+    private final ObjectMapper objectMapper;
 
     @GetMapping("/{spotKey}/history")
     public Result<List<GuideMessageDTO>> history(
@@ -37,8 +40,8 @@ public class GuideChatController {
         if (request.getMessage() == null || request.getMessage().isBlank()) {
             SseEmitter emitter = new SseEmitter();
             try {
-                emitter.send(SseEmitter.event().data("{\"error\":\"消息不能为空\"}"));
-            } catch (IOException ignored) {}
+                emitter.send(SseEmitter.event().data(objectMapper.writeValueAsString(Map.of("error", "消息不能为空"))));
+            } catch (Exception ignored) {}
             emitter.complete();
             return emitter;
         }
@@ -51,8 +54,8 @@ public class GuideChatController {
         } catch (RuntimeException e) {
             SseEmitter emitter = new SseEmitter();
             try {
-                emitter.send(SseEmitter.event().data("{\"error\":\"" + e.getMessage() + "\"}"));
-            } catch (IOException ignored) {}
+                emitter.send(SseEmitter.event().data(objectMapper.writeValueAsString(Map.of("error", e.getMessage()))));
+            } catch (Exception ignored) {}
             emitter.complete();
             return emitter;
         }

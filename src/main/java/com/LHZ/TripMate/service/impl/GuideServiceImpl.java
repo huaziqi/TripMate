@@ -10,6 +10,7 @@ import com.LHZ.TripMate.repository.GuideSpotConfigRepository;
 import com.LHZ.TripMate.service.DeepSeekClient;
 import com.LHZ.TripMate.service.GuideService;
 import tools.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +43,8 @@ public class GuideServiceImpl implements GuideService {
     public List<GuideMessageDTO> getHistory(Long userId, String spotKey) {
         return sessionRepo.findByUserIdAndSpotKey(userId, spotKey)
                 .map(session -> {
-                    List<GuideMessage> msgs =
-                            messageRepo.findTop20BySessionIdOrderByCreatedAtDesc(session.getId());
+                    List<GuideMessage> msgs = new ArrayList<>(
+                            messageRepo.findTop20BySessionIdOrderByCreatedAtDesc(session.getId()));
                     Collections.reverse(msgs);
                     return msgs.stream().map(this::toDTO).toList();
                 })
@@ -72,8 +73,8 @@ public class GuideServiceImpl implements GuideService {
         messageRepo.save(userMsg);
 
         // 取最近 20 条（含刚保存的），倒序→时序
-        List<GuideMessage> history =
-                messageRepo.findTop20BySessionIdOrderByCreatedAtDesc(session.getId());
+        List<GuideMessage> history = new ArrayList<>(
+                messageRepo.findTop20BySessionIdOrderByCreatedAtDesc(session.getId()));
         Collections.reverse(history);
 
         List<Map<String, Object>> messages = buildMessages(buildSystemPrompt(config), history);
@@ -121,6 +122,7 @@ public class GuideServiceImpl implements GuideService {
     }
 
     @Override
+    @Transactional
     public void clearHistory(Long userId, String spotKey) {
         sessionRepo.findByUserIdAndSpotKey(userId, spotKey)
                 .ifPresent(session -> messageRepo.deleteBySessionId(session.getId()));
