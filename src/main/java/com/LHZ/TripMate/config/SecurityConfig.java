@@ -51,6 +51,8 @@ public class SecurityConfig {
                                 "/api/history/**"
                         ).hasRole("WX_USER")
 
+                        .requestMatchers("/api/guide/**").hasRole("WX_USER")
+
                         .requestMatchers(HttpMethod.GET, "/api/posts/my", "/api/posts/my/favorites").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/posts", "/api/posts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/users/*/stats").permitAll()
