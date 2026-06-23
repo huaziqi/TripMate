@@ -98,15 +98,21 @@ public class GuideServiceImpl implements GuideService {
                             messageRepo.save(assistantMsg);
                             emitter.send(SseEmitter.event()
                                     .data(objectMapper.writeValueAsString(Map.of("done", true))));
-                        } catch (Exception ignored) {}
-                        emitter.complete();
+                            emitter.complete();
+                        } catch (Exception e) {
+                            log.warn("guide onComplete error", e);
+                            emitter.complete();
+                        }
                     },
                     error -> {
                         try {
                             emitter.send(SseEmitter.event()
                                     .data(objectMapper.writeValueAsString(Map.of("error", error))));
-                        } catch (Exception ignored) {}
-                        emitter.complete();
+                            emitter.complete();
+                        } catch (Exception e) {
+                            log.warn("guide onError send failed", e);
+                            emitter.complete();
+                        }
                     }
             );
         });
