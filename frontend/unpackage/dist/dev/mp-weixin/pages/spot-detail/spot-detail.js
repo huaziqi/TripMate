@@ -106,7 +106,8 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     function handleImageError(error) {
       var _a;
       imageLoadFailed.value = true;
-      common_vendor.index.__f__("error", "at pages/spot-detail/spot-detail.vue:233", "图片加载失败：", (_a = spot.value) == null ? void 0 : _a.imageUrl, error);
+      coverError.value = true;
+      common_vendor.index.__f__("error", "at pages/spot-detail/spot-detail.vue:234", "图片加载失败：", (_a = spot.value) == null ? void 0 : _a.imageUrl, error);
     }
     function buildGuideText() {
       if (!spot.value) {
@@ -175,11 +176,11 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           });
           return;
         }
-        common_vendor.index.__f__("log", "at pages/spot-detail/spot-detail.vue:321", "TTS导览文本：", guideText);
+        common_vendor.index.__f__("log", "at pages/spot-detail/spot-detail.vue:322", "TTS导览文本：", guideText);
         const result = await api_tts.synthesizeSpeech(guideText);
         const audioUrl = (result == null ? void 0 : result.audioUrl) || ((_a = result == null ? void 0 : result.data) == null ? void 0 : _a.audioUrl);
-        common_vendor.index.__f__("log", "at pages/spot-detail/spot-detail.vue:326", "TTS返回结果：", result);
-        common_vendor.index.__f__("log", "at pages/spot-detail/spot-detail.vue:327", "TTS音频地址：", audioUrl);
+        common_vendor.index.__f__("log", "at pages/spot-detail/spot-detail.vue:327", "TTS返回结果：", result);
+        common_vendor.index.__f__("log", "at pages/spot-detail/spot-detail.vue:328", "TTS音频地址：", audioUrl);
         if (!audioUrl) {
           common_vendor.index.showToast({
             title: "未获取到音频",
@@ -193,18 +194,18 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         ctx.autoplay = false;
         ctx.onPlay(() => {
           isPlaying.value = true;
-          common_vendor.index.__f__("log", "at pages/spot-detail/spot-detail.vue:345", "开始播放景点导览");
+          common_vendor.index.__f__("log", "at pages/spot-detail/spot-detail.vue:346", "开始播放景点导览");
         });
         ctx.onPause(() => {
           isPlaying.value = false;
-          common_vendor.index.__f__("log", "at pages/spot-detail/spot-detail.vue:350", "暂停景点导览");
+          common_vendor.index.__f__("log", "at pages/spot-detail/spot-detail.vue:351", "暂停景点导览");
         });
         ctx.onEnded(() => {
           isPlaying.value = false;
-          common_vendor.index.__f__("log", "at pages/spot-detail/spot-detail.vue:355", "景点导览播放结束");
+          common_vendor.index.__f__("log", "at pages/spot-detail/spot-detail.vue:356", "景点导览播放结束");
         });
         ctx.onError((error) => {
-          common_vendor.index.__f__("error", "at pages/spot-detail/spot-detail.vue:359", "景点导览播放失败：", error);
+          common_vendor.index.__f__("error", "at pages/spot-detail/spot-detail.vue:360", "景点导览播放失败：", error);
           isPlaying.value = false;
           common_vendor.index.showToast({
             title: "音频播放失败",
@@ -214,7 +215,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         audioContext.value = ctx;
         ctx.play();
       } catch (error) {
-        common_vendor.index.__f__("error", "at pages/spot-detail/spot-detail.vue:372", "生成或播放导览失败：", error);
+        common_vendor.index.__f__("error", "at pages/spot-detail/spot-detail.vue:373", "生成或播放导览失败：", error);
         common_vendor.index.showToast({
           title: "导览生成失败",
           icon: "none"
@@ -275,7 +276,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
               `收藏了景点：${spot.value.name}`
             );
           } catch (historyError) {
-            common_vendor.index.__f__("warn", "at pages/spot-detail/spot-detail.vue:443", "收藏成功，但记录历史失败：", historyError);
+            common_vendor.index.__f__("warn", "at pages/spot-detail/spot-detail.vue:444", "收藏成功，但记录历史失败：", historyError);
           }
           common_vendor.index.showToast({
             title: "收藏成功",
@@ -283,7 +284,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           });
         }
       } catch (error) {
-        common_vendor.index.__f__("error", "at pages/spot-detail/spot-detail.vue:452", "收藏操作失败：", error);
+        common_vendor.index.__f__("error", "at pages/spot-detail/spot-detail.vue:453", "收藏操作失败：", error);
         common_vendor.index.showToast({
           title: "收藏失败，请重新登录",
           icon: "none"
