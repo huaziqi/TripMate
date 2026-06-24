@@ -38,7 +38,7 @@ upload:
 deepseek:
   api:
     url: https://api.deepseek.com/chat/completions
-    key: sk-7e9559bd81fd4bf3a3fb3f283ca25b42
+    key: sk-2de3188867fe40049fe8d24446a09fa9
     model: deepseek-chat
 tencent:
   tts:

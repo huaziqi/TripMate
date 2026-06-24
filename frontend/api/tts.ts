@@ -7,6 +7,15 @@ export interface TtsResult {
   sessionId: string
 }
 
-export function synthesizeSpeech(text: string, lang: string) {
-  return post<TtsResult>('/api/tts/synthesize', { text, lang })
+export interface TtsRequest {
+  text: string
+  lang?: string
+  voiceType?: number
+  speed?: number
+  volume?: number
+  pitch?: number
+}
+
+export function synthesizeSpeech(payload: TtsRequest) {
+  return post<TtsResult>('/api/tts/synthesize', payload)
 }

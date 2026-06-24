@@ -35,9 +35,7 @@ Component({
 
     ready() {
       if (this.properties.autoInit) {
-        setTimeout(() => {
-          this.initLive2D();
-        }, 150);
+        this.initLive2D();
       }
     },
 
@@ -49,15 +47,14 @@ Component({
 
   methods: {
     async initLive2D() {
-      if (this._initing || this.live2dPlayer || this._destroyed) {
+      if (this._initing || this.live2dPlayer) {
         return this.live2dPlayer;
       }
 
       this._initing = true;
 
       try {
-        const canvas = await this.getCanvasNodeWithRetry(6, 120);
-
+        const canvas = await this.getCanvasNode();
         if (!canvas || this._destroyed) {
           this._initing = false;
           return null;
@@ -90,44 +87,15 @@ Component({
 
     getCanvasNode() {
       return new Promise((resolve, reject) => {
-        const query = this.createSelectorQuery().in(this);
-
-        query
-          .select("#live2dCanvas")
-          .fields({ node: true, size: true })
-          .exec((res) => {
-            console.log("[live2d-view] canvas query result:", res);
-
-            const item = res && res[0];
-            const canvas = item && item.node;
-
-            if (!canvas) {
-              reject(new Error("Live2D canvas node not found"));
-              return;
-            }
-
-            resolve(canvas);
-          });
-      });
-    },
-
-    async getCanvasNodeWithRetry(retryCount = 6, delay = 120) {
-      let lastError = null;
-
-      for (let i = 0; i < retryCount; i++) {
-        try {
-          const canvas = await this.getCanvasNode();
-          if (canvas) {
-            return canvas;
+        const query = this.createSelectorQuery();
+        query.select("#live2dCanvas").node().exec((res) => {
+          if (!res || !res[0] || !res[0].node) {
+            reject(new Error("Live2D canvas node not found"));
+            return;
           }
-        } catch (err) {
-          lastError = err;
-        }
-
-        await new Promise((resolve) => setTimeout(resolve, delay));
-      }
-
-      throw lastError || new Error("Live2D canvas node not found");
+          resolve(res[0].node);
+        });
+      });
     },
 
     handleTouch(e) {
@@ -153,6 +121,104 @@ Component({
       if (this.live2dPlayer) {
         this.live2dPlayer.setModelScale(scaleBase);
       }
+    },
+
+    updateModelParam(paramId, value, clamp = true) {
+      if (!this.live2dPlayer) return false;
+      return this.live2dPlayer.updateModelParam(paramId, value, clamp);
+    },
+
+    updateModelParams(params, clamp = true) {
+      if (!this.live2dPlayer) return false;
+      return this.live2dPlayer.updateModelParams(params, clamp);
+    },
+
+    addModelParam(paramId, delta, clamp = true) {
+      if (!this.live2dPlayer) return false;
+      return this.live2dPlayer.addModelParam(paramId, delta, clamp);
+    },
+
+    addModelParams(params, clamp = true) {
+      if (!this.live2dPlayer) return false;
+      return this.live2dPlayer.addModelParams(params, clamp);
+    },
+
+    getModelParam(paramId) {
+      if (!this.live2dPlayer) return null;
+      return this.live2dPlayer.getModelParam(paramId);
+    },
+
+    getModelParamInfo(paramId) {
+      if (!this.live2dPlayer) return null;
+      return this.live2dPlayer.getModelParamInfo(paramId);
+    },
+
+    listModelParameters() {
+      if (!this.live2dPlayer) return [];
+      return this.live2dPlayer.listModelParameters();
+    },
+
+    resetModelParam(paramId) {
+      if (!this.live2dPlayer) return false;
+      return this.live2dPlayer.resetModelParam(paramId);
+    },
+
+    resetModelParams(paramIds) {
+      if (!this.live2dPlayer) return false;
+      return this.live2dPlayer.resetModelParams(paramIds);
+    },
+
+    lookTo(x, y) {
+      if (!this.live2dPlayer) return false;
+      return this.live2dPlayer.lookTo(x, y);
+    },
+
+    speakOnce(level = 1, duration = 300) {
+      if (!this.live2dPlayer) return;
+      this.live2dPlayer.speakOnce(level, duration);
+    },
+	animateModelParam(paramId, toValue, options = {}) {
+	  if (!this.live2dPlayer) return Promise.resolve(false);
+	  return this.live2dPlayer.animateModelParam(paramId, toValue, options);
+	},
+
+	animateModelParams(params, options = {}) {
+	  if (!this.live2dPlayer) return Promise.resolve([]);
+	  return this.live2dPlayer.animateModelParams(params, options);
+	},
+
+	stopModelParamAnimation(paramId) {
+	  if (!this.live2dPlayer) return false;
+	  return this.live2dPlayer.stopModelParamAnimation(paramId);
+	},
+
+	stopAllModelAnimations() {
+	  if (!this.live2dPlayer) return false;
+	  return this.live2dPlayer.stopAllModelAnimations();
+	},
+
+	blinkOnce(duration = 160) {
+	  if (!this.live2dPlayer) return Promise.resolve(false);
+	  return this.live2dPlayer.blinkOnce(duration);
+	},
+
+	playSendAction() {
+	  if (!this.live2dPlayer) return Promise.resolve(false);
+	  return this.live2dPlayer.playSendAction();
+	},
+
+	startTalking(duration = 2000, options = {}) {
+	  if (!this.live2dPlayer) return Promise.resolve(false);
+	  return this.live2dPlayer.startTalking(duration, options);
+	},
+
+	stopTalking() {
+	  if (!this.live2dPlayer) return false;
+	  return this.live2dPlayer.stopTalking();
+	},
+    inspectModel() {
+      if (!this.live2dPlayer) return;
+      this.live2dPlayer.inspectModel();
     }
   }
 });

@@ -74,7 +74,7 @@ public class TtsServiceImpl implements TtsService {
             Long primaryLanguage;
             switch (lang) {
                 case "zh" -> {
-                    voiceType = 101001L;
+                    voiceType = 601009L;
                     primaryLanguage = 1L;
                 }
                 case "en" -> {
@@ -92,7 +92,7 @@ public class TtsServiceImpl implements TtsService {
             ttsRequest.setSampleRate(sampleRate);
             ttsRequest.setPrimaryLanguage(primaryLanguage);
             ttsRequest.setModelType(1L);
-            ttsRequest.setSpeed(0F);
+            ttsRequest.setSpeed(0.3F);
             ttsRequest.setVolume(0F);
 
             TextToVoiceResponse response = client.TextToVoice(ttsRequest);

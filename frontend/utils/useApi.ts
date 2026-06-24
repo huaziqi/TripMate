@@ -1,8 +1,8 @@
 ﻿// 后端接口基础地址，开发时指向本地 Spring Boot 服务
-const BASE_URL = 'http://localhost:8080'
+export const BASE_URL = 'http://localhost:8080'
 
 // 统一响应结构（与后端约定保持一致）
-interface ApiResponse<T = any> {
+export interface ApiResponse<T = any> {
   code: number
   message: string
   data: T
@@ -15,16 +15,18 @@ interface RequestOptions {
   withToken?: boolean
 }
 
+type HttpMethod = 'GET' | 'POST' | 'DELETE' | 'PUT'
+
 // 封装底层 uni.request，返回 Promise
 function request<T = any>(
-  method: 'GET' | 'POST',
+  method: HttpMethod,
   url: string,
   data?: Record<string, any>,
   options: RequestOptions = {}
 ): Promise<ApiResponse<T>> {
   const { headers = {}, withToken = true } = options
 
-  // 自动携带 token（存储在 storage 中）
+  // 自动携带 token
   if (withToken) {
     const token = uni.getStorageSync('token')
     if (token) {
@@ -44,11 +46,19 @@ function request<T = any>(
       success: (res) => {
         const result = res.data as ApiResponse<T>
 
-        // HTTP 层面成功，再判断业务状态码
         if (res.statusCode === 200) {
+          // 后端 Result.code 不是 200 时，也认为业务失败
+          if (result && typeof result.code === 'number' && result.code !== 200) {
+            uni.showToast({
+              title: result.message || '请求失败',
+              icon: 'none'
+            })
+            reject(new Error(result.message || '请求失败'))
+            return
+          }
+
           resolve(result)
         } else if (res.statusCode === 401) {
-          // token 过期或未登录
           uni.removeStorageSync('token')
           uni.showToast({ title: '请重新登录', icon: 'none' })
           reject(new Error('未授权'))
@@ -70,27 +80,14 @@ function request<T = any>(
 
 // 对外暴露的 useApi composable
 export function useApi() {
-  /**
-   * GET 请求
-   * @param url    接口路径，如 '/api/user/info'
-   * @param params 查询参数（拼到 url query）
-   * @param options 额外选项
-   */
   function get<T = any>(
     url: string,
     params?: Record<string, any>,
     options?: RequestOptions
   ): Promise<ApiResponse<T>> {
-    // uni.request GET 时 data 会自动序列化为 query string
     return request<T>('GET', url, params, options)
   }
 
-  /**
-   * POST 请求
-   * @param url  接口路径，如 '/api/user/login'
-   * @param body 请求体（JSON）
-   * @param options 额外选项
-   */
   function post<T = any>(
     url: string,
     body?: Record<string, any>,
@@ -99,12 +96,26 @@ export function useApi() {
     return request<T>('POST', url, body, options)
   }
 
-  function del<T = any>(
+  function put<T = any>(
     url: string,
+    body?: Record<string, any>,
     options?: RequestOptions
   ): Promise<ApiResponse<T>> {
-    return request<T>('POST', url + '/delete', undefined, options)
+    return request<T>('PUT', url, body, options)
   }
 
-  return { get, post, del }
+  function del<T = any>(
+    url: string,
+    data?: Record<string, any>,
+    options?: RequestOptions
+  ): Promise<ApiResponse<T>> {
+    return request<T>('DELETE', url, data, options)
+  }
+
+  return {
+    get,
+    post,
+    put,
+    del
+  }
 }

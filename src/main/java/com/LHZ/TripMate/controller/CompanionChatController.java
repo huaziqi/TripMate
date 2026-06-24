@@ -47,6 +47,7 @@ public class CompanionChatController {
         try {
             return companionService.chat(
                     request.getMessage().trim(),
+                    request.getHistory(),
                     userDetails.getWxUser().getId());
         } catch (RuntimeException e) {
             SseEmitter emitter = new SseEmitter();
