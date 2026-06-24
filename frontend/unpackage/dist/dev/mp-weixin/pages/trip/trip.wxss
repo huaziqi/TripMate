@@ -238,6 +238,9 @@ to   { opacity: 1; transform: translateY(0) scale(1);
   font-size: 26rpx;
   line-height: 1.6;
   display: block;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
 }
 .chat-msg-user .chat-bubble.data-v-b49b36a1 {
   background: linear-gradient(135deg, #667eea, #764ba2);

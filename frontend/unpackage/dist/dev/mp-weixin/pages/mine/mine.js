@@ -92,37 +92,37 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       }, !common_vendor.unref(authState).isLoggedIn ? {
         b: common_vendor.unref(rpx)(28),
         c: common_vendor.unref(rpx)(30),
-        d: common_vendor.o(handleLogin)
+        d: common_vendor.o(handleLogin, "9a")
       } : common_vendor.e({
         e: (_a = common_vendor.unref(authState).userInfo) == null ? void 0 : _a.avatarUrl
       }, ((_b = common_vendor.unref(authState).userInfo) == null ? void 0 : _b.avatarUrl) ? {
         f: common_vendor.unref(authState).userInfo.avatarUrl
       } : {}, {
-        g: common_vendor.o(onChooseAvatar),
+        g: common_vendor.o(onChooseAvatar, "a3"),
         h: ((_c = common_vendor.unref(authState).userInfo) == null ? void 0 : _c.nickname) || "微信用户",
         i: common_vendor.unref(rpx)(34),
-        j: common_vendor.o(onNicknameBlur),
+        j: common_vendor.o(onNicknameBlur, "f1"),
         k: common_vendor.t((_e = (_d = common_vendor.unref(authState).userInfo) == null ? void 0 : _d.openid) == null ? void 0 : _e.slice(0, 12)),
         l: common_vendor.unref(rpx)(22),
         m: common_vendor.unref(rpx)(28),
-        n: common_vendor.o(onNotifications),
+        n: common_vendor.o(onNotifications, "3e"),
         o: common_vendor.unref(rpx)(28),
-        p: common_vendor.o(onMyPosts),
+        p: common_vendor.o(onMyPosts, "59"),
         q: common_vendor.unref(rpx)(28),
-        r: common_vendor.o(onHistory),
+        r: common_vendor.o(onHistory, "3e"),
         s: common_vendor.unref(rpx)(28),
-        t: common_vendor.o(onCollect),
+        t: common_vendor.o(onCollect, "86"),
         v: common_vendor.unref(rpx)(28),
-        w: common_vendor.o(onSpotFavorites),
+        w: common_vendor.o(onSpotFavorites, "ec"),
         x: common_vendor.unref(rpx)(28),
-        y: common_vendor.o(onLanguage),
+        y: common_vendor.o(onLanguage, "8f"),
         z: common_vendor.unref(rpx)(28),
         A: common_vendor.unref(isElderMode),
-        B: common_vendor.o(onElderToggle),
+        B: common_vendor.o(onElderToggle, "76"),
         C: common_vendor.unref(rpx)(28),
-        D: common_vendor.o(onAbout),
+        D: common_vendor.o(onAbout, "3c"),
         E: common_vendor.unref(rpx)(28),
-        F: common_vendor.o(handleLogout)
+        F: common_vendor.o(handleLogout, "fd")
       }), {
         G: common_vendor.p({
           active: "mine"

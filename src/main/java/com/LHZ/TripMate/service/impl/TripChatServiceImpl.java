@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientResponseException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
@@ -59,12 +60,18 @@ public class TripChatServiceImpl implements TripChatService {
         // TTS 长度限制
         String ttsText = aiText.length() > MAX_TTS_LEN ? aiText.substring(0, MAX_TTS_LEN) : aiText;
 
-        // 合成语音
-        TtsRequestDTO ttsReq = new TtsRequestDTO();
-        ttsReq.setText(ttsText);
-        TtsResponseDTO ttsRes = ttsService.synthesize(ttsReq);
+        // 合成语音（失败不影响文字回复）
+        String audioUrl = null;
+        try {
+            TtsRequestDTO ttsReq = new TtsRequestDTO();
+            ttsReq.setText(ttsText);
+            TtsResponseDTO ttsRes = ttsService.synthesize(ttsReq);
+            audioUrl = ttsRes.getAudioUrl();
+        } catch (Exception e) {
+            log.warn("TTS 合成失败，仅返回文字: {}", e.getMessage());
+        }
 
-        return new TripChatResponseDTO(aiText, ttsRes.getAudioUrl());
+        return new TripChatResponseDTO(aiText, audioUrl);
     }
 
     private String callDeepSeek(List<Map<String, Object>> messages) {
@@ -88,6 +95,9 @@ public class TripChatServiceImpl implements TripChatService {
 
             JsonNode root = objectMapper.readTree(responseBody);
             return root.path("choices").path(0).path("message").path("content").asText("抱歉，我暂时无法回答。");
+        } catch (RestClientResponseException e) {
+            log.error("DeepSeek API 返回错误 HTTP {}: {}", e.getStatusCode(), e.getResponseBodyAsString());
+            throw new RuntimeException("AI 服务暂时不可用，请稍后再试");
         } catch (Exception e) {
             log.error("DeepSeek call failed", e);
             throw new RuntimeException("AI 服务暂时不可用，请稍后再试");

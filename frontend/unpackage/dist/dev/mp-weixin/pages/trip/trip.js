@@ -9,6 +9,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const spotName = common_vendor.ref("");
     const partnerNickname = common_vendor.ref("");
     const spotId = common_vendor.ref(0);
+    const isSolo = common_vendor.ref(false);
     const myLat = common_vendor.ref(29.8266);
     const myLng = common_vendor.ref(106.422);
     const partnerLat = common_vendor.ref(null);
@@ -58,7 +59,10 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const showChallenges = common_vendor.ref(false);
     let popupDismissTimer = null;
     let partnerLocationCount = 0;
-    const completedCount = common_vendor.computed(() => challenges.value.filter((c) => c.completed).length);
+    const visibleChallenges = common_vendor.computed(
+      () => isSolo.value ? challenges.value.filter((c) => !["near_partner", "partner_active"].includes(c.id)) : challenges.value
+    );
+    const completedCount = common_vendor.computed(() => visibleChallenges.value.filter((c) => c.completed).length);
     function checkAndComplete(id) {
       const task = challenges.value.find((c) => c.id === id);
       if (!task || task.completed)
@@ -161,7 +165,8 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     let lastRegionKey = "";
     let regionPollTimer = null;
     common_vendor.onMounted(() => {
-      api_match.setMessageHandler(onWsMessage);
+      if (!isSolo.value)
+        api_match.setMessageHandler(onWsMessage);
       updateMyLocation();
       locationTimer = setInterval(updateMyLocation, 3e3);
       common_vendor.nextTick$1(() => initCanvas());
@@ -192,12 +197,14 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         clearInterval(regionPollTimer);
       if (popupDismissTimer)
         clearTimeout(popupDismissTimer);
-      api_match.disconnectMatch();
+      if (!isSolo.value)
+        api_match.disconnectMatch();
     });
     common_vendor.onLoad((query) => {
       spotId.value = Number((query == null ? void 0 : query.spotId) ?? 0);
       spotName.value = decodeURIComponent((query == null ? void 0 : query.spotName) ?? "");
       partnerNickname.value = decodeURIComponent((query == null ? void 0 : query.partnerNickname) ?? "搭子");
+      isSolo.value = (query == null ? void 0 : query.solo) === "true";
     });
     function fetchRegion() {
       mapCtx == null ? void 0 : mapCtx.getRegion({
@@ -290,7 +297,8 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       myStrokes.value = [...myStrokes.value, stroke];
       updatePolylines();
       redrawAllStrokes();
-      api_match.sendMatch("drawStroke", { id: stroke.id, points: stroke.points });
+      if (!isSolo.value)
+        api_match.sendMatch("drawStroke", { id: stroke.id, points: stroke.points });
       const n = myStrokes.value.length;
       if (n >= 1)
         checkAndComplete("first_stroke");
@@ -305,7 +313,8 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             myStrokes.value = myStrokes.value.filter((s) => s.id !== stroke.id);
             updatePolylines();
             redrawAllStrokes();
-            api_match.sendMatch("eraseStroke", { id: stroke.id });
+            if (!isSolo.value)
+              api_match.sendMatch("eraseStroke", { id: stroke.id });
             return;
           }
         }
@@ -316,7 +325,8 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       myStrokes.value = [];
       updatePolylines();
       redrawAllStrokes();
-      ids.forEach((id) => api_match.sendMatch("eraseStroke", { id }));
+      if (!isSolo.value)
+        ids.forEach((id) => api_match.sendMatch("eraseStroke", { id }));
     }
     function onWsMessage(msg) {
       switch (msg.type) {
@@ -362,7 +372,8 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           }
           myLat.value = res.latitude;
           myLng.value = res.longitude;
-          api_match.sendMatch("location", { latitude: res.latitude, longitude: res.longitude });
+          if (!isSolo.value)
+            api_match.sendMatch("location", { latitude: res.latitude, longitude: res.longitude });
           if (startLat !== null && startLng !== null) {
             const moved = haversine(startLat, startLng, res.latitude, res.longitude);
             if (moved > 200)
@@ -431,8 +442,10 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         confirmColor: "#e53935",
         success: (res) => {
           if (res.confirm) {
-            api_match.sendMatch("leave");
-            api_match.disconnectMatch();
+            if (!isSolo.value) {
+              api_match.sendMatch("leave");
+              api_match.disconnectMatch();
+            }
             common_vendor.index.redirectTo({ url: "/pages/index/index" });
           }
         }
@@ -461,29 +474,32 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         f: myLng.value,
         g: markers.value,
         h: mapPolylines.value,
-        i: common_vendor.o(onRegionChange),
+        i: common_vendor.o(onRegionChange, "99"),
         j: common_vendor.s(toolMode.value !== "none" ? "pointer-events:auto;" : "pointer-events:none;"),
-        k: common_vendor.o(onDrawStart),
-        l: common_vendor.o(onDrawMove),
-        m: common_vendor.o(onDrawEnd),
+        k: common_vendor.o(onDrawStart, "32"),
+        l: common_vendor.o(onDrawMove, "8a"),
+        m: common_vendor.o(onDrawEnd, "79"),
         n: toolMode.value === "pen" ? 1 : "",
-        o: common_vendor.o(($event) => toggleTool("pen")),
+        o: common_vendor.o(($event) => toggleTool("pen"), "d4"),
         p: toolMode.value === "eraser" ? 1 : "",
-        q: common_vendor.o(($event) => toggleTool("eraser")),
-        r: common_vendor.o(clearMyStrokes),
+        q: common_vendor.o(($event) => toggleTool("eraser"), "c2"),
+        r: common_vendor.o(clearMyStrokes, "2a"),
         s: toolMode.value !== "none"
       }, toolMode.value !== "none" ? {} : {}, {
         t: common_vendor.t(spotName.value),
-        v: common_vendor.t(partnerNickname.value),
-        w: common_vendor.t(distanceText.value),
-        x: completedCount.value / challenges.value.length * 100 + "%",
-        y: common_vendor.t(completedCount.value),
-        z: common_vendor.t(challenges.value.length),
-        A: common_vendor.t(showChallenges.value ? "▲" : "▼"),
-        B: common_vendor.o(($event) => showChallenges.value = !showChallenges.value),
-        C: showChallenges.value
+        v: common_vendor.t(isSolo.value ? "独自出发" : partnerNickname.value),
+        w: !isSolo.value
+      }, !isSolo.value ? {
+        x: common_vendor.t(distanceText.value)
+      } : {}, {
+        y: completedCount.value / visibleChallenges.value.length * 100 + "%",
+        z: common_vendor.t(completedCount.value),
+        A: common_vendor.t(visibleChallenges.value.length),
+        B: common_vendor.t(showChallenges.value ? "▲" : "▼"),
+        C: common_vendor.o(($event) => showChallenges.value = !showChallenges.value, "4c"),
+        D: showChallenges.value
       }, showChallenges.value ? {
-        D: common_vendor.f(challenges.value, (c, k0, i0) => {
+        E: common_vendor.f(visibleChallenges.value, (c, k0, i0) => {
           return {
             a: common_vendor.t(c.icon),
             b: common_vendor.t(c.title),
@@ -494,16 +510,16 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           };
         })
       } : {}, {
-        E: common_vendor.o(leaveTrip),
-        F: common_vendor.o(toggleChat),
-        G: chatOpen.value
+        F: common_vendor.o(leaveTrip, "ef"),
+        G: common_vendor.o(toggleChat, "24"),
+        H: chatOpen.value
       }, chatOpen.value ? common_vendor.e({
-        H: common_vendor.o(toggleChat),
-        I: chatMessages.value.length === 0
+        I: common_vendor.o(toggleChat, "9c"),
+        J: chatMessages.value.length === 0
       }, chatMessages.value.length === 0 ? {
-        J: common_vendor.t(spotName.value || "景区")
+        K: common_vendor.t(spotName.value || "景区")
       } : {}, {
-        K: common_vendor.f(chatMessages.value, (msg, idx, i0) => {
+        L: common_vendor.f(chatMessages.value, (msg, idx, i0) => {
           return common_vendor.e({
             a: common_vendor.t(msg.content),
             b: msg.role === "assistant" && msg.audioUrl
@@ -515,15 +531,15 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             f: common_vendor.n(msg.role === "user" ? "chat-msg-user" : "chat-msg-ai")
           });
         }),
-        L: aiLoading.value
+        M: aiLoading.value
       }, aiLoading.value ? {} : {}, {
-        M: scrollTarget.value,
-        N: aiLoading.value,
-        O: common_vendor.o(sendChat),
-        P: chatInput.value,
-        Q: common_vendor.o(($event) => chatInput.value = $event.detail.value),
-        R: aiLoading.value || !chatInput.value.trim() ? 1 : "",
-        S: common_vendor.o(sendChat)
+        N: scrollTarget.value,
+        O: aiLoading.value,
+        P: common_vendor.o(sendChat, "22"),
+        Q: chatInput.value,
+        R: common_vendor.o(($event) => chatInput.value = $event.detail.value, "1f"),
+        S: aiLoading.value || !chatInput.value.trim() ? 1 : "",
+        T: common_vendor.o(sendChat, "de")
       }) : {});
     };
   }

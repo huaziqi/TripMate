@@ -62,7 +62,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       }, loading.value ? {} : {}, {
         d: noMore.value && posts.value.length > 0
       }, noMore.value && posts.value.length > 0 ? {} : {}, {
-        e: common_vendor.o(loadMore)
+        e: common_vendor.o(loadMore, "8f")
       });
     };
   }

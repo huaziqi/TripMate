@@ -20,12 +20,13 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     }
     return (_ctx, _cache) => {
       return {
-        a: common_vendor.o(($event) => goTo("/pages/badges/badges")),
-        b: common_vendor.o(($event) => goTo("/pages/guide/guide")),
-        c: common_vendor.o(($event) => goTo("/pages/language/language")),
-        d: common_vendor.o(($event) => goTo("/pages/map/map")),
-        e: common_vendor.o(goMap),
-        f: common_vendor.p({
+        a: common_vendor.o(($event) => goTo("/pages/badges/badges"), "90"),
+        b: common_vendor.o(($event) => goTo("/pages/guide/guide"), "b1"),
+        c: common_vendor.o(($event) => goTo("/pages/language/language"), "5d"),
+        d: common_vendor.o(($event) => goTo("/pages/map/map"), "fa"),
+        e: common_vendor.o(($event) => goTo("/pages/live2d/live2d"), "8f"),
+        f: common_vendor.o(goMap, "9a"),
+        g: common_vendor.p({
           active: "home"
         })
       };

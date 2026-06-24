@@ -71,6 +71,13 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         });
       });
     }
+    function goSolo() {
+      if (!selectedSpot.value)
+        return;
+      common_vendor.index.redirectTo({
+        url: `/pages/trip/trip?spotId=${selectedSpot.value.id}&spotName=${encodeURIComponent(selectedSpot.value.name)}&solo=true`
+      });
+    }
     function onWsMessage(msg) {
       if (msg.type === "waiting") {
         step.value = "waiting";
@@ -131,7 +138,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       return common_vendor.e({
         a: step.value === "select"
       }, step.value === "select" ? common_vendor.e({
-        b: common_vendor.o([($event) => keyword.value = $event.detail.value, onSearch]),
+        b: common_vendor.o([($event) => keyword.value = $event.detail.value, onSearch], "3c"),
         c: keyword.value,
         d: loading.value
       }, loading.value ? {} : spots.value.length === 0 ? {} : {}, {
@@ -146,40 +153,42 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             e: common_vendor.o(($event) => selectedSpot.value = spot, spot.id)
           };
         }),
-        g: common_vendor.t(selectedSpot.value ? `前往 ${selectedSpot.value.name}，开始匹配` : "请先选择景点"),
-        h: !selectedSpot.value,
-        i: common_vendor.o(startMatch)
+        g: !selectedSpot.value,
+        h: common_vendor.o(goSolo, "b3"),
+        i: common_vendor.t(selectedSpot.value ? "开始匹配" : "请先选择景点"),
+        j: !selectedSpot.value,
+        k: common_vendor.o(startMatch, "1b")
       }) : step.value === "waiting" ? {
-        k: common_vendor.t((_a = selectedSpot.value) == null ? void 0 : _a.name),
-        l: common_vendor.o(cancelMatch)
+        m: common_vendor.t((_a = selectedSpot.value) == null ? void 0 : _a.name),
+        n: common_vendor.o(cancelMatch, "b4")
       } : step.value === "matched" ? common_vendor.e({
-        n: myAvatarUrl.value
+        p: myAvatarUrl.value
       }, myAvatarUrl.value ? {
-        o: myAvatarUrl.value
+        q: myAvatarUrl.value
       } : {
-        p: common_vendor.t(((_b = myNickname.value) == null ? void 0 : _b[0]) ?? "我")
+        r: common_vendor.t(((_b = myNickname.value) == null ? void 0 : _b[0]) ?? "我")
       }, {
-        q: common_vendor.t(myNickname.value),
-        r: common_vendor.t(myReady.value ? "✓ 已准备" : "待确认"),
-        s: myReady.value ? 1 : "",
-        t: partnerAvatarUrl.value
+        s: common_vendor.t(myNickname.value),
+        t: common_vendor.t(myReady.value ? "✓ 已准备" : "待确认"),
+        v: myReady.value ? 1 : "",
+        w: partnerAvatarUrl.value
       }, partnerAvatarUrl.value ? {
-        v: partnerAvatarUrl.value
+        x: partnerAvatarUrl.value
       } : {
-        w: common_vendor.t(((_c = partnerNickname.value) == null ? void 0 : _c[0]) ?? "他")
+        y: common_vendor.t(((_c = partnerNickname.value) == null ? void 0 : _c[0]) ?? "他")
       }, {
-        x: common_vendor.t(partnerNickname.value),
-        y: common_vendor.t(partnerReady.value ? "✓ 已准备" : "待确认"),
-        z: partnerReady.value ? 1 : "",
-        A: common_vendor.t((_d = selectedSpot.value) == null ? void 0 : _d.name),
-        B: common_vendor.t(countdown.value),
-        C: common_vendor.t(myReady.value ? "已确认出发" : "确认出发"),
-        D: myReady.value,
-        E: common_vendor.o(confirmMatch),
-        F: common_vendor.o(cancelMatch)
+        z: common_vendor.t(partnerNickname.value),
+        A: common_vendor.t(partnerReady.value ? "✓ 已准备" : "待确认"),
+        B: partnerReady.value ? 1 : "",
+        C: common_vendor.t((_d = selectedSpot.value) == null ? void 0 : _d.name),
+        D: common_vendor.t(countdown.value),
+        E: common_vendor.t(myReady.value ? "已确认出发" : "确认出发"),
+        F: myReady.value,
+        G: common_vendor.o(confirmMatch, "cb"),
+        H: common_vendor.o(cancelMatch, "52")
       }) : {}, {
-        j: step.value === "waiting",
-        m: step.value === "matched"
+        l: step.value === "waiting",
+        o: step.value === "matched"
       });
     };
   }
