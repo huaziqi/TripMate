@@ -62,9 +62,9 @@
       </view>
       <view class="panel-row">
         <text class="panel-label">搭子</text>
-        <text class="panel-value">{{ partnerNickname }}</text>
+        <text class="panel-value">{{ isSolo ? '独自出发' : partnerNickname }}</text>
       </view>
-      <view class="panel-row">
+      <view v-if="!isSolo" class="panel-row">
         <text class="panel-label">与搭子距离</text>
         <text class="panel-value">{{ distanceText }}</text>
       </view>
@@ -74,18 +74,18 @@
         <view class="challenge-progress-bar">
           <view
             class="challenge-progress-fill"
-            :style="{ width: (completedCount / challenges.length * 100) + '%' }"
+            :style="{ width: (completedCount / visibleChallenges.length * 100) + '%' }"
           />
         </view>
         <text class="challenge-summary">
-          🏆 挑战任务 {{ completedCount }}/{{ challenges.length }}
+          🏆 挑战任务 {{ completedCount }}/{{ visibleChallenges.length }}
         </text>
         <text class="challenge-toggle">{{ showChallenges ? '▲' : '▼' }}</text>
       </view>
 
       <view v-if="showChallenges" class="challenge-list">
         <view
-          v-for="c in challenges"
+          v-for="c in visibleChallenges"
           :key="c.id"
           class="challenge-item"
           :class="{ done: c.completed }"
@@ -165,6 +165,7 @@ const _inst = getCurrentInstance()
 const spotName = ref('')
 const partnerNickname = ref('')
 const spotId = ref(0)
+const isSolo = ref(false)
 
 // ── 位置 ─────────────────────────────────────────────────────────────────────
 const myLat = ref(29.8266)
@@ -221,7 +222,13 @@ const showChallenges = ref(false)
 let popupDismissTimer: ReturnType<typeof setTimeout> | null = null
 let partnerLocationCount = 0
 
-const completedCount = computed(() => challenges.value.filter(c => c.completed).length)
+const visibleChallenges = computed(() =>
+  isSolo.value
+    ? challenges.value.filter(c => !['near_partner', 'partner_active'].includes(c.id))
+    : challenges.value
+)
+
+const completedCount = computed(() => visibleChallenges.value.filter(c => c.completed).length)
 
 function checkAndComplete(id: string) {
   const task = challenges.value.find(c => c.id === id)
@@ -348,7 +355,7 @@ let lastRegionKey = ''
 let regionPollTimer: ReturnType<typeof setInterval> | null = null
 
 onMounted(() => {
-  setMessageHandler(onWsMessage)
+  if (!isSolo.value) setMessageHandler(onWsMessage)
   updateMyLocation()
   locationTimer = setInterval(updateMyLocation, 3000)
   nextTick(() => initCanvas())
@@ -376,13 +383,14 @@ onUnmounted(() => {
   if (locationTimer) clearInterval(locationTimer)
   if (regionPollTimer) clearInterval(regionPollTimer)
   if (popupDismissTimer) clearTimeout(popupDismissTimer)
-  disconnectMatch()
+  if (!isSolo.value) disconnectMatch()
 })
 
 onLoad((query) => {
   spotId.value = Number(query?.spotId ?? 0)
   spotName.value = decodeURIComponent(query?.spotName ?? '')
   partnerNickname.value = decodeURIComponent(query?.partnerNickname ?? '搭子')
+  isSolo.value = query?.solo === 'true'
 })
 
 function fetchRegion() {
@@ -473,7 +481,7 @@ function onDrawEnd() {
   myStrokes.value = [...myStrokes.value, stroke]
   updatePolylines()
   redrawAllStrokes()
-  sendMatch('drawStroke', { id: stroke.id, points: stroke.points })
+  if (!isSolo.value) sendMatch('drawStroke', { id: stroke.id, points: stroke.points })
 
   // 涂鸦相关任务检测
   const n = myStrokes.value.length
@@ -489,7 +497,7 @@ function eraseNear(pt: Pt) {
         myStrokes.value = myStrokes.value.filter(s => s.id !== stroke.id)
         updatePolylines()
         redrawAllStrokes()
-        sendMatch('eraseStroke', { id: stroke.id })
+        if (!isSolo.value) sendMatch('eraseStroke', { id: stroke.id })
         return
       }
     }
@@ -501,7 +509,7 @@ function clearMyStrokes() {
   myStrokes.value = []
   updatePolylines()
   redrawAllStrokes()
-  ids.forEach(id => sendMatch('eraseStroke', { id }))
+  if (!isSolo.value) ids.forEach(id => sendMatch('eraseStroke', { id }))
 }
 
 // ── WebSocket 消息 ────────────────────────────────────────────────────────────
@@ -555,7 +563,7 @@ function updateMyLocation() {
 
       myLat.value = res.latitude
       myLng.value = res.longitude
-      sendMatch('location', { latitude: res.latitude, longitude: res.longitude })
+      if (!isSolo.value) sendMatch('location', { latitude: res.latitude, longitude: res.longitude })
 
       // 移动距离任务：距出发点 > 200m
       if (startLat !== null && startLng !== null) {
@@ -639,8 +647,10 @@ function leaveTrip() {
     confirmColor: '#e53935',
     success: (res) => {
       if (res.confirm) {
-        sendMatch('leave')
-        disconnectMatch()
+        if (!isSolo.value) {
+          sendMatch('leave')
+          disconnectMatch()
+        }
         uni.redirectTo({ url: '/pages/index/index' })
       }
     },
