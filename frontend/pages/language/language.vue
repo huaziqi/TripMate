@@ -333,6 +333,9 @@
           <text class="sheet-translated" :style="{ fontSize: rpx(34) }">{{ phraseResult.translated }}</text>
         </view>
         <view class="sheet-actions">
+          <view class="icon-btn sheet-speak-btn" :class="{ speaking: speaking }" @click="speakPhrase">
+            <text class="icon-btn-text">{{ speaking ? '⏸' : '🔊' }}</text>
+          </view>
           <button class="sheet-btn secondary" :style="{ fontSize: rpx(26) }" @click="copyPhraseResult">
             {{ phraseCopied ? '✓ 已复制' : '📋 复制' }}
           </button>
@@ -873,6 +876,33 @@ async function translatePhrase(phrase: { zh: string; en: string }) {
   } finally {
     phraseLoading.value = false
     uni.hideLoading()
+  }
+}
+
+async function speakPhrase() {
+  if (!phraseResult.value || speaking.value) return
+  const supportedLangs = ['zh', 'en']
+  if (!supportedLangs.includes(phraseTargetLang.value)) {
+    uni.showToast({ title: '暂不支持该语言发音', icon: 'none' })
+    return
+  }
+  let text = phraseResult.value.translated
+  if (text.length > 150) {
+    text = text.slice(0, 150)
+    uni.showToast({ title: '文本过长，仅朗读前150字', icon: 'none' })
+  }
+  speaking.value = true
+  try {
+    const res = await synthesizeSpeech(text, phraseTargetLang.value)
+    if (res.code === 200 && res.data?.audioUrl) {
+      playAudio(res.data.audioUrl)
+    } else {
+      speaking.value = false
+      uni.showToast({ title: '发音失败，请稍后再试', icon: 'none' })
+    }
+  } catch {
+    speaking.value = false
+    uni.showToast({ title: '发音失败，请稍后再试', icon: 'none' })
   }
 }
 
@@ -1711,6 +1741,11 @@ function usePhraseInText() {
 .sheet-actions {
   display: flex;
   gap: 16rpx;
+}
+
+.sheet-speak-btn {
+  flex-shrink: 0;
+  align-self: center;
 }
 
 .sheet-btn {
