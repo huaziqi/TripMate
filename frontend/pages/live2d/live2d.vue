@@ -125,7 +125,7 @@ function handleSend() {
 
 .live2d-wrap {
   width: 70%;
-  height: 1000rpx;
+  height: 1100rpx;
   margin: 0 auto;
 }
 

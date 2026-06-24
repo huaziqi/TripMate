@@ -104,13 +104,13 @@
 
     <!-- ── AI 聊天悬浮按钮 ─────────────────────────────────────────── -->
     <view class="ai-fab" @click="toggleChat">
-      <text class="ai-fab-icon">🤖</text>
+      <text class="ai-fab-icon">👧</text>
     </view>
 
     <!-- ── AI 聊天抽屉 ────────────────────────────────────────────── -->
     <view v-if="chatOpen" class="chat-drawer">
       <view class="chat-header">
-        <text class="chat-title">🤖 AI 旅行向导</text>
+        <text class="chat-title">👧 AI 旅行向导</text>
         <text class="chat-close" @click="toggleChat">✕</text>
       </view>
 
