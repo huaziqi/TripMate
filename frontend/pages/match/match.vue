@@ -29,11 +29,18 @@
 
       <view class="bottom-bar">
         <button
+          class="solo-btn"
+          :disabled="!selectedSpot"
+          @click="goSolo"
+        >
+          独自出发
+        </button>
+        <button
           class="start-btn"
           :disabled="!selectedSpot"
           @click="startMatch"
         >
-          {{ selectedSpot ? `前往 ${selectedSpot.name}，开始匹配` : '请先选择景点' }}
+          {{ selectedSpot ? '开始匹配' : '请先选择景点' }}
         </button>
       </view>
     </view>
@@ -177,6 +184,13 @@ function startMatch() {
   })
 }
 
+function goSolo() {
+  if (!selectedSpot.value) return
+  uni.redirectTo({
+    url: `/pages/trip/trip?spotId=${selectedSpot.value.id}&spotName=${encodeURIComponent(selectedSpot.value.name)}&solo=true`
+  })
+}
+
 function onWsMessage(msg: { type: string; payload: Record<string, any> }) {
   if (msg.type === 'waiting') {
     step.value = 'waiting'
@@ -258,19 +272,36 @@ function clearCountdown() {
 .spot-region { font-size: 24rpx; color: #888; margin-top: 6rpx; display: block; }
 .bottom-bar {
   position: fixed;
-  left: 0; right: 0; bottom: 0;
-  padding: 24rpx;
-  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20rpx 32rpx;
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
   background: #fff;
   border-top: 1rpx solid #eee;
   z-index: 100;
+  display: flex;
+  gap: 16rpx;
 }
 .start-btn {
-  width: 100%; height: 88rpx; line-height: 88rpx;
+  flex: 1; height: 88rpx; line-height: 88rpx;
   background: linear-gradient(135deg, #ff6b35, #f7931e);
   color: #fff; border-radius: 44rpx; font-size: 32rpx; font-weight: 600; border: none;
 }
 .start-btn[disabled] { background: #ccc; }
+.solo-btn {
+  flex: 1;
+  height: 88rpx;
+  border-radius: 44rpx;
+  background: #f0f0f0;
+  color: #333;
+  font-size: 28rpx;
+  font-weight: 600;
+  border: none;
+}
+.solo-btn[disabled] {
+  opacity: 0.4;
+}
 
 .step-waiting {
   flex: 1; display: flex; flex-direction: column;
