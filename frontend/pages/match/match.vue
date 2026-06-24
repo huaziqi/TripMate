@@ -288,7 +288,9 @@ function clearCountdown() {
   background: linear-gradient(135deg, #ff6b35, #f7931e);
   color: #fff; border-radius: 44rpx; font-size: 32rpx; font-weight: 600; border: none;
 }
-.start-btn[disabled] { background: #ccc; }
+.start-btn[disabled] {
+  opacity: 0.4;
+}
 .solo-btn {
   flex: 1;
   height: 88rpx;
