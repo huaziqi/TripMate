@@ -156,7 +156,9 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         b: common_vendor.f(post.value.imageUrls, (url, i, i0) => {
           return {
             a: url,
-            b: i
+            b: common_vendor.o(() => {
+            }, i),
+            c: i
           };
         })
       } : {}, {

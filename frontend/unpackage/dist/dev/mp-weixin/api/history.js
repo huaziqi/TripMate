@@ -8,5 +8,11 @@ function addHistory(type, targetId, content) {
     content
   });
 }
+async function getHistoryList() {
+  const { get } = utils_useApi.useApi();
+  const res = await get("/api/history");
+  return res.data;
+}
 exports.addHistory = addHistory;
+exports.getHistoryList = getHistoryList;
 //# sourceMappingURL=../../.sourcemap/mp-weixin/api/history.js.map

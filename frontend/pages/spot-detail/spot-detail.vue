@@ -16,7 +16,6 @@
           :src="getImageSrc(spot.imageUrl)"
           mode="aspectFill"
           @error="handleImageError"
-          @error="coverError = true"
         />
 
         <view v-else class="image-placeholder">

@@ -1,6 +1,7 @@
 "use strict";
 const common_vendor = require("../../common/vendor.js");
 const api_match = require("../../api/match.js");
+const api_tripChat = require("../../api/tripChat.js");
 const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
   __name: "trip",
   setup(__props) {
@@ -370,6 +371,58 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         }
       });
     }
+    const chatOpen = common_vendor.ref(false);
+    const chatInput = common_vendor.ref("");
+    const chatMessages = common_vendor.ref([]);
+    const aiLoading = common_vendor.ref(false);
+    const scrollTarget = common_vendor.ref("chat-bottom");
+    function toggleChat() {
+      chatOpen.value = !chatOpen.value;
+    }
+    async function sendChat() {
+      const text = chatInput.value.trim();
+      if (!text || aiLoading.value)
+        return;
+      chatMessages.value.push({ role: "user", content: text });
+      chatInput.value = "";
+      aiLoading.value = true;
+      scrollTarget.value = "chat-bottom";
+      try {
+        const history = chatMessages.value.slice(-6).map((m) => ({ role: m.role, content: m.content }));
+        const res = await api_tripChat.sendTripChat({
+          message: text,
+          spotName: spotName.value || "景区",
+          history: history.slice(0, -1)
+          // 最后一条是刚加的 user，不重复传
+        });
+        if (res.code === 200) {
+          const aiMsg = {
+            role: "assistant",
+            content: res.data.text,
+            audioUrl: res.data.audioUrl
+          };
+          chatMessages.value.push(aiMsg);
+          if (res.data.audioUrl) {
+            playAudio(res.data.audioUrl);
+          }
+        } else {
+          chatMessages.value.push({ role: "assistant", content: res.message || "AI 暂时无法回答，请稍后再试" });
+        }
+      } catch {
+        chatMessages.value.push({ role: "assistant", content: "网络异常，请稍后重试" });
+      } finally {
+        aiLoading.value = false;
+        scrollTarget.value = "chat-bottom";
+      }
+    }
+    function playAudio(url) {
+      try {
+        const audio = common_vendor.index.createInnerAudioContext();
+        audio.src = url;
+        audio.play();
+      } catch (_) {
+      }
+    }
     function leaveTrip() {
       common_vendor.index.showModal({
         title: "结束旅途",
@@ -441,8 +494,37 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           };
         })
       } : {}, {
-        E: common_vendor.o(leaveTrip)
-      });
+        E: common_vendor.o(leaveTrip),
+        F: common_vendor.o(toggleChat),
+        G: chatOpen.value
+      }, chatOpen.value ? common_vendor.e({
+        H: common_vendor.o(toggleChat),
+        I: chatMessages.value.length === 0
+      }, chatMessages.value.length === 0 ? {
+        J: common_vendor.t(spotName.value || "景区")
+      } : {}, {
+        K: common_vendor.f(chatMessages.value, (msg, idx, i0) => {
+          return common_vendor.e({
+            a: common_vendor.t(msg.content),
+            b: msg.role === "assistant" && msg.audioUrl
+          }, msg.role === "assistant" && msg.audioUrl ? {
+            c: common_vendor.o(($event) => playAudio(msg.audioUrl), idx)
+          } : {}, {
+            d: idx,
+            e: "msg-" + idx,
+            f: common_vendor.n(msg.role === "user" ? "chat-msg-user" : "chat-msg-ai")
+          });
+        }),
+        L: aiLoading.value
+      }, aiLoading.value ? {} : {}, {
+        M: scrollTarget.value,
+        N: aiLoading.value,
+        O: common_vendor.o(sendChat),
+        P: chatInput.value,
+        Q: common_vendor.o(($event) => chatInput.value = $event.detail.value),
+        R: aiLoading.value || !chatInput.value.trim() ? 1 : "",
+        S: common_vendor.o(sendChat)
+      }) : {});
     };
   }
 });

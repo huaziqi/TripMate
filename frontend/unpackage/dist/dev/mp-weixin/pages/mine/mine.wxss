@@ -96,6 +96,9 @@
 .menu-label.data-v-7c2ebfa5 {
   color: #1a1a1a;
 }
+.history-label.data-v-7c2ebfa5{
+	font-size: 27rpx;
+}
 .menu-arrow.data-v-7c2ebfa5 {
   font-size: 40rpx;
   color: #ccc;

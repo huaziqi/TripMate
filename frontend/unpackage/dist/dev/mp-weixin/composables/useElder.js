@@ -6,13 +6,15 @@ const ELDER_SCALE = 1.4;
 const NORMAL_SCALE = 1;
 const isElderMode = common_vendor.ref(false);
 const fontScale = common_vendor.ref(NORMAL_SCALE);
-try {
-  const stored = common_vendor.index.getStorageSync(ELDER_MODE_KEY);
-  if (stored === true) {
-    isElderMode.value = true;
-    fontScale.value = ELDER_SCALE;
+function initElder() {
+  try {
+    const stored = common_vendor.index.getStorageSync(ELDER_MODE_KEY);
+    if (stored === true) {
+      isElderMode.value = true;
+      fontScale.value = ELDER_SCALE;
+    }
+  } catch {
   }
-} catch {
 }
 function persist() {
   common_vendor.index.setStorageSync(ELDER_MODE_KEY, isElderMode.value);
@@ -44,5 +46,6 @@ function useElder() {
     rpx
   };
 }
+exports.initElder = initElder;
 exports.useElder = useElder;
 //# sourceMappingURL=../../.sourcemap/mp-weixin/composables/useElder.js.map
