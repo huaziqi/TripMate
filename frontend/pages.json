@@ -121,6 +121,14 @@
 		  }
 		},
 		{
+			"path": "pages/live2d/live2d",
+			"style": {
+				"navigationBarTitleText": "数字人助手",
+				"usingComponents": {
+				"live2d-view": "/wxcomponents/live2d-view/live2d-view"
+			}
+		},
+		{
 		  "path": "pages/history/history",
 		  "style": {
 		    "navigationBarTitleText": "历史记录"

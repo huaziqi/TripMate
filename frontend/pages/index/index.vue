@@ -25,6 +25,10 @@
         <text class="feature-icon">📍</text>
         <text class="feature-label">景区地图</text>
       </view>
+	  view class="feature-item" @click="goTo('/pages/live2d/live2d')">
+		<text class="feature-icon">👧</text>
+		<text class="feature-label">数字人助手</text>
+	  </view>
     </view>
 
     <!-- 天气卡片 -->
