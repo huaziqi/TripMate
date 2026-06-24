@@ -54,6 +54,7 @@
 				"navigationBarTitleText": "开始旅游",
 				"navigationBarBackgroundColor": "#ff6b35",
 				"navigationBarTextStyle": "white"
+			
 			}
 		},
 		{
@@ -126,6 +127,7 @@
 				"navigationBarTitleText": "数字人助手",
 				"usingComponents": {
 				"live2d-view": "/wxcomponents/live2d-view/live2d-view"
+			}
 			}
 		},
 		{
