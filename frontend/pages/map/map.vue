@@ -125,7 +125,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, defineExpose } from 'vue'
+import { computed, ref } from 'vue'
 import { onLoad, onShow } from '@dcloudio/uni-app'
 import { reverseGeocoder } from '@/api/location'
 import {

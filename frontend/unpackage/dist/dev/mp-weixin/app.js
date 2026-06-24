@@ -22,6 +22,7 @@ if (!Math) {
   "./pages/guide/search/search.js";
   "./pages/spot-detail/spot-detail.js";
   "./pages/spot-favorites/spot-favorites.js";
+  "./pages/live2d/live2d.js";
   "./pages/history/history.js";
   "./pages/route/route.js";
 }

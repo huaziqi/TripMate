@@ -689,6 +689,10 @@
   display: flex;
   gap: 16rpx;
 }
+.sheet-speak-btn.data-v-143e30ec {
+  flex-shrink: 0;
+  align-self: center;
+}
 .sheet-btn.data-v-143e30ec {
   flex: 1;
   height: 88rpx;
@@ -741,4 +745,7 @@
 /* ——— 占位 ——— */
 .tabbar-placeholder.data-v-143e30ec {
   height: 140rpx;
+}
+.icon-btn.speaking.data-v-143e30ec {
+  background: #d6e4ff;
 }

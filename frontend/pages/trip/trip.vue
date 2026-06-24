@@ -913,6 +913,9 @@ function haversine(lat1: number, lng1: number, lat2: number, lng2: number): numb
   font-size: 26rpx;
   line-height: 1.6;
   display: block;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
 }
 .chat-msg-user .chat-bubble {
   background: linear-gradient(135deg, #667eea, #764ba2);

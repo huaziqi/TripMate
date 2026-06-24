@@ -5,6 +5,7 @@ const composables_useTranslationHistory = require("../../composables/useTranslat
 const composables_useFavoritePhrases = require("../../composables/useFavoritePhrases.js");
 const api_translate = require("../../api/translate.js");
 const i18n = require("../../i18n.js");
+const api_tts = require("../../api/tts.js");
 if (!Math) {
   TabBar();
 }
@@ -147,6 +148,25 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const detectedLang = common_vendor.ref("");
     const translating = common_vendor.ref(false);
     const copied = common_vendor.ref(false);
+    const speaking = common_vendor.ref(false);
+    let audioCtx = null;
+    function playAudio(url) {
+      if (audioCtx) {
+        audioCtx.stop();
+        audioCtx.destroy();
+        audioCtx = null;
+      }
+      audioCtx = common_vendor.index.createInnerAudioContext();
+      audioCtx.src = url;
+      audioCtx.onEnded(() => {
+        speaking.value = false;
+      });
+      audioCtx.onError(() => {
+        speaking.value = false;
+        common_vendor.index.showToast({ title: "发音失败，请稍后再试", icon: "none" });
+      });
+      audioCtx.play();
+    }
     function onInput(e) {
       inputText.value = e.detail.value ?? "";
       resultText.value = "";
@@ -209,8 +229,33 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         }
       });
     }
-    function speakResult() {
-      common_vendor.index.showToast({ title: "朗读功能即将上线", icon: "none" });
+    async function speakResult() {
+      var _a;
+      if (!resultText.value || speaking.value)
+        return;
+      const supportedLangs = ["zh", "en"];
+      if (!supportedLangs.includes(toLang.value)) {
+        common_vendor.index.showToast({ title: "暂不支持该语言发音", icon: "none" });
+        return;
+      }
+      let text = resultText.value;
+      if (text.length > 150) {
+        text = text.slice(0, 150);
+        common_vendor.index.showToast({ title: "文本过长，仅朗读前150字", icon: "none" });
+      }
+      speaking.value = true;
+      try {
+        const res = await api_tts.synthesizeSpeech(text, toLang.value);
+        if (res.code === 200 && ((_a = res.data) == null ? void 0 : _a.audioUrl)) {
+          playAudio(res.data.audioUrl);
+        } else {
+          speaking.value = false;
+          common_vendor.index.showToast({ title: "发音失败，请稍后再试", icon: "none" });
+        }
+      } catch {
+        speaking.value = false;
+        common_vendor.index.showToast({ title: "发音失败，请稍后再试", icon: "none" });
+      }
     }
     const historyFilter = common_vendor.ref("");
     const historyLangPairs = common_vendor.computed(() => {
@@ -437,6 +482,34 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         common_vendor.index.hideLoading();
       }
     }
+    async function speakPhrase() {
+      var _a;
+      if (!phraseResult.value || speaking.value)
+        return;
+      const supportedLangs = ["zh", "en"];
+      if (!supportedLangs.includes(phraseTargetLang.value)) {
+        common_vendor.index.showToast({ title: "暂不支持该语言发音", icon: "none" });
+        return;
+      }
+      let text = phraseResult.value.translated;
+      if (text.length > 150) {
+        text = text.slice(0, 150);
+        common_vendor.index.showToast({ title: "文本过长，仅朗读前150字", icon: "none" });
+      }
+      speaking.value = true;
+      try {
+        const res = await api_tts.synthesizeSpeech(text, phraseTargetLang.value);
+        if (res.code === 200 && ((_a = res.data) == null ? void 0 : _a.audioUrl)) {
+          playAudio(res.data.audioUrl);
+        } else {
+          speaking.value = false;
+          common_vendor.index.showToast({ title: "发音失败，请稍后再试", icon: "none" });
+        }
+      } catch {
+        speaking.value = false;
+        common_vendor.index.showToast({ title: "发音失败，请稍后再试", icon: "none" });
+      }
+    }
     function closePhraseResult() {
       phraseResult.value = null;
       phraseCopied.value = false;
@@ -470,10 +543,10 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         a: common_vendor.unref(rpx)(22),
         b: common_vendor.unref(rpx)(22),
         c: currentLocale.value === "zh" ? 1 : "",
-        d: common_vendor.o(($event) => switchUiLang("zh")),
+        d: common_vendor.o(($event) => switchUiLang("zh"), "5c"),
         e: common_vendor.unref(rpx)(22),
         f: currentLocale.value === "en" ? 1 : "",
-        g: common_vendor.o(($event) => switchUiLang("en")),
+        g: common_vendor.o(($event) => switchUiLang("en"), "31"),
         h: common_vendor.f(tabs.value, (tab, k0, i0) => {
           return common_vendor.e({
             a: common_vendor.t(tab.label),
@@ -506,28 +579,28 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         o: common_vendor.t(fromLangInfo.value.flag),
         p: common_vendor.t(fromLangInfo.value.name),
         q: common_vendor.unref(rpx)(26),
-        r: common_vendor.o(($event) => showLangPicker("from")),
-        s: common_vendor.o(swapLang),
+        r: common_vendor.o(($event) => showLangPicker("from"), "e9"),
+        s: common_vendor.o(swapLang, "07"),
         t: common_vendor.t(toLangInfo.value.flag),
         v: common_vendor.t(toLangInfo.value.name),
         w: common_vendor.unref(rpx)(26),
-        x: common_vendor.o(($event) => showLangPicker("to")),
+        x: common_vendor.o(($event) => showLangPicker("to"), "56"),
         y: common_vendor.unref(t)("translate.placeholder"),
         z: inputText.value,
         A: common_vendor.unref(rpx)(28),
-        B: common_vendor.o(onInput),
+        B: common_vendor.o(onInput, "be"),
         C: common_vendor.t(inputText.value.length),
         D: inputText.value.length > 450 ? 1 : "",
         E: common_vendor.unref(rpx)(22),
         F: inputText.value
       }, inputText.value ? {
         G: common_vendor.unref(rpx)(22),
-        H: common_vendor.o(clearInput)
+        H: common_vendor.o(clearInput, "d0")
       } : {}, {
         I: inputText.value
       }, inputText.value ? {
         J: common_vendor.unref(rpx)(22),
-        K: common_vendor.o(pasteFromClipboard)
+        K: common_vendor.o(pasteFromClipboard, "93")
       } : {}, {
         L: translating.value
       }, translating.value ? {} : {}, {
@@ -535,7 +608,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         N: translating.value || !inputText.value.trim(),
         O: translating.value || !inputText.value.trim() ? 1 : "",
         P: common_vendor.unref(rpx)(30),
-        Q: common_vendor.o(doTranslate),
+        Q: common_vendor.o(doTranslate, "7e"),
         R: common_vendor.t(common_vendor.unref(t)("translate.result")),
         S: common_vendor.unref(rpx)(22),
         T: detectedLang.value && fromLang.value === "auto"
@@ -545,38 +618,40 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       } : {}, {
         W: resultText.value
       }, resultText.value ? {
-        X: common_vendor.o(speakResult),
-        Y: common_vendor.t(copied.value ? "✓ " + common_vendor.unref(t)("translate.copied") : common_vendor.unref(t)("translate.copy")),
-        Z: common_vendor.unref(rpx)(22),
-        aa: common_vendor.o(copyResult)
+        X: common_vendor.t(speaking.value ? "⏸" : "🔊"),
+        Y: speaking.value ? 1 : "",
+        Z: common_vendor.o(speakResult, "a8"),
+        aa: common_vendor.t(copied.value ? "✓ " + common_vendor.unref(t)("translate.copied") : common_vendor.unref(t)("translate.copy")),
+        ab: common_vendor.unref(rpx)(22),
+        ac: common_vendor.o(copyResult, "9e")
       } : {}, {
-        ab: resultText.value
+        ad: resultText.value
       }, resultText.value ? {
-        ac: common_vendor.t(resultText.value),
-        ad: common_vendor.unref(rpx)(30)
+        ae: common_vendor.t(resultText.value),
+        af: common_vendor.unref(rpx)(30)
       } : {
-        ae: common_vendor.t(common_vendor.unref(t)("translate.noResult")),
-        af: common_vendor.unref(rpx)(26)
+        ag: common_vendor.t(common_vendor.unref(t)("translate.noResult")),
+        ah: common_vendor.unref(rpx)(26)
       }, {
-        ag: resultText.value ? 1 : "",
-        ah: resultText.value
+        ai: resultText.value ? 1 : "",
+        aj: resultText.value
       }, resultText.value ? {
-        ai: common_vendor.unref(rpx)(22),
-        aj: common_vendor.t(inputText.value.trim().length),
-        ak: common_vendor.t(resultText.value.length),
-        al: common_vendor.unref(rpx)(22)
+        ak: common_vendor.unref(rpx)(22),
+        al: common_vendor.t(inputText.value.trim().length),
+        am: common_vendor.t(resultText.value.length),
+        an: common_vendor.unref(rpx)(22)
       } : {}) : {}, {
-        am: activeTab.value === "phrases"
+        ao: activeTab.value === "phrases"
       }, activeTab.value === "phrases" ? common_vendor.e({
-        an: phraseSearch.value,
-        ao: common_vendor.unref(rpx)(26),
-        ap: common_vendor.o((e) => phraseSearch.value = e.detail.value),
-        aq: phraseSearch.value
+        ap: phraseSearch.value,
+        aq: common_vendor.unref(rpx)(26),
+        ar: common_vendor.o((e) => phraseSearch.value = e.detail.value, "00"),
+        as: phraseSearch.value
       }, phraseSearch.value ? {
-        ar: common_vendor.o(($event) => phraseSearch.value = "")
+        at: common_vendor.o(($event) => phraseSearch.value = "", "d6")
       } : {}, {
-        as: common_vendor.unref(rpx)(24),
-        at: common_vendor.f(common_vendor.unref(phraseTargetLangs), (lang, k0, i0) => {
+        av: common_vendor.unref(rpx)(24),
+        aw: common_vendor.f(common_vendor.unref(phraseTargetLangs), (lang, k0, i0) => {
           return {
             a: common_vendor.t(lang.flag),
             b: common_vendor.t(lang.name),
@@ -585,16 +660,16 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             e: common_vendor.o(($event) => onPhraseTargetChange(lang.code), lang.code)
           };
         }),
-        av: common_vendor.unref(rpx)(22),
-        aw: phraseSearch.value && !phraseCategories.value.length && !filteredFavorites.value.length
+        ax: common_vendor.unref(rpx)(22),
+        ay: phraseSearch.value && !phraseCategories.value.length && !filteredFavorites.value.length
       }, phraseSearch.value && !phraseCategories.value.length && !filteredFavorites.value.length ? {
-        ax: common_vendor.t(phraseSearch.value),
-        ay: common_vendor.unref(rpx)(26)
+        az: common_vendor.t(phraseSearch.value),
+        aA: common_vendor.unref(rpx)(26)
       } : {}, {
-        az: filteredFavorites.value.length
+        aB: filteredFavorites.value.length
       }, filteredFavorites.value.length ? {
-        aA: common_vendor.unref(rpx)(26),
-        aB: common_vendor.f(filteredFavorites.value, (phrase, k0, i0) => {
+        aC: common_vendor.unref(rpx)(26),
+        aD: common_vendor.f(filteredFavorites.value, (phrase, k0, i0) => {
           return {
             a: common_vendor.t(phrase.zh),
             b: common_vendor.t(phrase.en),
@@ -606,12 +681,12 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             e: common_vendor.o(($event) => translatePhrase(phrase), phrase.zh)
           };
         }),
-        aC: common_vendor.unref(rpx)(28),
-        aD: common_vendor.unref(rpx)(24)
+        aE: common_vendor.unref(rpx)(28),
+        aF: common_vendor.unref(rpx)(24)
       } : {}, {
-        aE: common_vendor.t(common_vendor.unref(t)("translate.phrases.tapToTranslate")),
-        aF: common_vendor.unref(rpx)(24),
-        aG: common_vendor.f(phraseCategories.value, (cat, k0, i0) => {
+        aG: common_vendor.t(common_vendor.unref(t)("translate.phrases.tapToTranslate")),
+        aH: common_vendor.unref(rpx)(24),
+        aI: common_vendor.f(phraseCategories.value, (cat, k0, i0) => {
           return {
             a: common_vendor.t(cat.icon),
             b: common_vendor.t(common_vendor.unref(t)(`translate.phrases.${cat.key}`)),
@@ -636,29 +711,29 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             d: cat.key
           };
         }),
-        aH: common_vendor.unref(rpx)(26),
-        aI: common_vendor.unref(rpx)(28),
-        aJ: common_vendor.unref(rpx)(24)
+        aJ: common_vendor.unref(rpx)(26),
+        aK: common_vendor.unref(rpx)(28),
+        aL: common_vendor.unref(rpx)(24)
       }) : {}, {
-        aK: activeTab.value === "history"
+        aM: activeTab.value === "history"
       }, activeTab.value === "history" ? common_vendor.e({
-        aL: common_vendor.unref(history).length === 0
+        aN: common_vendor.unref(history).length === 0
       }, common_vendor.unref(history).length === 0 ? {
-        aM: common_vendor.t(common_vendor.unref(t)("translate.history.empty")),
-        aN: common_vendor.unref(rpx)(28),
-        aO: common_vendor.unref(rpx)(24)
+        aO: common_vendor.t(common_vendor.unref(t)("translate.history.empty")),
+        aP: common_vendor.unref(rpx)(28),
+        aQ: common_vendor.unref(rpx)(24)
       } : common_vendor.e({
-        aP: common_vendor.t(historyFilter.value ? filteredHistory.value.length + "/" : ""),
-        aQ: common_vendor.t(common_vendor.unref(history).length),
-        aR: common_vendor.unref(rpx)(24),
-        aS: common_vendor.unref(rpx)(24),
-        aT: common_vendor.o(onClearHistory),
-        aU: historyLangPairs.value.length > 1
+        aR: common_vendor.t(historyFilter.value ? filteredHistory.value.length + "/" : ""),
+        aS: common_vendor.t(common_vendor.unref(history).length),
+        aT: common_vendor.unref(rpx)(24),
+        aU: common_vendor.unref(rpx)(24),
+        aV: common_vendor.o(onClearHistory, "dd"),
+        aW: historyLangPairs.value.length > 1
       }, historyLangPairs.value.length > 1 ? {
-        aV: common_vendor.unref(rpx)(22),
-        aW: historyFilter.value === "" ? 1 : "",
-        aX: common_vendor.o(($event) => historyFilter.value = ""),
-        aY: common_vendor.f(historyLangPairs.value, (pair, k0, i0) => {
+        aX: common_vendor.unref(rpx)(22),
+        aY: historyFilter.value === "" ? 1 : "",
+        aZ: common_vendor.o(($event) => historyFilter.value = "", "9c"),
+        ba: common_vendor.f(historyLangPairs.value, (pair, k0, i0) => {
           return {
             a: common_vendor.t(pair),
             b: pair,
@@ -666,13 +741,13 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             d: common_vendor.o(($event) => historyFilter.value = pair, pair)
           };
         }),
-        aZ: common_vendor.unref(rpx)(22)
+        bb: common_vendor.unref(rpx)(22)
       } : {}, {
-        ba: filteredHistory.value.length === 0
+        bc: filteredHistory.value.length === 0
       }, filteredHistory.value.length === 0 ? {
-        bb: common_vendor.unref(rpx)(26)
+        bd: common_vendor.unref(rpx)(26)
       } : {}, {
-        bc: common_vendor.f(filteredHistory.value, (item, k0, i0) => {
+        be: common_vendor.f(filteredHistory.value, (item, k0, i0) => {
           return {
             a: common_vendor.t(langNameByCode(item.from)),
             b: common_vendor.t(langNameByCode(item.to)),
@@ -685,38 +760,41 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             i: common_vendor.o(($event) => onHistoryLongPress(item), item.id)
           };
         }),
-        bd: common_vendor.unref(rpx)(20),
-        be: common_vendor.unref(rpx)(20),
-        bf: common_vendor.unref(rpx)(28),
-        bg: common_vendor.unref(rpx)(26),
-        bh: common_vendor.unref(rpx)(22),
-        bi: common_vendor.unref(rpx)(22)
+        bf: common_vendor.unref(rpx)(20),
+        bg: common_vendor.unref(rpx)(20),
+        bh: common_vendor.unref(rpx)(28),
+        bi: common_vendor.unref(rpx)(26),
+        bj: common_vendor.unref(rpx)(22),
+        bk: common_vendor.unref(rpx)(22)
       })) : {}, {
-        bj: phraseResult.value
+        bl: phraseResult.value
       }, phraseResult.value ? {
-        bk: common_vendor.unref(rpx)(28),
-        bl: common_vendor.o(closePhraseResult),
-        bm: common_vendor.t(phraseResult.value.source),
-        bn: common_vendor.unref(rpx)(28),
-        bo: common_vendor.t(langNameByCode(phraseTargetLang.value)),
-        bp: common_vendor.unref(rpx)(22),
-        bq: common_vendor.t(phraseResult.value.translated),
-        br: common_vendor.unref(rpx)(34),
-        bs: common_vendor.t(phraseCopied.value ? "✓ 已复制" : "📋 复制"),
-        bt: common_vendor.unref(rpx)(26),
-        bv: common_vendor.o(copyPhraseResult),
-        bw: common_vendor.unref(rpx)(26),
-        bx: common_vendor.o(usePhraseInText),
-        by: common_vendor.o(() => {
-        }),
-        bz: common_vendor.o(closePhraseResult)
+        bm: common_vendor.unref(rpx)(28),
+        bn: common_vendor.o(closePhraseResult, "72"),
+        bo: common_vendor.t(phraseResult.value.source),
+        bp: common_vendor.unref(rpx)(28),
+        bq: common_vendor.t(langNameByCode(phraseTargetLang.value)),
+        br: common_vendor.unref(rpx)(22),
+        bs: common_vendor.t(phraseResult.value.translated),
+        bt: common_vendor.unref(rpx)(34),
+        bv: common_vendor.t(speaking.value ? "⏸" : "🔊"),
+        bw: speaking.value ? 1 : "",
+        bx: common_vendor.o(speakPhrase, "fa"),
+        by: common_vendor.t(phraseCopied.value ? "✓ 已复制" : "📋 复制"),
+        bz: common_vendor.unref(rpx)(26),
+        bA: common_vendor.o(copyPhraseResult, "d8"),
+        bB: common_vendor.unref(rpx)(26),
+        bC: common_vendor.o(usePhraseInText, "ec"),
+        bD: common_vendor.o(() => {
+        }, "97"),
+        bE: common_vendor.o(closePhraseResult, "44")
       } : {}, {
-        bA: langPickerVisible.value
+        bF: langPickerVisible.value
       }, langPickerVisible.value ? {
-        bB: common_vendor.t(pickerTarget.value === "from" ? "选择源语言" : "选择目标语言"),
-        bC: common_vendor.unref(rpx)(28),
-        bD: common_vendor.o(($event) => langPickerVisible.value = false),
-        bE: common_vendor.f(pickerLangs.value, (lang, k0, i0) => {
+        bG: common_vendor.t(pickerTarget.value === "from" ? "选择源语言" : "选择目标语言"),
+        bH: common_vendor.unref(rpx)(28),
+        bI: common_vendor.o(($event) => langPickerVisible.value = false, "97"),
+        bJ: common_vendor.f(pickerLangs.value, (lang, k0, i0) => {
           return common_vendor.e({
             a: common_vendor.t(lang.flag),
             b: common_vendor.t(lang.name),
@@ -727,12 +805,12 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
             f: common_vendor.o(($event) => selectLang(lang.code), lang.code)
           });
         }),
-        bF: common_vendor.unref(rpx)(28),
-        bG: common_vendor.o(() => {
-        }),
-        bH: common_vendor.o(($event) => langPickerVisible.value = false)
+        bK: common_vendor.unref(rpx)(28),
+        bL: common_vendor.o(() => {
+        }, "e3"),
+        bM: common_vendor.o(($event) => langPickerVisible.value = false, "fd")
       } : {}, {
-        bI: common_vendor.p({
+        bN: common_vendor.p({
           active: "language"
         })
       });

@@ -298,20 +298,20 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         c: spot.value.imageUrl && !imageLoadFailed.value && !coverError.value
       }, spot.value.imageUrl && !imageLoadFailed.value && !coverError.value ? {
         d: getImageSrc(spot.value.imageUrl),
-        e: common_vendor.o(handleImageError)
+        e: common_vendor.o(handleImageError, "5b")
       } : {}, {
         f: common_vendor.t(spot.value.name),
         g: common_vendor.t(spot.value.category || "景点"),
         h: common_vendor.t(spot.value.address || "暂无地址"),
         i: common_vendor.t(spot.value.region || "暂无地区"),
         j: common_vendor.t(spot.value.description || "暂无景点简介"),
-        k: common_vendor.o(goRouteRecommend),
-        l: common_vendor.o(backToMap),
+        k: common_vendor.o(goRouteRecommend, "37"),
+        l: common_vendor.o(backToMap, "1e"),
         m: common_vendor.t(guideButtonText.value),
         n: generatingAudio.value ? 1 : "",
-        o: common_vendor.o(playGuide),
+        o: common_vendor.o(playGuide, "27"),
         p: common_vendor.t(isFavorited.value ? "已收藏" : "收藏"),
-        q: common_vendor.o(favoriteSpot)
+        q: common_vendor.o(favoriteSpot, "6f")
       }), {
         b: !spot.value
       });

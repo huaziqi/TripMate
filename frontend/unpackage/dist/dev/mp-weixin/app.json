@@ -17,6 +17,7 @@
     "pages/guide/search/search",
     "pages/spot-detail/spot-detail",
     "pages/spot-favorites/spot-favorites",
+    "pages/live2d/live2d",
     "pages/history/history",
     "pages/route/route"
   ],
