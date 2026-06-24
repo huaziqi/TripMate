@@ -34,6 +34,11 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     function onSpotFavorites() {
       common_vendor.index.navigateTo({ url: "/pages/spot-favorites/spot-favorites" });
     }
+    function onHistory() {
+      common_vendor.index.navigateTo({
+        url: "/pages/history/history"
+      });
+    }
     async function onChooseAvatar(e) {
       var _a;
       const newAvatarUrl = e.detail.avatarUrl;
@@ -104,20 +109,22 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         o: common_vendor.unref(rpx)(28),
         p: common_vendor.o(onMyPosts),
         q: common_vendor.unref(rpx)(28),
-        r: common_vendor.o(onCollect),
+        r: common_vendor.o(onHistory),
         s: common_vendor.unref(rpx)(28),
-        t: common_vendor.o(onSpotFavorites),
+        t: common_vendor.o(onCollect),
         v: common_vendor.unref(rpx)(28),
-        w: common_vendor.o(onLanguage),
+        w: common_vendor.o(onSpotFavorites),
         x: common_vendor.unref(rpx)(28),
-        y: common_vendor.unref(isElderMode),
-        z: common_vendor.o(onElderToggle),
-        A: common_vendor.unref(rpx)(28),
-        B: common_vendor.o(onAbout),
+        y: common_vendor.o(onLanguage),
+        z: common_vendor.unref(rpx)(28),
+        A: common_vendor.unref(isElderMode),
+        B: common_vendor.o(onElderToggle),
         C: common_vendor.unref(rpx)(28),
-        D: common_vendor.o(handleLogout)
+        D: common_vendor.o(onAbout),
+        E: common_vendor.unref(rpx)(28),
+        F: common_vendor.o(handleLogout)
       }), {
-        E: common_vendor.p({
+        G: common_vendor.p({
           active: "mine"
         })
       });

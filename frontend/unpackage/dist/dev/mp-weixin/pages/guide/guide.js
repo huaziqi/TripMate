@@ -31,7 +31,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
     const loading = common_vendor.ref(false);
     const noMore = common_vendor.ref(false);
     const refreshing = common_vendor.ref(false);
-    common_vendor.onMounted(() => load(true));
+    common_vendor.onShow(() => load(true));
     function onCategory(v) {
       if (activeCategory.value === v)
         return;
@@ -55,8 +55,10 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
         return;
       loading.value = true;
       try {
-        const category = activeCategory.value === "ALL" ? void 0 : activeCategory.value;
-        const res = await api_post.fetchPosts({ category, sort: sort.value, page: page.value, size: 10 });
+        const params = { sort: sort.value, page: page.value, size: 10 };
+        if (activeCategory.value !== "ALL")
+          params.category = activeCategory.value;
+        const res = await api_post.fetchPosts(params);
         if (res.code === 200) {
           const items = res.data.items;
           posts.value = reset ? items : [...posts.value, ...items];

@@ -58,7 +58,7 @@
 		<view class="divider" />
 		
 		<view class="menu-item" @tap="onHistory">
-		  <text class="menu-label history-label">历史记录</text>
+		  <text class="menu-label" :style="{ fontSize: rpx(28) }">历史记录</text>
 		  <text class="menu-arrow">›</text>
 		</view>
 		

@@ -7010,7 +7010,7 @@ function isConsoleWritable() {
 function initRuntimeSocketService() {
   const hosts = "192.168.56.1,192.168.10.16,192.168.153.1,192.168.200.1,127.0.0.1";
   const port = "8090";
-  const id = "mp-weixin_rWHDyB";
+  const id = "mp-weixin_u8q5yr";
   const lazy = typeof swan !== "undefined";
   let restoreError = lazy ? () => {
   } : initOnError();
@@ -11350,6 +11350,7 @@ const createHook = (lifecycle) => (hook, target = getCurrentInstance()) => {
 };
 const onShow = /* @__PURE__ */ createHook(ON_SHOW);
 const onLoad = /* @__PURE__ */ createHook(ON_LOAD);
+const onUnload = /* @__PURE__ */ createHook(ON_UNLOAD);
 const onBackPress = /* @__PURE__ */ createHook(ON_BACK_PRESS);
 var dist = {};
 (function(exports2) {
@@ -21630,6 +21631,7 @@ exports.onBackPress = onBackPress;
 exports.onLoad = onLoad;
 exports.onMounted = onMounted;
 exports.onShow = onShow;
+exports.onUnload = onUnload;
 exports.onUnmounted = onUnmounted;
 exports.p = p;
 exports.reactive = reactive;

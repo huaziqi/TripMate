@@ -2,6 +2,7 @@
 Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 const common_vendor = require("./common/vendor.js");
 const composables_useAuth = require("./composables/useAuth.js");
+const composables_useElder = require("./composables/useElder.js");
 const i18n = require("./i18n.js");
 if (!Math) {
   "./pages/index/index.js";
@@ -21,11 +22,14 @@ if (!Math) {
   "./pages/guide/search/search.js";
   "./pages/spot-detail/spot-detail.js";
   "./pages/spot-favorites/spot-favorites.js";
+  "./pages/history/history.js";
+  "./pages/route/route.js";
 }
 const _sfc_main = {
   onLaunch: function() {
     const { loadFromStorage } = composables_useAuth.useAuth();
     loadFromStorage();
+    composables_useElder.initElder();
   },
   onShow: function() {
   },
