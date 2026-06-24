@@ -119,8 +119,8 @@
             </text>
           </view>
           <view v-if="resultText" class="result-actions-row">
-            <view class="icon-btn" @click="speakResult">
-              <text class="icon-btn-text">🔊</text>
+            <view class="icon-btn" :class="{ speaking: speaking }" @click="speakResult">
+              <text class="icon-btn-text">{{ speaking ? '⏸' : '🔊' }}</text>
             </view>
             <view class="copy-btn" @click="copyResult">
               <text class="copy-text" :style="{ fontSize: rpx(22) }">
@@ -383,6 +383,7 @@ import { useTranslationHistory } from '@/composables/useTranslationHistory'
 import { useFavoritePhrases } from '@/composables/useFavoritePhrases'
 import { translateText } from '@/api/translate'
 import { setLocale } from '@/i18n'
+import { synthesizeSpeech } from '@/api/tts'
 
 const { t, locale } = useI18n()
 
@@ -536,6 +537,24 @@ const resultText   = ref('')
 const detectedLang = ref('')
 const translating  = ref(false)
 const copied       = ref(false)
+const speaking = ref(false)
+let audioCtx: UniApp.InnerAudioContext | null = null
+
+function playAudio(url: string) {
+  if (audioCtx) {
+    audioCtx.stop()
+    audioCtx.destroy()
+    audioCtx = null
+  }
+  audioCtx = uni.createInnerAudioContext()
+  audioCtx.src = url
+  audioCtx.onEnded(() => { speaking.value = false })
+  audioCtx.onError(() => {
+    speaking.value = false
+    uni.showToast({ title: '发音失败，请稍后再试', icon: 'none' })
+  })
+  audioCtx.play()
+}
 
 function onInput(e: any) {
   inputText.value  = e.detail.value ?? ''
@@ -602,10 +621,31 @@ function copyResult() {
   })
 }
 
-function speakResult() {
-  // 微信小程序使用 wx.createInnerAudioContext 或文字转语音暂无免费 API
-  // 这里只用 Toast 提示，预留扩展
-  uni.showToast({ title: '朗读功能即将上线', icon: 'none' })
+async function speakResult() {
+  if (!resultText.value || speaking.value) return
+  const supportedLangs = ['zh', 'en']
+  if (!supportedLangs.includes(toLang.value)) {
+    uni.showToast({ title: '暂不支持该语言发音', icon: 'none' })
+    return
+  }
+  let text = resultText.value
+  if (text.length > 150) {
+    text = text.slice(0, 150)
+    uni.showToast({ title: '文本过长，仅朗读前150字', icon: 'none' })
+  }
+  speaking.value = true
+  try {
+    const res = await synthesizeSpeech(text, toLang.value)
+    if (res.code === 200 && res.data?.audioUrl) {
+      playAudio(res.data.audioUrl)
+    } else {
+      speaking.value = false
+      uni.showToast({ title: '发音失败，请稍后再试', icon: 'none' })
+    }
+  } catch {
+    speaking.value = false
+    uni.showToast({ title: '发音失败，请稍后再试', icon: 'none' })
+  }
 }
 
 // ——— 历史操作 ———
@@ -1733,5 +1773,9 @@ function usePhraseInText() {
 /* ——— 占位 ——— */
 .tabbar-placeholder {
   height: 140rpx;
+}
+
+.icon-btn.speaking {
+  background: #d6e4ff;
 }
 </style>
