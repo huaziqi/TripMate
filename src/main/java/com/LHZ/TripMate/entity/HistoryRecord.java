@@ -1,8 +1,11 @@
 package com.LHZ.TripMate.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
+
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 @Table(name = "history_record")
 public class HistoryRecord {
@@ -11,15 +14,22 @@ public class HistoryRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "user_id", nullable = false)
     private Long userId;
 
+    /**
+     * VIEW_SPOT / FAVORITE_SPOT / SEARCH_SPOT / PLAY_AUDIO / AI_CHAT
+     */
+    @Column(nullable = false, length = 64)
     private String type;
 
+    @Column(name = "target_id")
     private Long targetId;
 
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    @Column(name = "create_time", updatable = false)
     private LocalDateTime createTime;
 
     public HistoryRecord() {
@@ -33,55 +43,7 @@ public class HistoryRecord {
     }
 
     @PrePersist
-    public void prePersist() {
-        this.createTime = LocalDateTime.now();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public Long getTargetId() {
-        return targetId;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public void setTargetId(Long targetId) {
-        this.targetId = targetId;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
+    void prePersist() {
+        createTime = LocalDateTime.now();
     }
 }

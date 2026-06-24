@@ -42,7 +42,9 @@ public class SecurityConfig {
                                 "/api/spots/**",
                                 "/api/weather/**",
                                 "/api/translate",
-                                "/api/tts/**"
+                                "/api/tts/**",
+                                "/api/routes/**",
+                                "/uploads/**"
                         ).permitAll()
 
                         .requestMatchers(

@@ -29,6 +29,10 @@ public class HistoryRecordController {
     ) {
         Long userId = getCurrentUserId(userDetails);
 
+        if (req.getType() == null || req.getType().trim().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "历史记录类型不能为空");
+        }
+
         HistoryRecord record = new HistoryRecord(
                 userId,
                 req.getType(),

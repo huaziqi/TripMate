@@ -54,6 +54,14 @@
           <text class="menu-label" :style="{ fontSize: rpx(28) }">我的攻略</text>
           <text class="menu-arrow">›</text>
         </view>
+		
+		<view class="divider" />
+		
+		<view class="menu-item" @tap="onHistory">
+		  <text class="menu-label history-label">历史记录</text>
+		  <text class="menu-arrow">›</text>
+		</view>
+		
         <view class="divider" />
         <view class="menu-item" @click="onCollect">
           <text class="menu-label" :style="{ fontSize: rpx(28) }">攻略收藏</text>
@@ -125,6 +133,12 @@ function handleLogout() {
 
 function onSpotFavorites() {
   uni.navigateTo({ url: '/pages/spot-favorites/spot-favorites' })
+}
+
+function onHistory(){
+	uni.navigateTo({
+		url:'/pages/history/history'
+	})
 }
 
 async function onChooseAvatar(e: any) {
@@ -286,6 +300,10 @@ function onAbout() {
 
 .menu-label {
   color: #1a1a1a;
+}
+
+.history-label{
+	font-size: 27rpx;
 }
 
 .menu-arrow {
