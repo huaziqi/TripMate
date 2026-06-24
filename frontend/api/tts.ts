@@ -8,5 +8,5 @@ export interface TtsResult {
 }
 
 export function synthesizeSpeech(text: string, lang: string) {
-  return post<TtsResult>('/api/tts/synthesize', { text, lang } as any)
+  return post<TtsResult>('/api/tts/synthesize', { text, lang })
 }
