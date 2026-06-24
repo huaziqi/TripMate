@@ -230,6 +230,7 @@ function getImageSrc(url?: string) {
 
 function handleImageError(error: any) {
   imageLoadFailed.value = true
+  coverError.value = true
   console.error('图片加载失败：', spot.value?.imageUrl, error)
 }
 
