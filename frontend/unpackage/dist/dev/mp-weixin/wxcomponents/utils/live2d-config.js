@@ -7,8 +7,8 @@ module.exports = {
 
   model: {
     url: isDev
-      ? "http://10.69.232.31:8081/person4_42_vts/person4_42.model3.json"
-      : "https://your-domain.com/person4_42_vts/person4_42.model3.json",
+      ? "http://localhost:8080/live2d_model/person4_42_vts/person4_42.model3.json"
+      : "https://10.69.232.31:8081/person4_42_vts/person4_42.model3.json",
 
     scaleBase: 0.40,
     xRatio: 0.50,
