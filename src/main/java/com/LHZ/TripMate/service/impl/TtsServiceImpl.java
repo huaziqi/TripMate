@@ -31,9 +31,6 @@ public class TtsServiceImpl implements TtsService {
     @Value("${tencent.tts.region:ap-beijing}")
     private String region;
 
-    @Value("${tencent.tts.voice-type:101001}")
-    private Long voiceType;
-
     @Value("${tencent.tts.codec:mp3}")
     private String codec;
 
@@ -72,13 +69,28 @@ public class TtsServiceImpl implements TtsService {
 
             String sessionId = UUID.randomUUID().toString();
 
+            String lang = request.getLang() == null ? "zh" : request.getLang().toLowerCase();
+            Long voiceType;
+            Long primaryLanguage;
+            switch (lang) {
+                case "zh" -> {
+                    voiceType = 101001L;
+                    primaryLanguage = 1L;
+                }
+                case "en" -> {
+                    voiceType = 101016L;
+                    primaryLanguage = 2L;
+                }
+                default -> throw new RuntimeException("不支持该语言的语音合成：" + lang);
+            }
+
             TextToVoiceRequest ttsRequest = new TextToVoiceRequest();
             ttsRequest.setText(text);
             ttsRequest.setSessionId(sessionId);
             ttsRequest.setVoiceType(voiceType);
             ttsRequest.setCodec(codec);
             ttsRequest.setSampleRate(sampleRate);
-            ttsRequest.setPrimaryLanguage(1L);
+            ttsRequest.setPrimaryLanguage(primaryLanguage);
             ttsRequest.setModelType(1L);
             ttsRequest.setSpeed(0F);
             ttsRequest.setVolume(0F);

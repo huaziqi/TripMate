@@ -7,14 +7,13 @@ public class TtsRequestDTO {
     @NotBlank(message = "合成文本不能为空")
     private String text;
 
-    public TtsRequestDTO() {
-    }
+    private String lang = "zh";
 
-    public String getText() {
-        return text;
-    }
+    public TtsRequestDTO() {}
 
-    public void setText(String text) {
-        this.text = text;
-    }
+    public String getText() { return text; }
+    public void setText(String text) { this.text = text; }
+
+    public String getLang() { return lang; }
+    public void setLang(String lang) { this.lang = lang != null ? lang : "zh"; }
 }
