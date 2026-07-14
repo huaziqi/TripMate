@@ -21,6 +21,14 @@ function request(method, url, data, options = {}) {
       success: (res) => {
         const result = res.data;
         if (res.statusCode === 200) {
+          if (result && typeof result.code === "number" && result.code !== 200) {
+            common_vendor.index.showToast({
+              title: result.message || "请求失败",
+              icon: "none"
+            });
+            reject(new Error(result.message || "请求失败"));
+            return;
+          }
           resolve(result);
         } else if (res.statusCode === 401) {
           common_vendor.index.removeStorageSync("token");
@@ -48,10 +56,19 @@ function useApi() {
   function post(url, body, options) {
     return request("POST", url, body, options);
   }
-  function del(url, options) {
-    return request("POST", url + "/delete", void 0, options);
+  function put(url, body, options) {
+    return request("PUT", url, body, options);
   }
-  return { get, post, del };
+  function del(url, data, options) {
+    return request("DELETE", url, data, options);
+  }
+  return {
+    get,
+    post,
+    put,
+    del
+  };
 }
+exports.BASE_URL = BASE_URL;
 exports.useApi = useApi;
 //# sourceMappingURL=../../.sourcemap/mp-weixin/utils/useApi.js.map

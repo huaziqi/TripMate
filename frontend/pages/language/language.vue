@@ -638,7 +638,7 @@ async function speakResult() {
   }
   speaking.value = true
   try {
-    const res = await synthesizeSpeech(text, toLang.value)
+    const res = await synthesizeSpeech({ text, lang: toLang.value })
     if (res.code === 200 && res.data?.audioUrl) {
       playAudio(res.data.audioUrl)
     } else {
@@ -893,7 +893,7 @@ async function speakPhrase() {
   }
   speaking.value = true
   try {
-    const res = await synthesizeSpeech(text, phraseTargetLang.value)
+    const res = await synthesizeSpeech({ text, lang: phraseTargetLang.value })
     if (res.code === 200 && res.data?.audioUrl) {
       playAudio(res.data.audioUrl)
     } else {

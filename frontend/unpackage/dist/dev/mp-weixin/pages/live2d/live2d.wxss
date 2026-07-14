@@ -1,8 +1,11 @@
 
 .page.data-v-25246cd7 {
-  position: relative;
-  min-height: 100vh;
-  overflow: hidden;
+  position: fixed; /* 固定定位，禁止整体滚动 */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden; /* 关键：禁止页面整体滑动 */
   background: linear-gradient(180deg, #fdfcff 0%, #f7f5ff 42%, #f3f6ff 100%);
 }
 
@@ -38,16 +41,151 @@
   background: rgba(194, 216, 255, 0.42);
 }
 
-/* Live2D主区域 */
+/* 1. 顶部预置控制栏 */
+.top-control-bar.data-v-25246cd7 {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40rpx;
+  padding: 30rpx 24rpx;
+}
+.control-item.data-v-25246cd7 {
+  padding: 16rpx 32rpx;
+  border-radius: 24rpx;
+  background: rgba(255, 255, 255, 0.86);
+  -webkit-backdrop-filter: blur(12rpx);
+          backdrop-filter: blur(12rpx);
+  box-shadow: 0 8rpx 20rpx rgba(179, 184, 255, 0.12);
+  font-size: 28rpx;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* 2. 聊天气泡容器 - 核心修改：可滚动 */
+.chat-bubble-container.data-v-25246cd7 {
+  position: absolute; /* 改为绝对定位固定位置 */
+  top: 180rpx; /* 距离顶部固定距离 */
+  left: 0;
+  right: 0;
+  height: 380rpx;
+  z-index: 4;
+  overflow-y: auto; /* 开启纵向滚动 */
+  padding: 0 40rpx;
+  /* 隐藏滚动条 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* 隐藏微信小程序滚动条 */
+.chat-bubble-container.data-v-25246cd7::-webkit-scrollbar {
+  display: none;
+}
+.chat-bubble-area.data-v-25246cd7 {
+  display: flex;
+  flex-direction: column; /* 垂直排列多条消息 */
+  gap: 20rpx; /* 消息之间的间距 */
+  padding: 10rpx 0;
+}
+
+/* 通用气泡样式 */
+.chat-bubble.data-v-25246cd7 {
+  max-width: 70%;
+  padding: 20rpx 28rpx;
+  border-radius: 32rpx;
+  background: rgba(255, 255, 255, 0.9);
+  -webkit-backdrop-filter: blur(12rpx);
+          backdrop-filter: blur(12rpx);
+  box-shadow: 0 8rpx 24rpx rgba(179, 184, 255, 0.15);
+  position: relative; /* 用于语音按钮定位 */
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+/* 左侧气泡（机器人回复） */
+.chat-bubble-left.data-v-25246cd7 {
+  align-self: flex-start;
+  border-bottom-left-radius: 8rpx;
+}
+
+/* 右侧气泡（用户发送） */
+.chat-bubble-right.data-v-25246cd7 {
+  align-self: flex-end;
+  border-bottom-right-radius: 8rpx;
+  background: linear-gradient(135deg, #8ea7ff 0%, #b59cff 100%);
+  margin-right: 60rpx; /* 核心修改：添加右侧外边距往左移 */
+}
+
+/* 气泡文字样式 */
+.bubble-text.data-v-25246cd7 {
+  font-size: 28rpx;
+  line-height: 1.5;
+  flex: 1;
+}
+
+/* 左侧气泡文字颜色 */
+.chat-bubble-left .bubble-text.data-v-25246cd7 {
+  color: #333;
+}
+
+/* 右侧气泡文字颜色 */
+.chat-bubble-right .bubble-text.data-v-25246cd7 {
+  color: #fff;
+}
+
+/* 语音按钮样式 */
+.voice-btn.data-v-25246cd7 {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4rpx 12rpx rgba(179, 184, 255, 0.1);
+}
+.voice-btn-loading.data-v-25246cd7 {
+  background: rgba(255, 243, 205, 0.95);
+}
+.voice-btn-playing.data-v-25246cd7 {
+  background: linear-gradient(135deg, #8ea7ff 0%, #b59cff 100%);
+  box-shadow: 0 0 0 4rpx rgba(142, 167, 255, 0.15);
+}
+.voice-btn-played.data-v-25246cd7 {
+  background: rgba(220, 252, 231, 0.95);
+}
+.voice-btn-error.data-v-25246cd7 {
+  background: rgba(254, 226, 226, 0.95);
+}
+.voice-btn-playing .voice-icon.data-v-25246cd7 {
+  color: #fff;
+}
+.voice-btn-played .voice-icon.data-v-25246cd7 {
+  color: #16a34a;
+}
+.voice-btn-error .voice-icon.data-v-25246cd7 {
+  color: #dc2626;
+}
+.voice-icon.data-v-25246cd7 {
+  font-size: 24rpx;
+  color: #8ea7ff;
+}
+
+/* 3. Live2D主区域 */
 .live2d-stage.data-v-25246cd7 {
   position: relative;
   z-index: 2;
   width: 100%;
-  padding-top: 80rpx;
+  padding-top: 0rpx;
+  padding-bottom: 0rpx;
+  margin: 0 auto;
 }
 .live2d-wrap.data-v-25246cd7 {
-  width: 70%;
-  height: 1000rpx;
+  width: 84%;
+  height: 1170rpx;
   margin: 0 auto;
 }
 .data-v-25246cd7 .live2d-box {
@@ -73,9 +211,9 @@
   pointer-events: none;
 }
 
-/* 输入区 */
+/* 4. 输入区 - 绝对定位固定位置 */
 .chat-panel.data-v-25246cd7 {
-  position: fixed;
+  position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
@@ -116,16 +254,175 @@
   background: linear-gradient(135deg, #8ea7ff 0%, #b59cff 100%);
   box-shadow: 0 8rpx 20rpx rgba(150, 146, 255, 0.28);
 }
+.send-btn-stop.data-v-25246cd7 {
+  background: linear-gradient(135deg, #ff7a7a 0%, #ff5252 100%);
+  box-shadow: 0 8rpx 20rpx rgba(255, 82, 82, 0.28);
+}
 .send-text.data-v-25246cd7 {
   font-size: 28rpx;
   color: #fff;
   font-weight: 600;
 }
 .placeholder.data-v-25246cd7 {
-  min-height: 100vh;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #666;
   font-size: 30rpx;
+}
+
+/* 新增主题样式 */
+.theme-purple .page.data-v-25246cd7 {
+  background: linear-gradient(180deg, #fdfcff 0%, #f7f5ff 42%, #f3f6ff 100%);
+}
+.theme-purple .glow-1.data-v-25246cd7 {
+  background: rgba(255, 205, 226, 0.45);
+}
+.theme-purple .glow-2.data-v-25246cd7 {
+  background: rgba(194, 216, 255, 0.42);
+}
+.theme-purple .bottom-atmosphere.data-v-25246cd7 {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(237, 233, 255, 0.72) 42%,
+    rgba(237, 233, 255, 0) 75%
+  );
+}
+
+/* 蓝白色主题 */
+.theme-blue .page.data-v-25246cd7 {
+  background: linear-gradient(180deg, #f8fcff 0%, #e8f4f8 42%, #e0f2f7 100%);
+}
+.theme-blue .glow-1.data-v-25246cd7 {
+  background: rgba(205, 235, 255, 0.45);
+}
+.theme-blue .glow-2.data-v-25246cd7 {
+  background: rgba(180, 220, 255, 0.42);
+}
+.theme-blue .bottom-atmosphere.data-v-25246cd7 {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(224, 240, 255, 0.72) 42%,
+    rgba(224, 240, 255, 0) 75%
+  );
+}
+.theme-blue .chat-bubble-right.data-v-25246cd7 {
+  background: linear-gradient(135deg, #7cb3f0 0%, #91c8ff 100%);
+}
+.theme-blue .voice-icon.data-v-25246cd7 {
+  color: #7cb3f0;
+}
+.theme-blue .send-btn.data-v-25246cd7 {
+  background: linear-gradient(135deg, #7cb3f0 0%, #91c8ff 100%);
+}
+
+/* 绿白色主题 */
+.theme-green .page.data-v-25246cd7 {
+  background: linear-gradient(180deg, #f9fffb 0%, #e8f8ef 42%, #e0f5e6 100%);
+}
+.theme-green .glow-1.data-v-25246cd7 {
+  background: rgba(205, 255, 226, 0.45);
+}
+.theme-green .glow-2.data-v-25246cd7 {
+  background: rgba(180, 255, 210, 0.42);
+}
+.theme-green .bottom-atmosphere.data-v-25246cd7 {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(224, 255, 235, 0.72) 42%,
+    rgba(224, 255, 235, 0) 75%
+  );
+}
+.theme-green .chat-bubble-right.data-v-25246cd7 {
+  background: linear-gradient(135deg, #7cf0b3 0%, #91ffc8 100%);
+}
+.theme-green .voice-icon.data-v-25246cd7 {
+  color: #7cf0b3;
+}
+.theme-green .send-btn.data-v-25246cd7 {
+  background: linear-gradient(135deg, #7cf0b3 0%, #91ffc8 100%);
+}
+
+/* 原生弹窗样式 - 遮罩层 */
+.skin-popup-mask.data-v-25246cd7 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+  -webkit-backdrop-filter: blur(4rpx);
+          backdrop-filter: blur(4rpx);
+  z-index: 9998;
+}
+
+/* 换肤弹窗样式 - 顶部窄版 */
+.skin-popup.data-v-25246cd7 {
+  position: fixed; /* 固定定位，不受页面滚动影响 */
+  top: 20rpx;      /* 屏幕顶部显示 */
+  left: 50%;       /* 水平居中 */
+  transform: translateX(-50%); /* 仅水平居中，保持顶部位置 */
+  width: 240rpx;   /* 宽度限制为240rpx（不超过要求） */
+  height: auto;    /* 高度自适应内容 */
+  padding: 20rpx 15rpx; /* 紧凑内边距 */
+  border-radius: 16rpx; /* 适配窄宽度，缩小圆角 */
+  background: rgba(255, 255, 255, 0.95);
+  -webkit-backdrop-filter: blur(12rpx);
+          backdrop-filter: blur(12rpx);
+  z-index: 9999;   /* 最高层级，避免被遮挡 */
+  box-sizing: border-box; /* 内边距计入宽度，防止超240rpx */
+}
+.popup-title.data-v-25246cd7 {
+  font-size: 24rpx; /* 缩小标题字号 */
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  margin-bottom: 15rpx; /* 减少间距 */
+  white-space: nowrap; /* 标题不换行 */
+  overflow: hidden;
+  text-overflow: ellipsis; /* 超长标题省略 */
+}
+.skin-list.data-v-25246cd7 {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx; /* 极小间距，适配窄宽度 */
+  margin-bottom: 15rpx;
+}
+.skin-item.data-v-25246cd7 {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  padding: 10rpx 15rpx; /* 紧凑内边距 */
+  border-radius: 12rpx;
+  cursor: pointer;
+}
+.skin-item.active.data-v-25246cd7 {
+  background: rgba(240, 245, 255, 0.8);
+  border: 2rpx solid #8ea7ff;
+}
+.skin-preview.data-v-25246cd7 {
+  width: 40rpx;  /* 大幅缩小预览图，适配窄宽度 */
+  height: 40rpx;
+  border-radius: 8rpx;
+}
+.skin-name.data-v-25246cd7 {
+  font-size: 22rpx; /* 缩小文字 */
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* 文字超长省略 */
+}
+.skin-confirm.data-v-25246cd7 {
+  width: 100%;
+  height: 60rpx; /* 缩小按钮 */
+  line-height: 60rpx;
+  text-align: center;
+  background: linear-gradient(135deg, #8ea7ff 0%, #b59cff 100%);
+  color: #fff;
+  font-size: 24rpx; /* 缩小按钮文字 */
+  border-radius: 12rpx;
 }

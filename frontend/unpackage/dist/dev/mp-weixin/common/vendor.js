@@ -5271,6 +5271,10 @@ function vFor(source, renderItem) {
   }
   return ret;
 }
+function setRef(ref2, id, opts = {}) {
+  const { $templateRefs } = getCurrentInstance();
+  $templateRefs.push({ i: id, r: ref2, k: opts.k, f: opts.f });
+}
 function setupDevtoolsPlugin() {
 }
 const o = (value, key) => vOn(value, key);
@@ -5281,6 +5285,7 @@ const h = (str) => hyphenate(str);
 const n = (value) => normalizeClass(value);
 const t = (val) => toDisplayString$1(val);
 const p = (props) => renderProps(props);
+const sr = (ref2, id, opts) => setRef(ref2, id, opts);
 function createApp$1(rootComponent, rootProps = null) {
   rootComponent && (rootComponent.mpType = "app");
   return createVueApp(rootComponent, rootProps).use(plugin);
@@ -7145,9 +7150,9 @@ function isConsoleWritable() {
   return isWritable;
 }
 function initRuntimeSocketService() {
-  const hosts = "192.168.56.1,192.168.139.1,192.168.200.3,10.69.74.115,127.0.0.1";
+  const hosts = "192.168.56.1,192.168.139.1,192.168.200.3,10.135.29.80,127.0.0.1";
   const port = "8090";
-  const id = "mp-weixin_wFXy9g";
+  const id = "mp-weixin__Vl8TN";
   const lazy = typeof swan !== "undefined";
   let restoreError = lazy ? () => {
   } : initOnError();
@@ -14730,7 +14735,7 @@ var dist = {};
             return n3 = null !== r4 ? t4.getParameter(r4.MAX_TEXTURE_MAX_ANISOTROPY_EXT) : 0;
           }, getMaxPrecision: i3, precision: o5, logarithmicDepthBuffer: c3, maxTextures: l4, maxVertexTextures: h4, maxTextureSize: u3, maxCubemapSize: p4, maxAttributes: d3, maxVertexUniforms: f4, maxVaryings: m3, maxFragmentUniforms: g3, vertexTextures: v3, floatFragmentTextures: y3, floatVertexTextures: v3 && y3, maxSamples: a3 ? t4.getParameter(36183) : 0 };
         }
-        function sr() {
+        function sr2() {
           var t4 = this, e5 = null, r3 = 0, n3 = false, i3 = false, a3 = new Xe(), o5 = new m2(), s5 = { value: null, needsUpdate: false };
           function c3() {
             s5.value !== e5 && (s5.value = e5, s5.needsUpdate = r3 > 0), t4.numPlanes = r3, t4.numIntersection = 0;
@@ -16508,7 +16513,7 @@ var dist = {};
         function Qn(t4) {
           var e5 = void 0 !== (t4 = t4 || {}).canvas ? t4.canvas : i2.createElementNS("http://www.w3.org/1999/xhtml", "canvas"), r3 = void 0 !== t4.context ? t4.context : null, n3 = void 0 !== t4.alpha && t4.alpha, o5 = void 0 === t4.depth || t4.depth, c3 = void 0 === t4.stencil || t4.stencil, h4 = void 0 !== t4.antialias && t4.antialias, u3 = void 0 === t4.premultipliedAlpha || t4.premultipliedAlpha, p4 = void 0 !== t4.preserveDrawingBuffer && t4.preserveDrawingBuffer, f4 = void 0 !== t4.powerPreference ? t4.powerPreference : "default", m3 = void 0 !== t4.failIfMajorPerformanceCaveat && t4.failIfMajorPerformanceCaveat, g3 = null, v3 = null;
           this.domElement = e5, this.debug = { checkShaderErrors: true }, this.autoClear = true, this.autoClearColor = true, this.autoClearDepth = true, this.autoClearStencil = true, this.sortObjects = true, this.clippingPlanes = [], this.localClippingEnabled = false, this.gammaFactor = 2, this.gammaInput = false, this.gammaOutput = false, this.physicallyCorrectLights = false, this.toneMapping = 1, this.toneMappingExposure = 1, this.toneMappingWhitePoint = 1, this.maxMorphTargets = 8, this.maxMorphNormals = 4;
-          var y3, b3, w3, _3, M3, S3, T3, E4, A3, L3, R2, C2, O2, D2, N2, I2, z2, B2, F2 = this, G2 = false, U2 = null, H2 = 0, V2 = 0, j2 = null, k2 = null, W2 = -1, q2 = { geometry: null, program: null, wireframe: false }, X2 = null, Y2 = null, J2 = new x2(), Z2 = new x2(), Q2 = null, K2 = e5.width, $2 = e5.height, tt3 = 1, et2 = new x2(0, 0, K2, $2), rt2 = new x2(0, 0, K2, $2), nt2 = false, it2 = new Ze(), at2 = new sr(), ot2 = false, st2 = false, ct2 = new P2(), lt2 = new d2();
+          var y3, b3, w3, _3, M3, S3, T3, E4, A3, L3, R2, C2, O2, D2, N2, I2, z2, B2, F2 = this, G2 = false, U2 = null, H2 = 0, V2 = 0, j2 = null, k2 = null, W2 = -1, q2 = { geometry: null, program: null, wireframe: false }, X2 = null, Y2 = null, J2 = new x2(), Z2 = new x2(), Q2 = null, K2 = e5.width, $2 = e5.height, tt3 = 1, et2 = new x2(0, 0, K2, $2), rt2 = new x2(0, 0, K2, $2), nt2 = false, it2 = new Ze(), at2 = new sr2(), ot2 = false, st2 = false, ct2 = new P2(), lt2 = new d2();
           function ht2() {
             return null === j2 ? tt3 : 1;
           }
@@ -21781,6 +21786,7 @@ exports.n = n;
 exports.nextTick$1 = nextTick$1;
 exports.o = o;
 exports.onBackPress = onBackPress;
+exports.onBeforeUnmount = onBeforeUnmount;
 exports.onLoad = onLoad;
 exports.onMounted = onMounted;
 exports.onShow = onShow;
@@ -21791,6 +21797,7 @@ exports.reactive = reactive;
 exports.ref = ref;
 exports.resolveComponent = resolveComponent;
 exports.s = s;
+exports.sr = sr;
 exports.t = t;
 exports.unref = unref;
 exports.useI18n = useI18n;

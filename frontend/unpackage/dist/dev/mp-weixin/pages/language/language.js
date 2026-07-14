@@ -245,7 +245,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       }
       speaking.value = true;
       try {
-        const res = await api_tts.synthesizeSpeech(text, toLang.value);
+        const res = await api_tts.synthesizeSpeech({ text, lang: toLang.value });
         if (res.code === 200 && ((_a = res.data) == null ? void 0 : _a.audioUrl)) {
           playAudio(res.data.audioUrl);
         } else {
@@ -498,7 +498,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
       }
       speaking.value = true;
       try {
-        const res = await api_tts.synthesizeSpeech(text, phraseTargetLang.value);
+        const res = await api_tts.synthesizeSpeech({ text, lang: phraseTargetLang.value });
         if (res.code === 200 && ((_a = res.data) == null ? void 0 : _a.audioUrl)) {
           playAudio(res.data.audioUrl);
         } else {

@@ -44,6 +44,7 @@ public class SecurityConfig {
                                 "/api/weather/**",
                                 "/api/translate",
                                 "/api/tts/**",
+                                "/api/asr/**",
                                 "/api/routes/**",
                                 "/uploads/**"
                         ).permitAll()

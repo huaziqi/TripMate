@@ -177,7 +177,7 @@ const _sfc_main = /* @__PURE__ */ common_vendor.defineComponent({
           return;
         }
         common_vendor.index.__f__("log", "at pages/spot-detail/spot-detail.vue:322", "TTS导览文本：", guideText);
-        const result = await api_tts.synthesizeSpeech(guideText);
+        const result = await api_tts.synthesizeSpeech({ text: guideText, lang: "zh" });
         const audioUrl = (result == null ? void 0 : result.audioUrl) || ((_a = result == null ? void 0 : result.data) == null ? void 0 : _a.audioUrl);
         common_vendor.index.__f__("log", "at pages/spot-detail/spot-detail.vue:327", "TTS返回结果：", result);
         common_vendor.index.__f__("log", "at pages/spot-detail/spot-detail.vue:328", "TTS音频地址：", audioUrl);
