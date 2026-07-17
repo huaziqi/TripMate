@@ -39,3 +39,7 @@ node_modules/
 
 ### uni-app 编译产物 ###
 frontend/unpackage/
+
+### claude
+CLAUDE.md
+/.claude/

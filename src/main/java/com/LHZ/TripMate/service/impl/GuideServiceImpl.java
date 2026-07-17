@@ -4,9 +4,13 @@ import com.LHZ.TripMate.dto.GuideMessageDTO;
 import com.LHZ.TripMate.entity.GuideMessage;
 import com.LHZ.TripMate.entity.GuideSession;
 import com.LHZ.TripMate.entity.GuideSpotConfig;
+import com.LHZ.TripMate.entity.KnowledgeDoc;
+import com.LHZ.TripMate.entity.KnowledgeSpotEntry;
 import com.LHZ.TripMate.repository.GuideMessageRepository;
 import com.LHZ.TripMate.repository.GuideSessionRepository;
 import com.LHZ.TripMate.repository.GuideSpotConfigRepository;
+import com.LHZ.TripMate.repository.KnowledgeDocRepository;
+import com.LHZ.TripMate.repository.KnowledgeSpotEntryRepository;
 import com.LHZ.TripMate.service.DeepSeekClient;
 import com.LHZ.TripMate.service.GuideService;
 import tools.jackson.databind.ObjectMapper;
@@ -26,9 +30,17 @@ import java.util.concurrent.Executor;
 @RequiredArgsConstructor
 public class GuideServiceImpl implements GuideService {
 
+    /** 知识库注入 system prompt 的总字符上限，防止超长文档撑爆上下文 */
+    private static final int KNOWLEDGE_CHAR_LIMIT = 20_000;
+
+    /** 景点结构化条目注入的字符上限 */
+    private static final int SPOT_ENTRY_CHAR_LIMIT = 15_000;
+
     private final GuideSpotConfigRepository spotConfigRepo;
     private final GuideSessionRepository sessionRepo;
     private final GuideMessageRepository messageRepo;
+    private final KnowledgeDocRepository knowledgeDocRepo;
+    private final KnowledgeSpotEntryRepository knowledgeSpotRepo;
     private final DeepSeekClient deepSeekClient;
     private final ObjectMapper objectMapper;
 
@@ -134,13 +146,80 @@ public class GuideServiceImpl implements GuideService {
 
                 ## 你掌握的景点知识
                 %s
-
+                %s
                 ## 对话规范
                 - 回答简洁自然，每次不超过 150 字
                 - 不知道的内容直接说"这个我还不太清楚"，不编造
                 - 保持导游视角，语气亲切，适当引导游客探索
                 - 使用中文回答
-                """, config.getPersonaName(), config.getPersonaDesc(), config.getKnowledgeText());
+                """, config.getPersonaName(), config.getPersonaDesc(),
+                config.getKnowledgeText(),
+                buildSpotEntrySection(config.getSpotKey()) + buildKnowledgeSection(config.getSpotKey()));
+    }
+
+    /** 拼接景点结构化知识条目：每个景点一段，仅输出非空字段 */
+    private String buildSpotEntrySection(String spotKey) {
+        List<KnowledgeSpotEntry> entries = knowledgeSpotRepo.findBySpotKeyAndEnabledTrueOrderBySpotCode(spotKey);
+        if (entries.isEmpty()) return "";
+
+        StringBuilder sb = new StringBuilder("\n## 景点详细资料\n");
+        for (KnowledgeSpotEntry entry : entries) {
+            if (sb.length() >= SPOT_ENTRY_CHAR_LIMIT) {
+                sb.append("\n（篇幅所限，其余景点资料略）\n");
+                break;
+            }
+            sb.append("\n### ").append(entry.getName()).append('（').append(entry.getSpotCode()).append('）').append('\n');
+            appendField(sb, "所属景区", entry.getZoneName());
+            appendField(sb, "具体位置", entry.getLocation());
+            appendField(sb, "建筑/景观参数", entry.getScaleInfo());
+            appendField(sb, "核心功能", entry.getCoreFunction());
+            appendField(sb, "文化内涵", entry.getCulture());
+            appendField(sb, "详细介绍", entry.getDescription());
+            appendField(sb, "游玩亮点", entry.getTourTips());
+            appendField(sb, "演艺/开放信息", entry.getTicketInfo());
+            appendField(sb, "备注", entry.getRemark());
+        }
+        return sb.toString();
+    }
+
+    private void appendField(StringBuilder sb, String label, String value) {
+        if (value != null && !value.isBlank()) {
+            sb.append(label).append('：').append(value).append('\n');
+        }
+    }
+
+    /** 拼接知识库中该景点可用的知识文档（专属 + 通用），按分类分组，总量限长 */
+    private String buildKnowledgeSection(String spotKey) {
+        List<KnowledgeDoc> docs = knowledgeDocRepo.findActiveKnowledgeForSpot(spotKey);
+        if (docs.isEmpty()) return "";
+
+        Map<KnowledgeDoc.Category, String> categoryLabels = Map.of(
+                KnowledgeDoc.Category.EXPLANATION, "讲解词",
+                KnowledgeDoc.Category.HISTORY, "文史资料",
+                KnowledgeDoc.Category.FAQ, "常见问题及答案",
+                KnowledgeDoc.Category.OTHER, "其他资料");
+
+        StringBuilder sb = new StringBuilder();
+        KnowledgeDoc.Category currentCategory = null;
+        for (KnowledgeDoc doc : docs) {
+            if (sb.length() >= KNOWLEDGE_CHAR_LIMIT) {
+                sb.append("\n（篇幅所限，其余知识文档略）\n");
+                break;
+            }
+            if (doc.getCategory() != currentCategory) {
+                currentCategory = doc.getCategory();
+                sb.append("\n## ").append(categoryLabels.get(currentCategory)).append('\n');
+            }
+            sb.append("\n### ").append(doc.getTitle()).append('\n');
+            String content = doc.getContent();
+            int remaining = KNOWLEDGE_CHAR_LIMIT - sb.length();
+            if (content.length() > remaining) {
+                sb.append(content, 0, Math.max(0, remaining)).append("\n（本文档过长，已截断）\n");
+            } else {
+                sb.append(content).append('\n');
+            }
+        }
+        return sb.toString();
     }
 
     private List<Map<String, Object>> buildMessages(String systemPrompt, List<GuideMessage> history) {

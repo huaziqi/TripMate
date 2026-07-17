@@ -14,6 +14,7 @@ const router = createRouter({
         { path: 'users', component: () => import('@/views/users/UsersView.vue'), meta: { requiresSuperAdmin: true } },
         { path: 'settings', component: () => import('@/views/settings/SettingsView.vue'), meta: { requiresSuperAdmin: true } },
         { path: 'posts', component: () => import('@/views/posts/PostsView.vue'), meta: { requiresSuperAdmin: true } },
+        { path: 'knowledge', component: () => import('@/views/knowledge/KnowledgeView.vue'), meta: { requiresSuperAdmin: true } },
       ],
     },
   ],

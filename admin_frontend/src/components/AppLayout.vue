@@ -25,6 +25,10 @@
           <el-icon><Document /></el-icon>
           <span>帖子管理</span>
         </el-menu-item>
+        <el-menu-item v-if="auth.isSuperAdmin" index="/knowledge">
+          <el-icon><Collection /></el-icon>
+          <span>知识库管理</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
 
@@ -43,7 +47,7 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { DataLine, User, Setting, Document } from '@element-plus/icons-vue'
+import { DataLine, User, Setting, Document, Collection } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()

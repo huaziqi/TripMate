@@ -7,6 +7,8 @@ import com.LHZ.TripMate.entity.GuideSpotConfig;
 import com.LHZ.TripMate.repository.GuideMessageRepository;
 import com.LHZ.TripMate.repository.GuideSessionRepository;
 import com.LHZ.TripMate.repository.GuideSpotConfigRepository;
+import com.LHZ.TripMate.repository.KnowledgeDocRepository;
+import com.LHZ.TripMate.repository.KnowledgeSpotEntryRepository;
 import com.LHZ.TripMate.service.impl.GuideServiceImpl;
 import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +31,8 @@ class GuideServiceImplTest {
     @Mock GuideSpotConfigRepository spotConfigRepo;
     @Mock GuideSessionRepository sessionRepo;
     @Mock GuideMessageRepository messageRepo;
+    @Mock KnowledgeDocRepository knowledgeDocRepo;
+    @Mock KnowledgeSpotEntryRepository knowledgeSpotRepo;
     @Mock DeepSeekClient deepSeekClient;
     @Mock Executor executor;
 
@@ -36,7 +40,8 @@ class GuideServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        service = new GuideServiceImpl(spotConfigRepo, sessionRepo, messageRepo, deepSeekClient, new ObjectMapper());
+        service = new GuideServiceImpl(spotConfigRepo, sessionRepo, messageRepo, knowledgeDocRepo,
+                knowledgeSpotRepo, deepSeekClient, new ObjectMapper());
         service.setExecutor(executor);
     }
 
