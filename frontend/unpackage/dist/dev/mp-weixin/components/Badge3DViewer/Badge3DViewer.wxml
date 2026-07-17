@@ -1,1 +1,0 @@
-<view class="viewer data-v-e649efab"><block wx:if="{{r0}}"><canvas type="webgl" id="{{a}}" class="canvas data-v-e649efab" bindtouchstart="{{b}}" bindtouchmove="{{c}}" bindtouchend="{{d}}"/></block><text class="hint data-v-e649efab">拖动旋转</text></view>
