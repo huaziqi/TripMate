@@ -321,7 +321,7 @@ async function playGuide() {
 
     console.log('TTS导览文本：', guideText)
 
-    const result: any = await synthesizeSpeech(guideText)
+    const result: any = await synthesizeSpeech({ text: guideText, lang: 'zh' })
     const audioUrl = result?.audioUrl || result?.data?.audioUrl
 
     console.log('TTS返回结果：', result)

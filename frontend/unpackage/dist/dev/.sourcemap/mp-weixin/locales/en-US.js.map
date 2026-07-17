@@ -1,1 +1,0 @@
-{"version":3,"file":"en-US.js","sources":["locales/en-US.ts"],"sourcesContent":["export default {\n  tabbar: {\n    home: 'Home',\n    guide: 'Guide',\n    elder: 'Guide',\n    language: 'Language',\n    mine: 'Me'\n  }\n}"],"names":[],"mappings":";AAAA,MAAe,OAAA;AAAA,EACb,QAAQ;AAAA,IACN,MAAM;AAAA,IACN,OAAO;AAAA,IACP,OAAO;AAAA,IACP,UAAU;AAAA,IACV,MAAM;AAAA,EACR;AACF;;"}

@@ -15,8 +15,8 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
   servlet:
     multipart:
-      max-file-size: 5MB
-      max-request-size: 5MB
+      max-file-size: 30MB
+      max-request-size: 30MB
 
 weather:
   api:
@@ -38,7 +38,7 @@ upload:
 deepseek:
   api:
     url: https://api.deepseek.com/chat/completions
-    key: sk-2de3188867fe40049fe8d24446a09fa9
+    key: sk-fee2d2d507654d65ab0896230660fd2c
     model: deepseek-chat
 tencent:
   tts:
@@ -48,6 +48,17 @@ tencent:
     voice-type: 101001
     codec: mp3
     sample-rate: 16000
+
+xfyun:
+  asr:
+    host-url: wss://iat-api.xfyun.cn/v2/iat
+    appid: f286e12b
+    api-key: ce45a1596fbc1b35a34d82f4cd83d3cb
+    api-secret: NzYwMTUyZTMyYzc0MzQyNzE1OGRiYTBm
+    # 每帧音频发送间隔（毫秒），官方建议 40ms；调小可加快识别返回速度
+    frame-interval-ms: 40
+    # 整体识别超时（秒）
+    timeout-seconds: 60
 
 app:
   base-url: http://127.0.0.1:8080

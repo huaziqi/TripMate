@@ -33,4 +33,13 @@ build/
 .vscode/
 D:/code/作业/综合实践2/TripMate
 .superpowers/
-/frontend/unpackage
+
+### Node ###
+node_modules/
+
+### uni-app 编译产物 ###
+frontend/unpackage/
+
+### claude
+CLAUDE.md
+/.claude/

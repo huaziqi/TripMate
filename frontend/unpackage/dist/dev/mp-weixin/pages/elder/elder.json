@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "老年版",
-  "usingComponents": {
-    "tab-bar": "../../components/TabBar/TabBar"
-  }
-}
