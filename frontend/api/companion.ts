@@ -77,7 +77,7 @@ export function chatWithCompanionStream(options: ChatStreamOptions): ChatStreamT
     success() {
       // 微信小程序 chunk 数据主要通过 onChunkReceived 接收
     },
-    fail(err) {
+    fail(err: any) {
       console.error('[companion] stream request fail:', err)
 
       if (!finished) {
@@ -90,7 +90,7 @@ export function chatWithCompanionStream(options: ChatStreamOptions): ChatStreamT
     }
   })
 
-  requestTask.onChunkReceived((res) => {
+  requestTask.onChunkReceived((res: any) => {
     try {
       const chunkText = decodeArrayBuffer(res.data)
       sseBuffer += chunkText

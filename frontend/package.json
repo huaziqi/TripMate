@@ -1,6 +1,9 @@
 {
   "devDependencies": {
+    "@dcloudio/types": "^3.4.32",
+    "@dcloudio/uni-app": "^2.0.2-5010520260709001",
     "typescript": "^6.0.3",
+    "vue": "^3.5.40",
     "vue-tsc": "^3.2.9"
   },
   "dependencies": {

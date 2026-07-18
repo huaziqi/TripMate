@@ -7,6 +7,8 @@ export interface PostAuthor {
   id: number
   nickname: string
   avatarUrl: string
+  /** 当前用户是否已关注该作者（详情接口返回） */
+  following?: boolean
 }
 
 export interface PostItem {

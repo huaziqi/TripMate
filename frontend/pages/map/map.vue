@@ -135,9 +135,9 @@ import {
   type NearbySpot
 } from '@/api/spot'
 
-// 默认位置：西南大学附近，防止定位失败时地图空白
-const defaultLatitude = 29.8266
-const defaultLongitude = 106.4220
+// 默认位置：无锡灵山胜境（灵山大佛附近），防止定位失败时地图空白
+const defaultLatitude = 31.0899
+const defaultLongitude = 120.0937
 
 const latitude = ref(defaultLatitude)
 const longitude = ref(defaultLongitude)

@@ -4,16 +4,24 @@
     "module": "esnext",
     "strict": true,
     "jsx": "preserve",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
+    "paths": {
+      "@/*": ["./*"]
+    },
     "types": [
       "@dcloudio/types"
     ]
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.vue"
+    "**/*.ts",
+    "**/*.vue"
+  ],
+  "exclude": [
+    "node_modules",
+    "unpackage",
+    "dist"
   ]
 }

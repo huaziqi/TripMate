@@ -15,7 +15,7 @@
           >{{ c.label }}</view>
         </view>
       </scroll-view>
-      <view class="search-icon" @click="uni.navigateTo({ url: '/pages/guide/search/search' })">
+      <view class="search-icon" @click="goSearch">
         <text class="search-icon-text">🔍</text>
       </view>
     </view>
@@ -140,6 +140,10 @@ function onCategory(v: string) {
   if (activeCategory.value === v) return
   activeCategory.value = v
   load(true)
+}
+
+function goSearch() {
+  uni.navigateTo({ url: '/pages/guide/search/search' })
 }
 
 function onSort(v: 'new' | 'hot') {

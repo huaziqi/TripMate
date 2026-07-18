@@ -3,6 +3,7 @@ package com.LHZ.TripMate.service.impl;
 import com.LHZ.TripMate.dto.GuideHistoryItemDTO;
 import com.LHZ.TripMate.dto.GuideMessageDTO;
 import com.LHZ.TripMate.entity.GuideMessage;
+import com.LHZ.TripMate.entity.GuideSession;
 import com.LHZ.TripMate.repository.GuideMessageRepository;
 import com.LHZ.TripMate.repository.GuideSessionRepository;
 import com.LHZ.TripMate.service.CompanionService;
@@ -26,14 +27,21 @@ public class CompanionServiceImpl implements CompanionService {
 
     private static final String SYSTEM_PROMPT = """
             你叫林晓，25岁，是一个真实的年轻女性。
-            你是一名景区导游，现在在重庆北碚西南大学，
-            向游客们推荐介绍附近的旅游景点
+            你是一名景区导游，现在在江苏无锡灵山胜境景区，
+            向游客介绍灵山大佛、灵山梵宫、九龙灌浴、祥符禅寺、五印坛城、拈花湾等景点。
+            你熟悉景区的佛教文化典故与演出时间（九龙灌浴每日10:00、11:30、13:30、15:00；
+            梵宫《吉祥颂》每日10:35、11:30、14:00、16:00），
+            也能根据游客兴趣（历史文化、自然风光、亲子、祈福、艺术、禅修）推荐游览路线，
+            并提醒游客可在小程序“路线推荐”页获取个性化路线。
             你性格开朗、热情、
             说话自然随意，像跟朋友聊天，偶尔用网络用语，但不堆砌。
             每次回复简洁，不超过 150 字。
             你不是 AI 助手，你就是林晓，不要提及自己是人工智能或语言模型。
             使用中文回答。
             """;
+
+    /** 伴游对话落库使用的会话 key；个性化路线画像与数据大屏会消费这些消息 */
+    private static final String COMPANION_SPOT_KEY = "lingshan-companion";
 
     private final GuideSessionRepository sessionRepo;
     private final GuideMessageRepository messageRepo;
@@ -57,6 +65,9 @@ public class CompanionServiceImpl implements CompanionService {
 
         SseEmitter emitter = new SseEmitter(120_000L);
 
+        // 落库用户消息：个性化路线推荐从中挖掘兴趣关键词，数据大屏统计服务人次/热门问答
+        saveMessage(userId, "USER", userMessage);
+
         executor.execute(() -> deepSeekClient.streamChat(
                 messages,
                 delta -> {
@@ -66,6 +77,7 @@ public class CompanionServiceImpl implements CompanionService {
                     } catch (Exception ignored) {}
                 },
                 fullContent -> {
+                    saveMessage(userId, "ASSISTANT", fullContent);
                     try {
                         emitter.send(SseEmitter.event()
                                 .data(objectMapper.writeValueAsString(Map.of("done", true))));
@@ -94,6 +106,30 @@ public class CompanionServiceImpl implements CompanionService {
     @Transactional
     public void clearHistory(Long userId) {
         // 暂时禁用清空历史逻辑
+    }
+
+    /** 将对话消息落库；失败不影响聊天主流程 */
+    private void saveMessage(Long userId, String role, String content) {
+        if (userId == null || content == null || content.isBlank()) return;
+
+        try {
+            GuideSession session = sessionRepo
+                    .findByUserIdAndSpotKey(userId, COMPANION_SPOT_KEY)
+                    .orElseGet(() -> {
+                        GuideSession s = new GuideSession();
+                        s.setUserId(userId);
+                        s.setSpotKey(COMPANION_SPOT_KEY);
+                        return sessionRepo.save(s);
+                    });
+
+            GuideMessage message = new GuideMessage();
+            message.setSessionId(session.getId());
+            message.setRole(role);
+            message.setContent(content);
+            messageRepo.save(message);
+        } catch (Exception e) {
+            log.warn("保存伴游对话失败 userId={}", userId, e);
+        }
     }
 
     private List<Map<String, Object>> buildMessages(List<GuideHistoryItemDTO> history, String userMessage) {

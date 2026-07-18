@@ -302,9 +302,8 @@ function initCanvas() {
   uni.createSelectorQuery()
     .in(_inst)
     .select('#draw-canvas')
-    .node()
-    .exec((res: any[]) => {
-      const node = res[0]?.node
+    .node((nodeRes: any) => {
+      const node = nodeRes?.node
       if (!node) return
       uni.createSelectorQuery()
         .in(_inst)
@@ -322,6 +321,7 @@ function initCanvas() {
         })
         .exec()
     })
+    .exec()
 }
 
 function redrawAllStrokes() {
