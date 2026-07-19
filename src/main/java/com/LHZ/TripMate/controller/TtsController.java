@@ -21,4 +21,9 @@ public class TtsController {
     public Result<TtsResponseDTO> synthesize(@Valid @RequestBody TtsRequestDTO request) {
         return Result.success(ttsService.synthesize(request));
     }
+
+    @PostMapping("/synthesize-with-timeline")
+    public Result<TtsResponseDTO> synthesizeWithTimeline(@Valid @RequestBody TtsRequestDTO request) {
+        return Result.success(ttsService.synthesizeWithTimeline(request));
+    }
 }

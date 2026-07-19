@@ -58,7 +58,7 @@ public class JwtUtil {
     }
 
     private Claims parseClaims(String token) {
-        return Jwts.parser().verifyWith(key).build()
+        return Jwts.parser().verifyWith(key).clockSkewSeconds(60).build()
                 .parseSignedClaims(token).getPayload();
     }
 }

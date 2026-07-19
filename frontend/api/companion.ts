@@ -1,4 +1,5 @@
 import { BASE_URL, useApi } from '@/utils/useApi'
+import { isTokenExpired, clearExpiredToken } from '@/utils/token'
 
 export interface GuideMessageDTO {
   role: 'USER' | 'ASSISTANT' | string
@@ -56,6 +57,12 @@ export function chatWithCompanionStream(options: ChatStreamOptions): ChatStreamT
 
   const token = uni.getStorageSync('token')
 
+  if (!token || isTokenExpired(token)) {
+    clearExpiredToken()
+    onError?.('登录已过期，请重新登录')
+    return { abort() {} }
+  }
+
   // #ifdef MP-WEIXIN
   let sseBuffer = ''
   let finished = false
@@ -68,14 +75,20 @@ export function chatWithCompanionStream(options: ChatStreamOptions): ChatStreamT
     header: {
       'Content-Type': 'application/json',
       Accept: 'text/event-stream',
-      ...(token ? { Authorization: `Bearer ${token}` } : {})
+      Authorization: `Bearer ${token}`
     },
     data: {
       message,
       history
     },
-    success() {
-      // 微信小程序 chunk 数据主要通过 onChunkReceived 接收
+    success(res) {
+      if (res.statusCode === 401) {
+        clearExpiredToken()
+        if (!finished) {
+          finished = true
+          onError?.('登录已过期，请重新登录')
+        }
+      }
     },
     fail(err) {
       console.error('[companion] stream request fail:', err)
@@ -135,31 +148,37 @@ export function chatWithCompanionStream(options: ChatStreamOptions): ChatStreamT
   // #endif
 
   // #ifndef MP-WEIXIN
-  uni.request({
-    url: `${BASE_URL}/api/companion/chat`,
-    method: 'POST',
-    header: {
-      'Content-Type': 'application/json',
-      Accept: 'text/event-stream',
-      ...(token ? { Authorization: `Bearer ${token}` } : {})
-    },
-    data: {
-      message,
-      history
-    },
-    success() {
-      onError?.('当前平台暂未适配流式聊天，请在微信小程序中使用')
-    },
-    fail() {
-      onError?.('网络异常，请稍后再试')
-    }
-  })
+    uni.request({
+      url: `${BASE_URL}/api/companion/chat`,
+      method: 'POST',
+      header: {
+        'Content-Type': 'application/json',
+        Accept: 'text/event-stream',
+        Authorization: `Bearer ${token}`
+      },
+      data: {
+        message,
+        history
+      },
+      success(res: any) {
+        if (res.statusCode === 401) {
+          clearExpiredToken()
+          onError?.('登录已过期，请重新登录')
+          return
+        }
+        onError?.('当前平台暂未适配流式聊天，请在微信小程序中使用')
+      },
+      fail() {
+        onError?.('网络异常，请稍后再试')
+      }
+    })
 
-  return {
-    abort() {}
+    return {
+      abort() {}
+    }
+    // #endif
   }
-  // #endif
-}
+
 
 function handleSseEvent(
   eventText: string,

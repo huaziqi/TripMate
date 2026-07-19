@@ -343,4 +343,4 @@ live2dRef.value.inspectModel()
 
 
 
-后续优化方向，startTalking函数嘴型基准值设定，眨眼不显示修复，后端流式传输报错，音画不同步
+后续优化方向，startTalking函数嘴型基准值设定，眨眼不显示修复，后端流式传输报错，音画不同步，reset需要考虑停止说话？

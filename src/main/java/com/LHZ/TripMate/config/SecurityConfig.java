@@ -30,6 +30,7 @@ public class SecurityConfig {
             .headers(AbstractHttpConfigurer::disable)
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/ws", "/ws/**").permitAll()
 
                         .requestMatchers(
@@ -55,6 +56,8 @@ public class SecurityConfig {
                                 "/api/history",
                                 "/api/history/**"
                         ).hasRole("WX_USER")
+
+                        .requestMatchers(HttpMethod.POST, "/api/companion/chat", "/api/guide/*/chat").permitAll()
 
                         .requestMatchers("/api/guide/**").hasRole("WX_USER")
                         .requestMatchers("/api/companion/**").hasRole("WX_USER")

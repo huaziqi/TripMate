@@ -27,7 +27,15 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import ws.schild.jave.Encoder;
+import ws.schild.jave.MultimediaObject;
+import ws.schild.jave.encode.AudioAttributes;
+import ws.schild.jave.encode.EncodingAttributes;
+import ws.schild.jave.info.AudioInfo;
+import java.io.File;
+import java.net.URI;
 /**
  * 科大讯飞语音听写（IAT）WebSocket 协议实现
  *
@@ -65,40 +73,59 @@ public class AsrServiceImpl implements AsrService {
     @Override
     public AsrResponseDTO recognize(byte[] audio, String format, String language) {
         String fmt = format == null ? "pcm" : format.toLowerCase(Locale.ROOT);
-        String encoding = switch (fmt) {
-            case "pcm", "wav" -> "raw";
-            case "mp3" -> "lame";
-            default -> throw new IllegalArgumentException("不支持的音频格式：" + fmt + "（支持 pcm / wav / mp3）");
-        };
         String lang = language == null || language.isBlank() ? "zh_cn" : language;
         if (!lang.equals("zh_cn") && !lang.equals("en_us")) {
             throw new IllegalArgumentException("不支持的语种：" + lang + "（支持 zh_cn / en_us）");
         }
-        // wav 本质是带头的 pcm，讯飞 raw 编码只收裸 pcm，需要去掉文件头
-        byte[] payload = "wav".equals(fmt) ? stripWavHeader(audio) : audio;
+
+        byte[] payload;
+        if (isWebmFormat(audio)) {
+            log.warn("检测到 WebM 格式（微信小程序录音），正在转换为 PCM...");
+            payload = convertWebmToPcm(audio);
+            log.info("WebM→PCM 转换成功: {} bytes → {} bytes", audio.length, payload.length);
+        } else if ("wav".equals(fmt)) {
+            log.info("音频格式为 WAV，正在去除 Header...");
+            payload = stripWavHeader(audio);
+        } else {
+            log.info("音频格式为 {}，正在去除 Header...", fmt);
+            payload = audio;
+        }
+
         if (payload.length == 0) {
             throw new IllegalArgumentException("音频内容为空");
         }
+
+        int totalFrames = (payload.length + FRAME_SIZE - 1) / FRAME_SIZE;
+        log.info("========== ASR 开始 ==========");
+        log.info("音频参数: format={}, size={} bytes, frames={}, language={}", fmt, payload.length, totalFrames, lang);
+        log.info("音频前16字节(hex): {}", bytesToHex(payload, 16));
 
         IatSession session = new IatSession();
         WebSocket webSocket = null;
         try {
             String authUrl = buildAuthUrl();
+            log.debug("讯飞握手 URL: {}", authUrl);
             webSocket = HttpClient.newHttpClient()
                     .newWebSocketBuilder()
                     .connectTimeout(Duration.ofSeconds(10))
                     .buildAsync(URI.create(authUrl), session)
                     .join();
+            log.info("WebSocket 连接已建立");
 
-            sendAudioFrames(webSocket, session, payload, encoding, lang);
+            sendAudioFrames(webSocket, session, payload, lang, totalFrames);
 
+            log.info("音频帧发送完毕，等待讯飞响应（超时 {}s）...", timeoutSeconds);
             if (!session.latch.await(timeoutSeconds, TimeUnit.SECONDS)) {
                 throw new RuntimeException("语音识别超时（" + timeoutSeconds + "s）");
             }
             if (session.error != null) {
                 throw new RuntimeException(session.error);
             }
-            return new AsrResponseDTO(session.text.toString(), session.sid);
+
+            String resultText = session.text.toString();
+            log.info("识别结果: text='{}', sid={}, 收到响应帧数={}", resultText, session.sid, session.responseCount);
+            log.info("========== ASR 结束 ==========");
+            return new AsrResponseDTO(resultText, session.sid);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("语音识别被中断", e);
@@ -113,16 +140,77 @@ public class AsrServiceImpl implements AsrService {
         }
     }
 
+    private boolean isWebmFormat(byte[] audio) {
+        if (audio.length < 4) {
+            log.info("isWebmFormat: 音频太短 ({} bytes)，返回 false", audio.length);
+            return false;
+        }
+        boolean result = (audio[0] & 0xFF) == 0x1A && (audio[1] & 0xFF) == 0x45
+                && (audio[2] & 0xFF) == 0xDF && (audio[3] & 0xFF) == 0xA3;
+        log.info("isWebmFormat: bytes[0-3]=0x{}, 0x{}, 0x{}, 0x{} → {}",
+                String.format("%02X", audio[0] & 0xFF),
+                String.format("%02X", audio[1] & 0xFF),
+                String.format("%02X", audio[2] & 0xFF),
+                String.format("%02X", audio[3] & 0xFF),
+                result);
+        return result;
+    }
+
+    private byte[] convertWebmToPcm(byte[] webmData) {
+        File tempWebm = null;
+        File tempWav = null;
+        try {
+            tempWebm = File.createTempFile("asr_input_", ".webm");
+            tempWav = File.createTempFile("asr_output_", ".wav");
+
+            java.nio.file.Files.write(tempWebm.toPath(), webmData);
+
+            AudioAttributes audioAttr = new AudioAttributes();
+            audioAttr.setCodec("pcm_s16le");
+            audioAttr.setBitRate(256000);
+            audioAttr.setChannels(1);
+            audioAttr.setSamplingRate(16000);
+
+            EncodingAttributes encodingAttr = new EncodingAttributes();
+            encodingAttr.setOutputFormat("wav");
+            encodingAttr.setAudioAttributes(audioAttr);
+
+            Encoder encoder = new Encoder();
+            MultimediaObject multimediaObject = new MultimediaObject(tempWebm);
+            encoder.encode(multimediaObject, tempWav, encodingAttr);
+
+            return java.nio.file.Files.readAllBytes(tempWav.toPath());
+        } catch (Exception e) {
+            log.error("WebM→PCM 转换失败: {}", e.getMessage(), e);
+            throw new RuntimeException("音频格式转换失败，请重试", e);
+        } finally {
+            if (tempWebm != null) tempWebm.delete();
+            if (tempWav != null) tempWav.delete();
+        }
+    }
+
+    private String bytesToHex(byte[] bytes, int maxLen) {
+        int len = Math.min(bytes.length, maxLen);
+        StringBuilder sb = new StringBuilder(len * 2);
+        for (int i = 0; i < len; i++) {
+            sb.append(String.format("%02x", bytes[i] & 0xFF));
+        }
+        return sb.toString();
+    }
+
     /**
      * 分帧上传音频：首帧 status=0 携带 common/business 参数，中间帧 status=1，尾帧 status=2
+     * 统一使用 PCM 格式（16kHz, 16bit, 单声道）发送给讯飞
      */
     private void sendAudioFrames(WebSocket webSocket, IatSession session,
-                                 byte[] audio, String encoding, String language)
+                                 byte[] audio, String language, int totalFrames)
             throws InterruptedException {
         boolean first = true;
+        int frameIndex = 0;
         for (int offset = 0; offset < audio.length; offset += FRAME_SIZE) {
             if (session.finished.get()) {
-                break; // 服务端已返回错误或提前结束，停止上传
+                log.warn("讯飞已提前结束，停止发送（已发 {}/{} 帧）", frameIndex, totalFrames);
+                break;
             }
             int len = Math.min(FRAME_SIZE, audio.length - offset);
             String chunk = Base64.getEncoder()
@@ -135,29 +223,30 @@ public class AsrServiceImpl implements AsrService {
                 business.put("language", language);
                 business.put("domain", "iat");
                 business.put("accent", "mandarin");
-                // 静默多久判定为语音结束（ms），调大避免长句中间停顿被截断
                 business.put("vad_eos", 5000);
-                business.put("ptt", 1); // 返回标点
+                business.put("ptt", 1);
+                log.info("首帧 business: {}", business);
             }
             ObjectNode data = frame.putObject("data");
             data.put("status", first ? 0 : 1);
             data.put("format", "audio/L16;rate=16000");
-            data.put("encoding", encoding);
+            data.put("encoding", "raw");
             data.put("audio", chunk);
 
             webSocket.sendText(frame.toString(), true).join();
             first = false;
+            frameIndex++;
             Thread.sleep(frameIntervalMs);
         }
 
-        // 尾帧：通知服务端音频发送完毕
         ObjectNode endFrame = objectMapper.createObjectNode();
         ObjectNode endData = endFrame.putObject("data");
         endData.put("status", 2);
         endData.put("format", "audio/L16;rate=16000");
-        endData.put("encoding", encoding);
+        endData.put("encoding", "raw");
         endData.put("audio", "");
         webSocket.sendText(endFrame.toString(), true).join();
+        log.info("尾帧已发送（共 {} 帧）", frameIndex);
     }
 
     /**
@@ -230,6 +319,7 @@ public class AsrServiceImpl implements AsrService {
         final AtomicBoolean finished = new AtomicBoolean(false);
         volatile String error;
         volatile String sid;
+        int responseCount = 0;
 
         private final StringBuilder messageBuffer = new StringBuilder();
 
@@ -253,7 +343,6 @@ public class AsrServiceImpl implements AsrService {
 
         @Override
         public CompletionStage<?> onClose(WebSocket webSocket, int statusCode, String reason) {
-            // 正常流程在收到 status=2 结果后已 complete；此处兜底服务端异常断开
             if (!finished.get()) {
                 error = "连接被服务端关闭（" + statusCode + " " + reason + "）";
                 complete();
@@ -262,6 +351,8 @@ public class AsrServiceImpl implements AsrService {
         }
 
         private void handleMessage(String message) {
+            responseCount++;
+            log.info("[讯飞响应 #{}] {}", responseCount, message);
             try {
                 JsonNode root = objectMapper.readTree(message);
                 if (root.hasNonNull("sid")) {
@@ -270,20 +361,27 @@ public class AsrServiceImpl implements AsrService {
                 int code = root.path("code").asInt();
                 if (code != 0) {
                     error = "讯飞识别失败（code=" + code + "）：" + root.path("message").asText();
+                    log.error("{}", error);
                     complete();
                     return;
                 }
                 JsonNode result = root.path("data").path("result");
+                int dataStatus = root.path("data").path("status").asInt(-1);
+                log.info("  data.status={}, result.ws 节点数={}", dataStatus, result.path("ws").size());
                 for (JsonNode ws : result.path("ws")) {
                     for (JsonNode cw : ws.path("cw")) {
-                        text.append(cw.path("w").asText());
+                        String w = cw.path("w").asText();
+                        log.info("  识别片段: '{}'", w);
+                        text.append(w);
                     }
                 }
-                if (root.path("data").path("status").asInt() == 2) {
+                if (dataStatus == 2) {
+                    log.info("讯飞识别完成，最终文本: '{}'", text);
                     complete();
                 }
             } catch (Exception e) {
                 error = "识别结果解析失败：" + e.getMessage();
+                log.error("{}", error, e);
                 complete();
             }
         }

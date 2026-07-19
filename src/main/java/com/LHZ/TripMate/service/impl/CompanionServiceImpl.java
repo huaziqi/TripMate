@@ -14,6 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.*;
@@ -25,8 +28,7 @@ import java.util.concurrent.Executor;
 public class CompanionServiceImpl implements CompanionService {
 
     private static final String SYSTEM_PROMPT = """
-            你叫林晓，25岁，是一个真实的年轻女性。
-            你是一名景区导游，现在在重庆北碚西南大学，
+            你是一个真实的年轻女性，你是一名景区导游，现在在江苏无锡灵山景区，
             向游客们推荐介绍附近的旅游景点
             你性格开朗、热情、
             说话自然随意，像跟朋友聊天，偶尔用网络用语，但不堆砌。
@@ -56,16 +58,19 @@ public class CompanionServiceImpl implements CompanionService {
         List<Map<String, Object>> messages = buildMessages(history, userMessage);
 
         SseEmitter emitter = new SseEmitter(120_000L);
+        SecurityContext securityContext = SecurityContextHolder.getContext();
 
         executor.execute(() -> deepSeekClient.streamChat(
                 messages,
                 delta -> {
+                    SecurityContextHolder.setContext(securityContext);
                     try {
                         emitter.send(SseEmitter.event()
                                 .data(objectMapper.writeValueAsString(Map.of("delta", delta))));
                     } catch (Exception ignored) {}
                 },
                 fullContent -> {
+                    SecurityContextHolder.setContext(securityContext);
                     try {
                         emitter.send(SseEmitter.event()
                                 .data(objectMapper.writeValueAsString(Map.of("done", true))));
@@ -76,6 +81,7 @@ public class CompanionServiceImpl implements CompanionService {
                     }
                 },
                 error -> {
+                    SecurityContextHolder.setContext(securityContext);
                     try {
                         emitter.send(SseEmitter.event()
                                 .data(objectMapper.writeValueAsString(Map.of("error", error))));

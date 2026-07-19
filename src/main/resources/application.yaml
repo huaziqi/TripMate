@@ -46,7 +46,7 @@ tencent:
     secret-key: 9B2QgmFdqCQYTCnCTZWL4fIFKNZp5GLG
     region: ap-beijing
     voice-type: 101001
-    codec: mp3
+    codec: wav
     sample-rate: 16000
 
 xfyun:
@@ -65,3 +65,8 @@ app:
 
 tripmate:
   upload-dir: uploads
+  use-external-align: false
+
+logging:
+  level:
+    com.LHZ.TripMate.security: INFO

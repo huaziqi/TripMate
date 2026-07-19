@@ -22,17 +22,22 @@
 			"Name": "左眼 开闭"
 		},
 		{
-			"Id": "Param",
+			"Id": "ParamL1",
 			"GroupId": "",
 			"Name": "l1"
 		},
 		{
-			"Id": "Param5",
+			"Id": "ParamSuitShift",
+			"GroupId": "",
+			"Name": "suitShift"
+		},
+		{
+			"Id": "ParamL2",
 			"GroupId": "",
 			"Name": "l2"
 		},
 		{
-			"Id": "Param6",
+			"Id": "ParamL3",
 			"GroupId": "",
 			"Name": "l3"
 		},
@@ -47,17 +52,17 @@
 			"Name": "右眼 开闭"
 		},
 		{
-			"Id": "Param2",
+			"Id": "ParamR1",
 			"GroupId": "",
 			"Name": "r1"
 		},
 		{
-			"Id": "Param3",
+			"Id": "ParamR2",
 			"GroupId": "",
 			"Name": "r2"
 		},
 		{
-			"Id": "Param4",
+			"Id": "ParamR3",
 			"GroupId": "",
 			"Name": "r3"
 		},
@@ -170,6 +175,14 @@
 	"ParameterGroups": [],
 	"Parts": [
 		{
+			"Id": "Part24",
+			"Name": "suit3.png(未找到对应图层)"
+		},
+		{
+			"Id": "Part7",
+			"Name": "suit2.png(未找到对应图层)"
+		},
+		{
 			"Id": "Part5",
 			"Name": "舌头.png(未找到对应图层)"
 		},
@@ -262,10 +275,6 @@
 		[
 			"ParamAngleX",
 			"ParamAngleY"
-		],
-		[
-			"Param2",
-			"Param3"
 		]
 	]
 }

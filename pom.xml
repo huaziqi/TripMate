@@ -119,6 +119,23 @@
             <version>5.4.1</version>
         </dependency>
 
+		<dependency>
+			<groupId>com.belerweb</groupId>
+			<artifactId>pinyin4j</artifactId>
+			<version>2.5.1</version>
+		</dependency>
+		<!-- JAVE2: Java 封装的 ffmpeg，用于 WebM→WAV 转换 -->
+		<dependency>
+			<groupId>ws.schild</groupId>
+			<artifactId>jave-core</artifactId>
+			<version>3.5.0</version>
+		</dependency>
+		<!-- 根据操作系统选择以下之一（Windows 开发环境） -->
+		<dependency>
+			<groupId>ws.schild</groupId>
+			<artifactId>jave-nativebin-win64</artifactId>
+			<version>3.5.0</version>
+		</dependency>
     </dependencies>
 
 	<build>

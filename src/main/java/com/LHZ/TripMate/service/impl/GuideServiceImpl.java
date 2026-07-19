@@ -21,6 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.Executor;
@@ -92,17 +95,20 @@ public class GuideServiceImpl implements GuideService {
         List<Map<String, Object>> messages = buildMessages(buildSystemPrompt(config), history);
         SseEmitter emitter = new SseEmitter(120_000L);
         final Long sessionId = session.getId();
+        SecurityContext securityContext = SecurityContextHolder.getContext();
 
         executor.execute(() -> {
             deepSeekClient.streamChat(
                     messages,
                     delta -> {
+                        SecurityContextHolder.setContext(securityContext);
                         try {
                             emitter.send(SseEmitter.event()
                                     .data(objectMapper.writeValueAsString(Map.of("delta", delta))));
                         } catch (Exception ignored) {}
                     },
                     fullContent -> {
+                        SecurityContextHolder.setContext(securityContext);
                         try {
                             GuideMessage assistantMsg = new GuideMessage();
                             assistantMsg.setSessionId(sessionId);
@@ -118,6 +124,7 @@ public class GuideServiceImpl implements GuideService {
                         }
                     },
                     error -> {
+                        SecurityContextHolder.setContext(securityContext);
                         try {
                             emitter.send(SseEmitter.event()
                                     .data(objectMapper.writeValueAsString(Map.of("error", error))));

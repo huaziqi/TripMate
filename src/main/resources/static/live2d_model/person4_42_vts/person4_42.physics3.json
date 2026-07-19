@@ -53,7 +53,7 @@
 				{
 					"Destination": {
 						"Target": "Parameter",
-						"Id": "Param"
+						"Id": "ParamL1"
 					},
 					"VertexIndex": 1,
 					"Scale": 1,
@@ -64,7 +64,7 @@
 				{
 					"Destination": {
 						"Target": "Parameter",
-						"Id": "Param5"
+						"Id": "ParamL2"
 					},
 					"VertexIndex": 1,
 					"Scale": 1,
@@ -125,7 +125,7 @@
 				{
 					"Destination": {
 						"Target": "Parameter",
-						"Id": "Param2"
+						"Id": "ParamR1"
 					},
 					"VertexIndex": 1,
 					"Scale": 1,
@@ -136,7 +136,7 @@
 				{
 					"Destination": {
 						"Target": "Parameter",
-						"Id": "Param3"
+						"Id": "ParamR2"
 					},
 					"VertexIndex": 1,
 					"Scale": 1,
@@ -197,7 +197,7 @@
 				{
 					"Destination": {
 						"Target": "Parameter",
-						"Id": "Param6"
+						"Id": "ParamL3"
 					},
 					"VertexIndex": 1,
 					"Scale": 1,
@@ -258,7 +258,7 @@
 				{
 					"Destination": {
 						"Target": "Parameter",
-						"Id": "Param4"
+						"Id": "ParamR3"
 					},
 					"VertexIndex": 1,
 					"Scale": 1,
