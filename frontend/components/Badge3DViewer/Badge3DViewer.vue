@@ -40,12 +40,12 @@ let touchPrev = { x: 0, y: 0 }
 
 onMounted(() => {
   const query = uni.createSelectorQuery()
-  query.select(`#${canvasId}`).node().exec((res: any[]) => {
-    const canvas = res[0]?.node
+  query.select(`#${canvasId}`).node((res: any) => {
+    const canvas = res?.node
     if (!canvas) return
     canvasNode = canvas
     initScene(canvas)
-  })
+  }).exec()
 })
 
 onUnmounted(() => {

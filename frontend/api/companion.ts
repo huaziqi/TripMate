@@ -90,7 +90,7 @@ export function chatWithCompanionStream(options: ChatStreamOptions): ChatStreamT
         }
       }
     },
-    fail(err) {
+    fail(err: any) {
       console.error('[companion] stream request fail:', err)
 
       if (!finished) {
@@ -103,7 +103,7 @@ export function chatWithCompanionStream(options: ChatStreamOptions): ChatStreamT
     }
   })
 
-  requestTask.onChunkReceived((res) => {
+  requestTask.onChunkReceived((res: any) => {
     try {
       const chunkText = decodeArrayBuffer(res.data)
       sseBuffer += chunkText

@@ -20,6 +20,18 @@ TripMate is a travel assistant mini-program (微信小程序) with a Spring Boot
 - Admin API prefix: `/api/admin/**` — all endpoints except `/api/admin/login` require `Authorization: Bearer <token>`
 - Mini-program API prefix: `/api/**` (e.g. `/api/weather`)
 
+#### Scenic Area Data (无锡灵山胜境)
+- The demo scenic area is **灵山胜境 + 拈花湾** (Wuxi Lingshan, from 软件杯 competition data pack `示范景区公开资料包/`, not in git)
+- `config/LingshanDataInitializer` seeds 23 spots into `scenic_spot` on first boot (wipes pre-Lingshan data once; idempotent — skips if `灵山大佛` exists)
+- `config/GuideDataInitializer` seeds the `lingshan` digital-human persona (`GuideSpotConfig`), deleting the legacy `swu` row
+- The companion digital human (`CompanionServiceImpl`) persists chat messages to `guide_session`/`guide_message` under spotKey `lingshan-companion` — these feed the interest profile and the dashboard stats
+
+#### Personalized Route Recommendation (`/api/routes/**`, all permitAll)
+- `GET /api/routes/recommend` — 6 themed Lingshan routes (no profile)
+- `GET /api/routes/recommend/options` — interest quiz options (8 dims: history/buddhist_art/nature/architecture/blessing/family/photography/zen)
+- `POST /api/routes/recommend/personalized` — body = questionnaire (`PersonalizeRequestDTO`); if a WX token is sent, the backend additionally mines favorites (`spot_favorite`), browse history (`history_record`) and digital-human chats (`guide_message`) into the interest vector; routes are scored (0–100 match) with explainable reasons, and each route spot gets an interest-matched `focusText` (讲解重点)
+- Core logic (route templates, keyword dicts, scoring) lives in `service/impl/RouteRecommendServiceImpl`; unit tests in `RouteRecommendServiceImplTest`
+
 #### Backend Package Structure
 ```
 com.LHZ.TripMate
@@ -53,6 +65,8 @@ com.LHZ.TripMate
 - **i18n**: `vue-i18n` with `zh` (default) and `en` locales in `frontend/locales/`. Weather condition keys follow `weather.condition.<中文天气字符串>` — backend returns raw Chinese strings, frontend translates them.
 - **Elder mode** (`frontend/composables/useElder.ts`): module-level singleton reactive state; provides `rpx(base)` helper that scales rpx values by `fontScale` (1× normal, 1.4× elder). All font sizes in components must use `rpx()` instead of inline rpx literals to support elder mode.
 - **Response contract**: `{ code: number, message: string, data: T }` — matches `com.LHZ.TripMate.common.Result<T>`.
+- **Interest profile**: the route page (`pages/route/route.vue`) stores the visitor questionnaire in `uni.getStorageSync('interest_profile')`; clearing it re-shows the quiz.
+- **Type-check**: `npx vue-tsc --noEmit` from `frontend/` now works (tsconfig include/paths fixed; `vue`, `@dcloudio/types`, `@dcloudio/uni-app` are devDependencies installed with `--legacy-peer-deps`).
 
 ### Admin Panel (`admin_frontend/`)
 - **Vue 3 + TypeScript + Vite**, port 5173

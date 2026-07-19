@@ -63,7 +63,7 @@
       <view class="card route-entry-card" @tap="goRouteRecommend">
         <view class="route-entry-left">
           <text class="section-title">路线推荐</text>
-          <text class="route-entry-desc">查看西南大学校园推荐路线</text>
+          <text class="route-entry-desc">查看灵山胜境个性化推荐路线</text>
         </view>
         <text class="route-entry-arrow">›</text>
       </view>
@@ -240,7 +240,7 @@ function buildGuideText() {
   }
 
   const name = spot.value.name || '该景点'
-  const category = spot.value.category || '校园景点'
+  const category = spot.value.category || '景区景点'
   const description = spot.value.description || ''
   const address = spot.value.address || ''
 
@@ -257,7 +257,7 @@ function buildGuideText() {
   if (description) {
     text += description
   } else {
-    text += '这里是西南大学北碚校区的重要景点之一，适合游览、拍照和打卡。'
+    text += '这里是无锡灵山胜境的重要景点之一，适合游览、祈福、拍照和打卡。'
   }
 
   if (text.length > 140) {

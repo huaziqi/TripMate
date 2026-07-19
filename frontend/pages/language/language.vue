@@ -407,7 +407,7 @@ const tabs = computed(() => [
   { key: 'text',    label: t('translate.tabs.text')    },
   { key: 'phrases', label: t('translate.tabs.phrases') },
   { key: 'history', label: t('translate.tabs.history') },
-])
+] as { key: 'text' | 'phrases' | 'history'; label: string }[])
 
 // ——— 语言列表 ———
 const allLanguages = [

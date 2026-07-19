@@ -20,7 +20,7 @@
       v-for="item in results"
       :key="item.id"
       class="post-card"
-      @click="uni.navigateTo({ url: `/pages/guide/detail/detail?id=${item.id}` })"
+      @click="goDetail(item.id)"
     >
       <image v-if="item.coverUrl" class="cover" :src="item.coverUrl" mode="aspectFill" />
       <view v-else class="cover cover-placeholder" />
@@ -55,6 +55,10 @@ const page = ref(0)
 const loading = ref(false)
 const noMore = ref(false)
 const searched = ref(false)
+
+function goDetail(id: number) {
+  uni.navigateTo({ url: `/pages/guide/detail/detail?id=${id}` })
+}
 
 async function doSearch() {
   if (!keyword.value.trim()) return
